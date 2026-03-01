@@ -2,8 +2,8 @@
 
 export default function Home() {
     return (
-        <main>
+        <section>
             <h1>Home</h1>
-        </main>
+        </section>
     );
 }
