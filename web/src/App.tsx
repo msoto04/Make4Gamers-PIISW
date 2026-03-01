@@ -6,6 +6,7 @@ import Ranking from "./pages/Ranking";
 import Juegos from "./pages/Juegos";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import RecuperarPassword from "./pages/RecuperarPassword";
 
 
 function App() {
