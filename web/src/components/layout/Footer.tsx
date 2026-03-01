@@ -1,4 +1,8 @@
 import { Link } from 'react-router-dom';
+import { Logo } from '../icons/Logo';
+import { Twitter } from '../icons/Twitter';
+import { Discord } from '../icons/Discord';
+import { Twitch } from '../icons/Twitch';
 
 const Footer = () => {
     return (
@@ -8,7 +12,7 @@ const Footer = () => {
                     {/* Brand Column */}
                     <div className="col-span-2">
                         <Link to="/" className="flex items-center gap-2 font-bold text-xl mb-4">
-                            <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+                            <Logo className="h-8 w-8" />
                             <span className="text-white">Make4Gamers</span>
                         </Link>
                         <p className="text-slate-400 text-sm max-w-xs">
@@ -47,9 +51,15 @@ const Footer = () => {
                 <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
                     <p>© 2026 Make4Gamers Inc. Todos los derechos reservados.</p>
                     <div className="flex gap-6">
-                        <a href="#" className="hover:text-indigo-200">Twitter</a>
-                        <a href="#" className="hover:text-indigo-200">Discord</a>
-                        <a href="#" className="hover:text-indigo-200">Twitch</a>
+                        <a href="https://twitter.com/make4gamers" target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity">
+                            <Twitter className='h-4 w-4' />
+                        </a>
+                        <a href="https://discord.gg/make4gamers" target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity">
+                            <Discord className='h-4 w-4' />
+                        </a>
+                        <a href="https://twitch.tv/make4gamers" target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity">
+                            <Twitch className='h-4 w-4' />
+                        </a>
                     </div>
                 </div>
             </div>
