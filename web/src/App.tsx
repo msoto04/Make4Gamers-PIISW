@@ -1,19 +1,32 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
-import Login from "./pages/Login"; 
-import RecuperarPassword from "./pages/RecuperarPassword"; // 1. Importa la nueva página
+import Chat from "./pages/Chat";
+import Ranking from "./pages/Ranking";
+import Juegos from "./pages/Juegos";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+
 
 function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
+      <Routes>
+
+        {/* Auth */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/recuperar-password" element={<RecuperarPassword />} />
+
+        {/* Main */}
+        <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/recuperar-password" element={<RecuperarPassword />} />
-        </Routes>
-      </Layout>
+          <Route path="/juegos" element={<Juegos />} />
+          <Route path="/ranking" element={<Ranking />} />
+          <Route path="/chat" element={<Chat />} />
+        </Route>
+
+      </Routes>
     </BrowserRouter>
   )
 }
