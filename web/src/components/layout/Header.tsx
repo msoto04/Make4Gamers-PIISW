@@ -1,11 +1,22 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Menu, Globe, ChevronDown, User, LogOut } from 'lucide-react';
 import { Logo } from '../icons/Logo';
 
 const Header = () => {
+    const { t, i18n } = useTranslation(); 
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isLangOpen, setIsLangOpen] = useState(false);
+
+    // Función para cambiar el idioma
+    const changeLanguage = (lng: string): void => {
+        i18n.changeLanguage(lng);
+        setIsLangOpen(false);   
+    };
+
+    const currentLang = i18n.language.split('-')[0].toUpperCase();
+
     return (
         <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-slate-950/80 backdrop-blur-md">
             <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -15,11 +26,11 @@ const Header = () => {
                     <span className="tracking-tighter text-white">Make<span className="text-indigo-500">4Gamers</span></span>
                 </Link>
 
-                {/* Desktop Nav */}
+                {/* Desktop Nav - Usando t() para los textos */}
                 <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-                    <Link to="/juegos" className="hover:text-indigo-400 transition-colors">Juegos</Link>
-                    <Link to="/ranking" className="hover:text-indigo-400 transition-colors">Ranking</Link>
-                    <Link to="/chat" className="hover:text-indigo-400 transition-colors">Chat</Link>
+                    <Link to="/juegos" className="hover:text-indigo-400 transition-colors">{t('nav.games')}</Link>
+                    <Link to="/ranking" className="hover:text-indigo-400 transition-colors">{t('nav.ranking')}</Link>
+                    <Link to="/chat" className="hover:text-indigo-400 transition-colors">{t('nav.chat')}</Link>
                 </nav>
 
                 {/* Actions */}
@@ -40,12 +51,12 @@ const Header = () => {
                             <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden py-1 z-50">
                                 <Link to="/cuenta" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" onClick={() => setIsProfileOpen(false)}>
                                     <User size={16} />
-                                    <span>Cuenta</span>
+                                    <span>{t('nav.account')}</span>
                                 </Link>
                                 <div className="h-px bg-slate-800 my-1"></div>
                                 <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-slate-800 hover:text-red-300 transition-colors" onClick={() => setIsProfileOpen(false)}>
                                     <LogOut size={16} />
-                                    <span>Cerrar sesión</span>
+                                    <span>{t('nav.logout')}</span>
                                 </button>
                             </div>
                         )}
@@ -62,19 +73,19 @@ const Header = () => {
                             className="flex items-center gap-1 text-slate-300 hover:text-white transition-colors text-sm font-medium"
                         >
                             <Globe size={18} />
-                            <span>ES</span>
+                            <span>{currentLang}</span>
                             <ChevronDown size={14} className={`transition-transform ${isLangOpen ? 'rotate-180' : ''}`} />
                         </button>
 
                         {isLangOpen && (
                             <div className="absolute right-0 mt-2 w-32 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden py-1 z-50">
-                                <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" onClick={() => setIsLangOpen(false)}>
+                                <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" onClick={() => changeLanguage('es')}>
                                     <span>🇪🇸</span> Español
                                 </button>
-                                <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" onClick={() => setIsLangOpen(false)}>
+                                <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" onClick={() => changeLanguage('en')}>
                                     <span>🇬🇧</span> English
                                 </button>
-                                <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" onClick={() => setIsLangOpen(false)}>
+                                <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" onClick={() => changeLanguage('cn')}>
                                     <span>🇨🇳</span> 中文
                                 </button>
                             </div>
