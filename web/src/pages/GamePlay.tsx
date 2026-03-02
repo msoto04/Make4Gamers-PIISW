@@ -1,17 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
+import type { User } from "@supabase/supabase-js";
 import { useNavigate, useParams } from "react-router-dom";
-import { getGameById, type Game } from "../services/games/getGameById.service";
-import GameViewport from "../components/gameplay/GameViewport";
-import { supabase } from "../supabase";
-import { createMatch } from "../services/matches/createMatch.service";
-import { getUserGameScore } from "../services/scores/getUserGameScore.service";
 import { useTranslation } from "react-i18next";
 
-type MoveItem = {
-  id: string;
-  move: string;
-  at: string;
-};
+import { getGameById, type Game } from "../services/games/getGameById.service";
+import { createMatch } from "../services/matches/createMatch.service";
+import { getUserGameScore } from "../services/scores/getUserGameScore.service";
+
+import { supabase } from "../supabase";
+import GameViewport from "../components/gameplay/GameViewport";
+import GameplaySidebar from "../components/gameplay/GameplaySidebar";
 
 export default function Gameplay() {
   const { id } = useParams<{ id: string }>();
@@ -20,14 +18,10 @@ export default function Gameplay() {
 
   const [loading, setLoading] = useState(true);
   const [game, setGame] = useState<Game | null>(null);
-  const [tab, setTab] = useState<"chat" | "history">("chat");
 
-  const [chatInput, setChatInput] = useState("");
-  const [chatMessages, setChatMessages] = useState<string[]>([]);
-  const [moves, setMoves] = useState<MoveItem[]>([]);
-
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [matchId, setMatchId] = useState<string | null>(null);
+
   const [myScore, setMyScore] = useState<number | null>(null);
   const [scoreLoading, setScoreLoading] = useState(false);
 
@@ -50,61 +44,22 @@ export default function Gameplay() {
   }, [id]);
 
   useEffect(() => {
-    const onMessage = (event: MessageEvent) => {
-      const msg = event.data;
-      if (!msg || msg.type !== "GAME_MOVE") return;
-
-      setMoves((prev) => [
-        {
-          id: crypto.randomUUID(),
-          move: msg.payload?.move ?? t("gameplay.noMovesYet"),
-          at: new Date().toLocaleTimeString(),
-        },
-        ...prev,
-      ]);
-    };
-
-    window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
-  }, [t]);
-
-  const supportsHistory = useMemo(() => {
-    const modes = game?.available_modes ?? [];
-    return modes.some((m) =>
-      ["turns", "turn-based", "history"].includes(m.toLowerCase())
-    );
-  }, [game]);
-
-    useEffect(() => {
     const fetchUser = async () => {
-        // getUser() es la forma más segura de recuperar la sesión actual
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (user) {
-        setUser(user);
-        } else {
-        console.log("No hay usuario autenticado");
-        }
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user ?? null);
     };
 
     fetchUser();
-    }, []);
-
-  const sendChat = () => {
-    const value = chatInput.trim();
-    if (!value) return;
-    setChatMessages((prev) => [...prev, value]);
-    setChatInput("");
-  };
+  }, []);
 
   useEffect(() => {
     const initMatch = async () => {
       if (!game?.id || !user?.id || matchId) return;
 
       try {
-        const newMatchId = await createMatch({
-          gameId: game.id
-        });
+        const newMatchId = await createMatch({ gameId: game.id });
         setMatchId(newMatchId);
         console.log("[Gameplay] match creado:", newMatchId);
       } catch (error) {
@@ -132,7 +87,7 @@ export default function Gameplay() {
 
   useEffect(() => {
     if (finalGameUrl) {
-        console.log("[Gameplay] finalGameUrl:", finalGameUrl);
+      console.log("[Gameplay] finalGameUrl:", finalGameUrl);
     }
   }, [finalGameUrl]);
 
@@ -158,10 +113,8 @@ export default function Gameplay() {
   if (loading) return <div className="p-6 text-slate-300">{t("gameplay.loading")}</div>;
   if (!game) return <div className="p-6 text-red-400">{t("gameplay.notFound")}</div>;
 
-
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      {/* Header centrado */}
       <div className="border-b border-slate-800">
         <div className="mx-auto w-full max-w-[1200px] px-8 lg:px-14 py-4 flex items-center justify-between">
           <div className="max-w-[70%]">
@@ -180,110 +133,18 @@ export default function Gameplay() {
         </div>
       </div>
 
-      {/* Contenido centrado */}
       <div className="mt-6">
         <div className="mx-auto w-full max-w-[1200px] px-8 lg:px-14">
           <div className="grid grid-cols-1 lg:grid-cols-[800px_280px] gap-4 justify-center items-stretch">
-            {/* Juego */}
-            <section
-              className="
-                h-[600px] w-[800px] rounded-xl overflow-hidden bg-black
-                border border-indigo-500/50
-                shadow-xl shadow-indigo-500/10
-                transition-all duration-300
-              "
-            >
-              <GameViewport
-                src={finalGameUrl}
-                title={`game-${game.id}`}
-                ratio="4:3"
-              />
+            <section className="h-[600px] w-[800px] rounded-xl overflow-hidden bg-black border border-indigo-500/50 shadow-xl shadow-indigo-500/10 transition-all duration-300">
+              <GameViewport src={finalGameUrl} title={`game-${game.id}`} ratio="4:3" />
             </section>
 
-            {/* Aside más compacto */}
-            <aside className="h-[600px] rounded-xl border border-slate-800 bg-slate-900 flex flex-col overflow-hidden">
-              <div className="px-4 py-3 border-b border-indigo-500/50 bg-slate-900 shadow-xl shadow-indigo-500/10">
-                <p className="text-xs uppercase tracking-wide text-slate-300">{t("gameplay.myScore")}</p>
-                <p className="text-2xl font-extrabold text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.35)] mt-1">
-                  {scoreLoading ? "..." : myScore ?? "-"}
-                </p>
-              </div>
-
-              <div className="flex border-b border-slate-800">
-                <button
-                  onClick={() => setTab("chat")}
-                  className={`flex-1 py-2 text-sm transition-all duration-200 origin-center ${
-                    tab === "chat"
-                      ? "text-indigo-400 font-semibold scale-105"
-                      : "text-slate-400 hover:text-slate-200 scale-100"
-                  }`}
-                >
-                  {t("gameplay.chat")}
-                </button>
-
-                <button
-                  onClick={() => setTab("history")}
-                  className={`flex-1 py-2 text-sm transition-all duration-200 origin-center ${
-                    tab === "history"
-                      ? "text-indigo-400 font-semibold scale-105"
-                      : "text-slate-400 hover:text-slate-200 scale-100"
-                  }`}
-                >
-                  {t("gameplay.history")}
-                </button>
-              </div>
-
-              {tab === "chat" ? (
-                <div className="flex flex-col h-full">
-                  <div className="flex-1 overflow-auto p-3 space-y-2">
-                    {chatMessages.length === 0 ? (
-                      <p className="text-slate-500 text-sm">{t("gameplay.noMessages")}</p>
-                    ) : (
-                      chatMessages.map((m, i) => (
-                        <div key={i} className="text-sm bg-slate-800 rounded p-2">
-                          {m}
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  <div className="p-3 border-t border-slate-800 flex gap-2">
-                    <input
-                      value={chatInput}
-                      onChange={(e) => setChatInput(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && sendChat()}
-                      placeholder={t("gameplay.writeMessage")}
-                      className="flex-1 bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm outline-none"
-                    />
-                    <button
-                      onClick={sendChat}
-                      className="px-3 py-2 rounded bg-indigo-600 hover:bg-indigo-500 text-sm"
-                    >
-                      {t("gameplay.send")}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="p-3 overflow-auto">
-                  {!supportsHistory ? (
-                    <p className="text-slate-500 text-sm">
-                      Este juego no requiere historial de movimientos.
-                    </p>
-                  ) : moves.length === 0 ? (
-                    <p className="text-slate-500 text-sm">Sin movimientos aún.</p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {moves.map((m) => (
-                        <li key={m.id} className="text-sm bg-slate-800 rounded p-2">
-                          <div className="font-medium">{m.move}</div>
-                          <div className="text-xs text-slate-400">{m.at}</div>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              )}
-            </aside>
+            <GameplaySidebar
+              myScore={myScore}
+              scoreLoading={scoreLoading}
+              availableModes={game.available_modes}
+            />
           </div>
         </div>
       </div>
