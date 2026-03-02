@@ -161,27 +161,38 @@ export default function Gameplay() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-      <div className="border-b border-slate-800 px-4 py-3 flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold">{game.title}</h1>
-          <p className="text-xs text-slate-400">
-            {game.genre ?? t("gameplay.noGenre")} {game.rating ? `· ⭐ ${game.rating}` : ""}
-          </p>
-        </div>
+      {/* Header centrado */}
+      <div className="border-b border-slate-800">
+        <div className="mx-auto w-full max-w-[1200px] px-8 lg:px-14 py-4 flex items-center justify-between">
+          <div className="max-w-[70%]">
+            <h1 className="text-xl font-semibold leading-tight">{game.title}</h1>
+            <p className="text-xs text-slate-400 mt-1">
+              {game.genre ?? t("gameplay.noGenre")} {game.rating ? `· ⭐ ${game.rating}` : ""}
+            </p>
+          </div>
 
-        <button
-          onClick={() => navigate(`/ranking?gameId=${game.id}`)}
-          className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-medium"
-        >
-          {t("gameplay.viewRanking")}
-        </button>
+          <button
+            onClick={() => navigate(`/ranking?gameId=${game.id}`)}
+            className="shrink-0 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-medium"
+          >
+            {t("gameplay.viewRanking")}
+          </button>
+        </div>
       </div>
 
-      <div className="px-6 lg:px-10 mt-6">
-        <div className="mx-auto w-full max-w-[1400px]">
-          <div className="grid grid-cols-1 lg:grid-cols-[800px_280px] gap-3 items-stretch justify-center">
+      {/* Contenido centrado */}
+      <div className="mt-6">
+        <div className="mx-auto w-full max-w-[1200px] px-8 lg:px-14">
+          <div className="grid grid-cols-1 lg:grid-cols-[800px_280px] gap-4 justify-center items-stretch">
             {/* Juego */}
-            <section className="h-[600px] w-[800px] rounded-xl border border-slate-800 bg-black overflow-hidden">
+            <section
+              className="
+                h-[600px] w-[800px] rounded-xl overflow-hidden bg-black
+                border border-indigo-500/50
+                shadow-xl shadow-indigo-500/10
+                transition-all duration-300
+              "
+            >
               <GameViewport
                 src={finalGameUrl}
                 title={`game-${game.id}`}
@@ -191,9 +202,9 @@ export default function Gameplay() {
 
             {/* Aside más compacto */}
             <aside className="h-[600px] rounded-xl border border-slate-800 bg-slate-900 flex flex-col overflow-hidden">
-              <div className="px-4 py-3 border-b border-slate-800">
-                <p className="text-xs uppercase tracking-wide text-slate-400">{t("gameplay.myScore")}</p>
-                <p className="text-2xl font-bold text-emerald-400 mt-1">
+              <div className="px-4 py-3 border-b border-indigo-500/50 bg-slate-900 shadow-xl shadow-indigo-500/10">
+                <p className="text-xs uppercase tracking-wide text-slate-300">{t("gameplay.myScore")}</p>
+                <p className="text-2xl font-extrabold text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.35)] mt-1">
                   {scoreLoading ? "..." : myScore ?? "-"}
                 </p>
               </div>
@@ -201,16 +212,21 @@ export default function Gameplay() {
               <div className="flex border-b border-slate-800">
                 <button
                   onClick={() => setTab("chat")}
-                  className={`flex-1 py-2 text-sm ${
-                    tab === "chat" ? "bg-slate-800 text-white" : "text-slate-400"
+                  className={`flex-1 py-2 text-sm transition-all duration-200 origin-center ${
+                    tab === "chat"
+                      ? "text-indigo-400 font-semibold scale-105"
+                      : "text-slate-400 hover:text-slate-200 scale-100"
                   }`}
                 >
                   {t("gameplay.chat")}
                 </button>
+
                 <button
                   onClick={() => setTab("history")}
-                  className={`flex-1 py-2 text-sm ${
-                    tab === "history" ? "bg-slate-800 text-white" : "text-slate-400"
+                  className={`flex-1 py-2 text-sm transition-all duration-200 origin-center ${
+                    tab === "history"
+                      ? "text-indigo-400 font-semibold scale-105"
+                      : "text-slate-400 hover:text-slate-200 scale-100"
                   }`}
                 >
                   {t("gameplay.history")}
