@@ -2,11 +2,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
 import Login from "./pages/Login"; 
-import RecuperarPassword from "./pages/RecuperarPassword"; // 1. Importa la nueva página
+import RecuperarPassword from "./pages/RecuperarPassword"; 
 import Chat from "./pages/Chat";
 import Ranking from "./pages/Ranking";
 import Juegos from "./pages/Juegos";
-
 
 function App() {
   return (
@@ -14,8 +13,12 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
+          
+          {/* --- Tus Rutas --- */}
           <Route path="/login" element={<Login />} />
           <Route path="/recuperar-password" element={<RecuperarPassword />} />
+          
+          {/* --- Rutas de tu compañero --- */}
           <Route path="/juegos" element={<Juegos />} />
           <Route path="/ranking" element={<Ranking />} />
           <Route path="/chat" element={<Chat />} />
