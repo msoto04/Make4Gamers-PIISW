@@ -37,7 +37,9 @@ export default function GameCard({ title, image, genre, rating, players }: GameC
           </h3>
         </div>
 
-        <p className="text-sm text-slate-400 mb-3">{genre}</p>
+        <p className="text-slate-400 text-sm mt-1">
+          {t(`genres.${genre.toLowerCase()}`, { defaultValue: genre })}
+        </p>
 
         <div className="flex items-center gap-1 text-slate-400">
           <Users size={16} />
