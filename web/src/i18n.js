@@ -73,13 +73,16 @@ i18n
                         allGames: "Todos los Juegos",
                         noResults: "No se encontraron juegos",
                         filters: {
+                            category: "Categoría",
                             all: "Todos",
                             action: "Acción",
                             arcade: "Arcade",
                             rpg: "RPG",
                             puzzle: "Puzle"
                         },
-                        players: "jugadores"
+                        players: "jugadores",
+                        filtersLabel: "Filtros:",
+                        gamesCount: "juegos"
                     },
                     genres: {
                         arcade: "Arcade",
@@ -169,13 +172,16 @@ i18n
                         allGames: "All Games",
                         noResults: "No games found",
                         filters: {
+                            category: "Category",
                             all: "All",
                             action: "Action",
                             arcade: "Arcade",
                             rpg: "RPG",
                             puzzle: "Puzzle"
                         },
-                        players: "players"
+                        players: "players",
+                        filtersLabel: "Filters:",
+                        gamesCount: "games"
                     },
                     genres: {
                         arcade: "Arcade",
@@ -265,13 +271,16 @@ i18n
                         allGames: "所有游戏",
                         noResults: "未找到游戏",
                         filters: {
+                            category: "类别",
                             all: "全部",
                             action: "动作",
                             arcade: "街机",
                             rpg: "角色扮演",
                             puzzle: "益智"
                         },
-                        players: "玩家"
+                        players: "玩家",
+                        filtersLabel: "筛选:",
+                        gamesCount: "游戏"
                     },
                     genres: {
                         arcade: "街机",
