@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Search, Filter, X, LogIn } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import GameCard from "../components/games/GameCard";
 import { getGames, type Game } from "../services/games/getGames";
 import { Link } from "react-router-dom";
@@ -9,7 +9,6 @@ import { Alert } from "../components/layout/Alert";
 
 export default function Home() {
   const [games, setGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
   const { loading: authLoading, isAuthenticated } = useAuthStatus();
   const [showAuthNotice, setShowAuthNotice] = useState(true);
@@ -21,8 +20,6 @@ export default function Home() {
         setGames(gamesData);
       } catch (error) {
         console.error("Error loading games:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
