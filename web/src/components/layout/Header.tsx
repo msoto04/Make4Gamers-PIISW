@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, Globe, ChevronDown, User, LogOut, LogIn } from 'lucide-react';
+import { Menu, Globe, ChevronDown, User, LogOut } from 'lucide-react';
 import { Logo } from '../icons/Logo';
 import { logout } from '../../services/LogOutService';
 import { useAuthStatus } from '../../services/session/notAuthenticated';
