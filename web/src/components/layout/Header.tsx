@@ -5,12 +5,14 @@ import { Menu, Globe, ChevronDown, User, LogOut } from 'lucide-react';
 import { Logo } from '../icons/Logo';
 import { logout } from '../../services/LogOutService';
 import { useAuthStatus } from '../../services/session/notAuthenticated';
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
     const { t, i18n } = useTranslation(); 
     const { isAuthenticated } = useAuthStatus();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isLangOpen, setIsLangOpen] = useState(false);
+    const navigate = useNavigate();
 
     // Función para cambiar el idioma
     const changeLanguage = (lng: string): void => {
@@ -19,6 +21,12 @@ const Header = () => {
     };
 
     const currentLang = (i18n.language ?? 'es').split('-')[0].toUpperCase();
+
+    const handleLogout = async () => {
+        await logout();
+        setIsProfileOpen(false);
+        navigate("/login"); // con HashRouter -> .../#/login
+    };
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-slate-950/80 backdrop-blur-md">
@@ -58,7 +66,10 @@ const Header = () => {
                                         <span>{t('nav.account')}</span>
                                     </Link>
                                     <div className="h-px bg-slate-800 my-1"></div>
-                                    <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-slate-800 hover:text-red-300 transition-colors" onClick={() => { logout(); setIsProfileOpen(false); }}>
+                                    <button
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-slate-800 hover:text-red-300 transition-colors"
+                                        onClick={handleLogout}
+                                    >
                                         <LogOut size={16} />
                                         <span>{t('nav.logout')}</span>
                                     </button>
