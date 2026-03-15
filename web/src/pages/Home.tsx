@@ -4,14 +4,27 @@ import { ScrollSplitHero } from '../features/landing/components/ScrollSplitHero'
 import Typewriter from 'typewriter-effect'
 import { useAuthStatus } from "../features/auth/hooks/useAuthStatus";
 import { Alert } from "../shared/layout/Alert";
-import { t } from "i18next";
-
-
+import { useTranslation } from "react-i18next";
+import { slots } from '../features/landing/constants/Slots'
+import Timeline from '../features/landing/components/TimeLine'
+import { useNavigate } from "react-router-dom";
 
 function Home() {
 
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const { loading: authLoading, isAuthenticated } = useAuthStatus();
   const [showAuthNotice, setShowAuthNotice] = useState(true);
+
+  const timelineEvents = slots.map((slot, index) => ({
+    ...slot,
+    button: slot.button
+      ? {
+          text: t(slot.button.textKey),
+          onClick: index === 0 ? () => navigate("/juegos") : slot.button.onClick,
+        }
+      : undefined,
+  }))
 
   return (
     <>
@@ -100,33 +113,49 @@ function Home() {
       <ScrollSplitHero
         direction="right"
         imageSrc="/assets/ps5.png"
-        imageAlt="Producto"
+        imageAlt={t("home.splitHero.one.imageAlt")}
         title={
           <h2 className="text-6xl font-black leading-tight text-white">
-            Al igual que el mundo de los videjuegos evoluciona, en <br /> <span className="text-lime-200">Made</span>4Gamers tu podrás hacerlo.
+            {t("home.splitHero.one.prefix")} <br />
+            <span className="text-lime-200">{t("home.splitHero.one.brand")}</span>
+            {t("home.splitHero.one.suffix")}
           </h2>
         }
       />
+
       <ScrollSplitHero
         direction="left"
         imageSrc="/assets/ps3.png"
-        imageAlt="Producto"
+        imageAlt={t("home.splitHero.two.imageAlt")}
         title={
           <h2 className="text-6xl font-black leading-tight text-white">
-            Comienza desde abajo, compite con gente de tu nivel y llega al<span className="text-lime-200"> Top</span>.
+            {t("home.splitHero.two.prefix")}
+            <span className="text-lime-200"> {t("home.splitHero.two.highlight")}</span>.
           </h2>
         }
       />
+
       <ScrollSplitHero
         direction="right"
         imageSrc="/assets/nintendo.png"
-        imageAlt="Producto"
+        imageAlt={t("home.splitHero.three.imageAlt")}
         title={
           <h2 className="text-6xl font-black leading-tight text-white">
-            <span className="text-lime-200">EVOLUCIONA</span> y llegarás a ser el mejor.
+            <span className="text-lime-200">{t("home.splitHero.three.highlight")}</span>
+            {t("home.splitHero.three.suffix")}
           </h2>
         }
       />
+
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+        <h2 className="mb-6 text-left text-2xl font-black tracking-wide text-violet-300 sm:text-3xl">
+          {t("home.ranks.title")}
+        </h2>
+      </div>
+
+      <Timeline events={timelineEvents} />
+
+      {/* ...existing code... */}
     </>
   )
 }
