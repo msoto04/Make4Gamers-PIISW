@@ -15,17 +15,17 @@ type TimelineItemProps = {
 
 const TimelineItem: React.FC<TimelineItemProps> = ({ title, imageSrc, imageAlt, button, isLast = false }) => (
   <li className="relative flex w-full max-w-[280px] flex-col items-center pb-56 sm:mb-0 sm:flex-1 sm:max-w-none sm:basis-0 sm:pb-60">
-    <div className="flex w-full items-center">
+    <div className="relative flex w-full items-center justify-center">
       <div className="z-10 h-8 w-8 shrink-0 rounded-full bg-violet-400 shadow-[0_0_14px_rgba(167,139,250,0.45)]" />
       {!isLast && (
-        <div className="h-[3px] flex-1 rounded-full bg-gradient-to-r from-violet-400/90 via-violet-500/80 to-violet-400/60" />
+        <span className="absolute left-1/2 top-1/2 hidden h-[2px] w-full -translate-y-1/2 bg-violet-300/60 sm:block" />
       )}
     </div>
 
-    <div className="mt-3 w-full text-center sm:absolute sm:left-5 sm:top-14 sm:mt-0 sm:w-[180px] sm:-translate-x-1/2">
+    <div className="mt-3 w-full text-center sm:absolute sm:left-1/2 sm:top-14 sm:mt-0 sm:w-[180px] sm:-translate-x-1/2">
       <h3 className="mb-3 text-sm font-extrabold text-yellow-300">{title}</h3>
 
-      <div className="relative mx-auto mb-3 h-28 w-full max-w-[150px]">
+      <div className="relative mx-auto mb-3 h-28 w-full max-w-[150px] timeline-view animate-zoom-in animate-range-cover">
         {isLast && (
           <>
             <img
@@ -70,7 +70,7 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ title, imageSrc, imageAlt, 
         <button
           onClick={button.onClick}
           type="button"
-          className="mx-auto block rounded-lg bg-violet-600/30 px-4 py-2 text-xs font-medium text-violet-100 shadow-[0_8px_18px_rgba(139,92,246,0.32)] transition-colors hover:bg-violet-600/45 focus:outline-none focus:ring-2 focus:ring-violet-400/45"
+          className="mx-auto block rounded-lg bg-violet-600/30 px-4 py-2 text-xs font-medium text-violet-100 shadow-[0_8px_18px_rgba(139,92,246,0.32)] transition-colors hover:bg-violet-600/45 focus:outline-none focus:ring-2 focus:ring-violet-400/45 animate-pop [animation-duration:1.8s] [animation-iteration-count:infinite]"
         >
           {button.text}
         </button>
@@ -93,7 +93,7 @@ type TimelineProps = {
 const Timeline: React.FC<TimelineProps> = ({ events }) => {
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
-      <ol className="mx-auto flex w-full flex-col items-center gap-6 sm:flex-row sm:items-start sm:justify-center sm:gap-0">
+      <ol className="mx-auto flex w-full flex-col items-center gap-6 sm:flex-row sm:items-start sm:justify-between sm:gap-0">
         {events.map((event, index) => (
           <TimelineItem
             key={`${event.title}-${index}`}
@@ -106,7 +106,7 @@ const Timeline: React.FC<TimelineProps> = ({ events }) => {
         ))}
       </ol>
     </section>
-  )
+  );
 };
 
 export default Timeline;

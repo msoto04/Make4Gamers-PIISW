@@ -31,7 +31,7 @@ export const slots: SlotEvent[] = [
     imageAlt: 'Tier 4',
   },
   {
-    title: 'High Definition',
+    title: 'High Definition', 
     imageSrc: '/assets/emblems/ps4Emblem.png',
     imageAlt: 'Tier 5',
   },

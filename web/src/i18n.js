@@ -109,24 +109,24 @@ i18n
                         splitHero: {
                             one: {
                                 imageAlt: "Producto",
-                                prefix: "As the gaming world evolves, in",
+                                prefix: "A medida que el mundo gaming evoluciona, en",
                                 brand: "Made",
-                                suffix: "4Gamers you can do it too."
+                                suffix: "4Gamers tú también puedes hacerlo."
                             },
                             two: {
                                 imageAlt: "Producto",
-                                prefix: "Start from the bottom, compete with players at your level and reach the",
-                                highlight: "Top"
+                                prefix: "Empieza desde abajo, compite con jugadores de tu nivel y alcanza la",
+                                highlight: "Cima"
                             },
                             three: {
                                 imageAlt: "Producto",
-                                highlight: "EVOLVE",
-                                suffix: " and you will become the best."
+                                highlight: "EVOLUCIONA",
+                                suffix: " y te convertirás en el mejor."
                             }
                         },
                         ranks: {
-                            title: "Rangos",
-                            firstButton: "Comenzar"
+                            title: "Escala en nuestra clasificación",
+                            firstButton: "Comenzar  ➜"
                         }
                     }
                 }
@@ -249,8 +249,8 @@ i18n
                             }
                         },
                         ranks: {
-                            title: "Ranks",
-                            firstButton: "Start"
+                            title: "Climb our ranking",
+                            firstButton: "Start ➜"
                         }
                     }
                 }
@@ -373,8 +373,8 @@ i18n
                             }
                         },
                         ranks: {
-                            title: "段位",
-                            firstButton: "开始"
+                            title: "提升我们的排名",
+                            firstButton: "开始 ➜"
                         }
                     }
                 }
