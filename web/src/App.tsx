@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import RecuperarPassword from "./pages/RecuperarPassword";
 import GameplayPage from "./pages/GamePlay";
+import Cuenta from './pages/Cuenta'; 
 
 function App() {
   return (
@@ -25,6 +26,9 @@ function App() {
           <Route path="/ranking" element={<Ranking />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/game/:id" element={<GameplayPage />} />
+          
+          {/* Cuenta */}
+          <Route path="/cuenta" element={<Cuenta />} /> 
         </Route>
       </Routes>
     </HashRouter>
