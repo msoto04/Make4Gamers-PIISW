@@ -77,7 +77,7 @@ const FALLBACK_RULE: RouteSeoRule = {
 };
 
 function ensureMetaTag(attr: "name" | "property", key: string, content: string) {
-  let element = document.querySelector(`meta[${attr}=\"${key}\"]`) as
+  let element = document.querySelector(`meta[${attr}="${key}"]`) as
     | HTMLMetaElement
     | null;
 
