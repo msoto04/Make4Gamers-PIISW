@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
 import Layout from "./shared/layout/Layout";
+import SeoManager from "./shared/seo/SeoManager";
 import Home from "./pages/Home";
 import Chat from "./pages/Chat";
 import Ranking from "./pages/Ranking";
@@ -13,6 +14,7 @@ import Cuenta from './pages/Cuenta';
 function App() {
   return (
     <HashRouter>
+      <SeoManager />
       <Routes>
         {/* Auth */}
         <Route path="/login" element={<Login />} />
