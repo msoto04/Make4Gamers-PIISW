@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { getFriendsList } from '../services/chat.service';
 import type { ChatProfile } from '../types/chat.types';
+import { useTranslation } from 'react-i18next';
 
 interface FriendListProps {
     currentUserId: string | null;
@@ -10,6 +11,7 @@ interface FriendListProps {
 }
 
 export default function FriendList({ currentUserId, onSelectFriend, selectedFriendId }: FriendListProps) {
+    const { t } = useTranslation();
     const [friends, setFriends] = useState<ChatProfile[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -61,9 +63,12 @@ export default function FriendList({ currentUserId, onSelectFriend, selectedFrie
                             )}
                         </div>
                         
-                        <div 
+                    <div 
                             className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-slate-800 ${getStatusColor(friend.status)}`}
-                            title={friend.status || 'Invisible'}
+                            title={friend.status === 'Invisible' ? t('chat.status.disconnected') : 
+                                   friend.status === 'Ocupado' ? t('chat.status.busy') : 
+                                   friend.status === 'Ausente' ? t('chat.status.away') : 
+                                   t('chat.status.online')}
                         ></div>
                     </div>
 
@@ -71,7 +76,10 @@ export default function FriendList({ currentUserId, onSelectFriend, selectedFrie
                     <div className="flex-1 overflow-hidden">
                         <h4 className="font-semibold text-slate-200 truncate">{friend.username}</h4>
                         <p className="text-xs text-slate-400 truncate mt-0.5">
-                            {friend.status === 'Invisible' ? 'Desconectado' : friend.status || 'Disponible'}
+                            {friend.status === 'Invisible' ? t('chat.status.disconnected') : 
+                             friend.status === 'Ocupado' ? t('chat.status.busy') : 
+                             friend.status === 'Ausente' ? t('chat.status.away') : 
+                             t('chat.status.online')}
                         </p>
                     </div>
                 </button>

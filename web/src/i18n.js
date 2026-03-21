@@ -2,6 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
+
 i18n
     .use(LanguageDetector)
     .use(initReactI18next)
@@ -104,6 +105,27 @@ i18n
                         noMovesRequired: "Este juego no requiere historial de movimientos.",
                         noMovesYet: "Sin movimientos aún.",
                         backToGames: "Volver a juegos"
+                    },
+                    chat: {
+                        unauthorizedTitle: "¡Alto ahí!",
+                        unauthorizedDesc: "Para poder chatear con otros usuarios y acceder a tus mensajes privados, necesitas iniciar sesión en tu cuenta.",
+                        loginButton: "Ir a Iniciar Sesión",
+
+                        myStatus: "Mi estado:",
+                        status: {
+                            online: "Disponible",
+                            away: "Ausente",
+                            busy: "Ocupado",
+                            offline: "Invisible",
+                            disconnected: "Desconectado"
+                        },
+                        messagesTitle: "Mensajes",
+                        addFriendTooltip: "Añadir amigo",
+                        selectFriend: "Selecciona un amigo de la lista para empezar a chatear.",
+                        errorLoading: "Hubo un error al preparar el chat. Inténtalo de nuevo.",
+                        breakIce: "¡Rompe el hielo!",
+                        firstMessage: "Envía el primer mensaje a {{name}}.", 
+                        placeholder: "Escribe un mensaje a {{name}}..."
                     }
                 }
             },
@@ -204,6 +226,26 @@ i18n
                         noMovesRequired: "This game does not require move history.",
                         noMovesYet: "No moves yet.",
                         backToGames: "Back to games"
+                    },
+                    chat: {
+                        unauthorizedTitle: "Hold on!",
+                        unauthorizedDesc: "To chat with other users and access your private messages, you need to sign in to your account.",
+                        loginButton: "Go to Sign In",
+                        myStatus: "My status:",
+                        status: {
+                            online: "Online",
+                            away: "Away",
+                            busy: "Busy",
+                            offline: "Invisible",
+                            disconnected: "Offline"
+                        },
+                        messagesTitle: "Messages",
+                        addFriendTooltip: "Add friend",
+                        selectFriend: "Select a friend from the list to start chatting.",
+                        errorLoading: "There was an error setting up the chat. Please try again.",
+                        breakIce: "Break the ice!",
+                        firstMessage: "Send the first message to {{name}}.",
+                        placeholder: "Write a message to {{name}}..."
                     }
                 }
             },
@@ -304,7 +346,28 @@ i18n
                         noMovesRequired: "该游戏不需要操作历史。",
                         noMovesYet: "暂无操作记录。",
                         backToGames: "返回游戏列表"
+                    },
+                    chat: {
+                        unauthorizedTitle: "请等一下！",
+                        unauthorizedDesc: "要与其他用户聊天并访问您的私人消息，您需要登录您的账户。",
+                        loginButton: "去登录",
+                        myStatus: "我的状态：",
+                        status: {
+                            online: "在线", 
+                            away: "离开", 
+                            busy: "忙碌", 
+                            offline: "隐身", 
+                            disconnected: "离线" 
+                        },
+                        messagesTitle: "消息",
+                        addFriendTooltip: "添加好友",
+                        selectFriend: "从列表中选择一个好友开始聊天。",
+                        errorLoading: "准备聊天时出错，请重试。",
+                        breakIce: "打破僵局！",
+                        firstMessage: "给 {{name}} 发送第一条消息。",
+                        placeholder: "给 {{name}} 发送消息..."
                     }
+                    
                 }
             }
         },
