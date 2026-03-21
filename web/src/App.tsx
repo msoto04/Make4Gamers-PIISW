@@ -8,7 +8,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import RecuperarPassword from "./pages/RecuperarPassword";
 import GameplayPage from "./pages/GamePlay";
-import Cuenta from './pages/Cuenta'; 
+import Cuenta from './pages/Cuenta';
+import PerfilUsuario from './pages/PerfilUsuario';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           
           {/* Cuenta */}
           <Route path="/cuenta" element={<Cuenta />} /> 
+          <Route path="/usuario/:username" element={<PerfilUsuario />} />
         </Route>
       </Routes>
     </HashRouter>
