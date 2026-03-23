@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import RecuperarPassword from "./pages/RecuperarPassword";
 import GameplayPage from "./pages/GamePlay";
 import Cuenta from './pages/Cuenta'; 
+import GameRules from "./pages/GameRules";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/ranking" element={<Ranking />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/game/:id" element={<GameplayPage />} />
+          <Route path="/juegos/:id/reglas" element={<GameRules />} />
           
           {/* Cuenta */}
           <Route path="/cuenta" element={<Cuenta />} /> 
