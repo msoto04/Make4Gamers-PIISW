@@ -90,6 +90,31 @@ export default function Cuenta() {
     }
   };
 
+  // NUEVO: Función para cambiar el estado, igual que en el Chat
+  const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newStatus = e.target.value;
+    
+    // 1. Actualizamos la interfaz rápidamente (Optimistic UI)
+    setProfile({ ...profile, status: newStatus });
+    
+    if (profile?.id) {
+      try {
+        // 2. Guardamos en el localStorage igual que hace el compañero en Chat.tsx
+        localStorage.setItem(`chat_status_${profile.id}`, newStatus);
+        
+        // 3. Actualizamos en Supabase
+        const { error } = await supabase
+          .from('profiles')
+          .update({ status: newStatus })
+          .eq('id', profile.id);
+
+        if (error) throw error;
+      } catch (error) {
+        console.error("Error actualizando el estado:", error);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -176,7 +201,22 @@ export default function Cuenta() {
                 {profile.email && (
                   <span className="flex items-center gap-1.5"><Mail size={16} /> {profile.email}</span>
                 )}
-                <span className="flex items-center gap-1.5"><Activity size={16} /> Estado: <span className="text-green-400">{profile.status || 'Disponible'}</span></span>
+                
+                {/* NUEVO: Selector de Estado idéntico al del Chat */}
+                <span className="flex items-center gap-1.5">
+                  <Activity size={16} /> Estado: 
+                  <select 
+                    value={profile.status || 'Disponible'}
+                    onChange={handleStatusChange}
+                    className="bg-slate-800/80 text-white border border-slate-700 rounded-md px-2 py-1 outline-none focus:border-indigo-500 cursor-pointer text-sm ml-1"
+                  >
+                    <option value="Disponible">🟢 Disponible</option>
+                    <option value="Ausente">🟡 Ausente</option>
+                    <option value="Ocupado">🔴 Ocupado</option>
+                    <option value="Invisible">⚫ Invisible</option>
+                  </select>
+                </span>
+
               </div>
             </div>
 
