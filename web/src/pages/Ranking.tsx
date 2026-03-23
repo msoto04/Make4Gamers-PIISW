@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Trophy, Medal, Crown, Gamepad2, TrendingUp, User } from 'lucide-react';
+import { useTranslation } from 'react-i18next'; 
 import { supabase } from '../supabase';
 import { getRankingByGame, getUserRankPosition, getPlayerTier, type RankingEntry } from '../features/ranking/services/ranking.service';
 
 export default function Ranking() {
+    const { t } = useTranslation(); 
+    
     const [games, setGames] = useState<any[]>([]);
     const [selectedGame, setSelectedGame] = useState<string>('');
     const [rankingData, setRankingData] = useState<RankingEntry[]>([]);
@@ -55,19 +58,18 @@ export default function Ranking() {
 
             <div className="max-w-5xl mx-auto space-y-10 relative z-10">
                 
-            
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-slate-900/50 p-6 rounded-2xl border border-slate-800 backdrop-blur-sm">
                     <div>
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-sm font-medium mb-3 border border-indigo-500/20">
-                            <TrendingUp size={16} /> Temporada Actual
+                            <TrendingUp size={16} /> {t('ranking.currentSeason')}
                         </div>
-                        <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Ranking Globla (No terminado) </h1>
-                        <p className="text-slate-400 mt-2">Asciende de liga en liga hasta alcanzar el nivel Ray-Tracing.</p>
+                        <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">{t('ranking.title')}</h1>
+                        <p className="text-slate-400 mt-2">{t('ranking.subtitle')}</p>
                     </div>
 
                     <div className="w-full md:w-64 space-y-2">
                         <label className="text-sm font-medium text-slate-400 flex items-center gap-2">
-                            <Gamepad2 size={16} /> Selecciona un juego
+                            <Gamepad2 size={16} /> {t('ranking.selectGame')}
                         </label>
                         <select 
                             value={selectedGame}
@@ -76,7 +78,7 @@ export default function Ranking() {
                         >
                             {games.map(game => (
                                 <option key={game.id} value={game.id}>
-                                    {game.title || game.name || 'Juego Desconocido'}
+                                    {game.title || game.name || t('ranking.unknownGame')}
                                 </option>
                             ))}
                         </select>
@@ -90,8 +92,8 @@ export default function Ranking() {
                 ) : rankingData.length === 0 ? (
                     <div className="text-center py-20 bg-slate-900/30 rounded-2xl border border-slate-800 border-dashed">
                         <Trophy className="mx-auto h-12 w-12 text-slate-600 mb-4" />
-                        <h3 className="text-xl font-medium text-white mb-2">Aún no hay puntuaciones</h3>
-                        <p className="text-slate-500">¡Sé el primero en jugar y corona el Top 1!</p>
+                        <h3 className="text-xl font-medium text-white mb-2">{t('ranking.noScoresTitle')}</h3>
+                        <p className="text-slate-500">{t('ranking.noScoresDesc')}</p>
                     </div>
                 ) : (
                     <>
@@ -163,10 +165,10 @@ export default function Ranking() {
                         {restOfRanking.length > 0 && (
                             <div className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden mt-8 backdrop-blur-md shadow-xl">
                                 <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-800 text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-950/50">
-                                    <div className="col-span-2 md:col-span-1 text-center">Pos</div>
-                                    <div className="col-span-6 md:col-span-5">Jugador</div>
-                                    <div className="col-span-4 hidden md:block text-center">Liga / Rango</div>
-                                    <div className="col-span-4 md:col-span-2 text-right pr-4">Puntuación</div>
+                                    <div className="col-span-2 md:col-span-1 text-center">{t('ranking.colPos')}</div>
+                                    <div className="col-span-6 md:col-span-5">{t('ranking.colPlayer')}</div>
+                                    <div className="col-span-4 hidden md:block text-center">{t('ranking.colTier')}</div>
+                                    <div className="col-span-4 md:col-span-2 text-right pr-4">{t('ranking.colScore')}</div>
                                 </div>
                                 <div className="divide-y divide-slate-800/50">
                                     {restOfRanking.map((entry, index) => {
@@ -182,7 +184,7 @@ export default function Ranking() {
                                                 <div className="col-span-6 md:col-span-5 flex items-center gap-4">
                                                     <img src={entry.avatar_url || 'https://via.placeholder.com/150'} className="w-12 h-12 rounded-full object-cover border-2 border-slate-700" alt="Avatar" />
                                                     <span className={`font-semibold text-base truncate ${isMe ? 'text-indigo-400' : 'text-slate-200'}`}>
-                                                        {entry.username} {isMe && '(Tú)'}
+                                                        {entry.username} {isMe && t('ranking.you')}
                                                     </span>
                                                 </div>
                                                 
@@ -215,9 +217,9 @@ export default function Ranking() {
                             #{currentUserRank}
                         </div>
                         <div>
-                            <p className="text-sm text-indigo-300 font-medium">Tu posición actual</p>
+                            <p className="text-sm text-indigo-300 font-medium">{t('ranking.yourPosition')}</p>
                             <div className="flex items-center gap-2 mt-0.5">
-                                <p className="text-white font-bold text-lg">Sigue jugando para subir de liga</p>
+                                <p className="text-white font-bold text-lg">{t('ranking.keepPlaying')}</p>
                             </div>
                         </div>
                     </div>
