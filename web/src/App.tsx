@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import RecuperarPassword from "./pages/RecuperarPassword";
 import GameplayPage from "./pages/GamePlay";
+import PerfilUsuario from './pages/PerfilUsuario';
 import Cuenta from './pages/Cuenta'; 
 import Ayuda from './pages/Ayuda';
 
@@ -44,6 +45,7 @@ function App() {
             
             {/* Cuenta */}
             <Route path="/cuenta" element={<Cuenta />} /> 
+            <Route path="/usuario/:username" element={<PerfilUsuario />} />
             <Route path="/ayuda" element={<Ayuda />} />
           </Route>
         </Routes>
