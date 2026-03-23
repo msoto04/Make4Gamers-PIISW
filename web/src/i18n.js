@@ -105,6 +105,45 @@ i18n
                         noMovesYet: "Sin movimientos aún.",
                         backToGames: "Volver a juegos"
                     },
+
+                    ranking: {
+                        currentSeason: "Temporada Actual",
+                        title: "Ranking Global",
+                        subtitle: "Asciende de liga en liga hasta alcanzar el nivel Ray-Tracing.",
+                        selectGame: "Selecciona un juego",
+                        unknownGame: "Juego Desconocido",
+                        noScoresTitle: "Aún no hay puntuaciones",
+                        noScoresDesc: "¡Sé el primero en jugar y corona el Top 1!",
+                        you: "(Tú)",
+                        colPos: "Pos",
+                        colPlayer: "Jugador",
+                        colTier: "Liga / Rango",
+                        colScore: "Puntuación",
+                        yourPosition: "Tu posición actual",
+                        keepPlaying: "Sigue jugando para subir de liga"
+                    },
+
+
+                    chat: {
+                        unauthorizedTitle: "¡Alto ahí!",
+                        unauthorizedDesc: "Para poder chatear con otros usuarios y acceder a tus mensajes privados, necesitas iniciar sesión en tu cuenta.",
+                        loginButton: "Ir a Iniciar Sesión",
+                        myStatus: "Mi estado:",
+                        status: {
+                            online: "Disponible",
+                            away: "Ausente",
+                            busy: "Ocupado",
+                            offline: "Invisible",
+                            disconnected: "Desconectado"
+                        },
+                        messagesTitle: "Mensajes",
+                        addFriendTooltip: "Añadir amigo",
+                        selectFriend: "Selecciona un amigo de la lista para empezar a chatear.",
+                        errorLoading: "Hubo un error al preparar el chat. Inténtalo de nuevo.",
+                        breakIce: "¡Rompe el hielo!",
+                        firstMessage: "Envía el primer mensaje a {{name}}.", 
+                        placeholder: "Escribe un mensaje a {{name}}..."
+                    },
                     home: {
                         splitHero: {
                             one: {
@@ -160,6 +199,23 @@ i18n
                             privacy: "Privacy",
                             terms: "Terms"
                         }
+                    },
+
+                    ranking: {
+                        currentSeason: "Current Season",
+                        title: "Global ranking",
+                        subtitle: "Climb from tier to tier until you reach Ray-Tracing level.",
+                        selectGame: "Select a game",
+                        unknownGame: "Unknown Game",
+                        noScoresTitle: "No scores yet",
+                        noScoresDesc: "Be the first to play and claim the Top 1!",
+                        you: "(You)",
+                        colPos: "Pos",
+                        colPlayer: "Player",
+                        colTier: "Tier / League",
+                        colScore: "Score",
+                        yourPosition: "Your current position",
+                        keepPlaying: "Keep playing to rank up"
                     },
                     auth: {
                         login: "Sign In",
@@ -228,6 +284,26 @@ i18n
                         noMovesRequired: "This game does not require move history.",
                         noMovesYet: "No moves yet.",
                         backToGames: "Back to games"
+                    },
+                    chat: {
+                        unauthorizedTitle: "Hold on!",
+                        unauthorizedDesc: "To chat with other users and access your private messages, you need to sign in to your account.",
+                        loginButton: "Go to Sign In",
+                        myStatus: "My status:",
+                        status: {
+                            online: "Online",
+                            away: "Away",
+                            busy: "Busy",
+                            offline: "Invisible",
+                            disconnected: "Offline"
+                        },
+                        messagesTitle: "Messages",
+                        addFriendTooltip: "Add friend",
+                        selectFriend: "Select a friend from the list to start chatting.",
+                        errorLoading: "There was an error setting up the chat. Please try again.",
+                        breakIce: "Break the ice!",
+                        firstMessage: "Send the first message to {{name}}.",
+                        placeholder: "Write a message to {{name}}..."
                     },
                     home: {
                         splitHero: {
@@ -352,6 +428,43 @@ i18n
                         noMovesRequired: "该游戏不需要操作历史。",
                         noMovesYet: "暂无操作记录。",
                         backToGames: "返回游戏列表"
+                    },
+
+                    ranking: {
+                        currentSeason: "当前赛季",
+                        title: "全球排名",
+                        subtitle: "在各个级别中攀升，直到达到光线追踪级别。",
+                        selectGame: "选择一个游戏",
+                        unknownGame: "未知游戏",
+                        noScoresTitle: "暂无分数",
+                        noScoresDesc: "成为第一个玩并占据榜首的人！",
+                        you: "(你)",
+                        colPos: "排名",
+                        colPlayer: "玩家",
+                        colTier: "段位 / 联赛",
+                        colScore: "分数",
+                        yourPosition: "你当前的位置",
+                        keepPlaying: "继续游戏以提升排名"
+                    },
+                    chat: {
+                        unauthorizedTitle: "请等一下！",
+                        unauthorizedDesc: "要与其他用户聊天并访问您的私人消息，您需要登录您的账户。",
+                        loginButton: "去登录",
+                        myStatus: "我的状态：",
+                        status: {
+                            online: "在线", 
+                            away: "离开", 
+                            busy: "忙碌", 
+                            offline: "隐身", 
+                            disconnected: "离线" 
+                        },
+                        messagesTitle: "消息",
+                        addFriendTooltip: "添加好友",
+                        selectFriend: "从列表中选择一个好友开始聊天。",
+                        errorLoading: "准备聊天时出错，请重试。",
+                        breakIce: "打破僵局！",
+                        firstMessage: "给 {{name}} 发送第一条消息。",
+                        placeholder: "给 {{name}} 发送消息..."
                     },
                     home: {
                         splitHero: {
