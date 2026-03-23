@@ -9,7 +9,6 @@ export default function Cuenta() {
   const [allowRequests, setAllowRequests] = useState(true);
   const [savingPrivacy, setSavingPrivacy] = useState(false);
 
-  //Estados para controlar la edicion del nombre
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState("");
   const [savingName, setSavingName] = useState(false);
