@@ -156,10 +156,20 @@ export default function Gameplay() {
           </div>
 
           <button
-            onClick={() => navigate(`/ranking?gameId=${game.id}`)}
-            className="shrink-0 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-medium"
+            onClick={() =>
+              navigate(`/juegos/${game.id}/reglas`, {
+                state: {
+                  game: {
+                    id: game.id,
+                    title: game.title,
+                    rules_markdown_url: game.manual_url,
+                  },
+                },
+              })
+            }
+            className="shrink-0 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-sm font-medium"
           >
-            {t("gameplay.viewRanking")}
+            {t("gameplay.rules")}
           </button>
         </div>
       </div>

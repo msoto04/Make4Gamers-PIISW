@@ -134,7 +134,12 @@ i18n
                         send: "Enviar",
                         noMovesRequired: "Este juego no requiere historial de movimientos.",
                         noMovesYet: "Sin movimientos aún.",
-                        backToGames: "Volver a juegos"
+                        backToGames: "Volver a juegos",
+                        rules: "Reglas",
+                        rulesTitle: "Reglas del juego",
+                        rulesLoading: "Cargando reglas...",
+                        rulesError: "No se pudieron cargar las reglas.",
+                        backButton: "Volver"
                     },
 
                     ranking: {
@@ -345,7 +350,12 @@ i18n
                         send: "Send",
                         noMovesRequired: "This game does not require move history.",
                         noMovesYet: "No moves yet.",
-                        backToGames: "Back to games"
+                        backToGames: "Back to games",
+                        rules: "Rules",
+                        rulesTitle: "Game Rules",
+                        rulesLoading: "Loading rules...",
+                        rulesError: "Could not load rules.",
+                        backButton: "Back"
                     },
                     chat: {
                         unauthorizedTitle: "Hold on!",
@@ -520,7 +530,12 @@ i18n
                         send: "发送",
                         noMovesRequired: "该游戏不需要操作历史。",
                         noMovesYet: "暂无操作记录。",
-                        backToGames: "返回游戏列表"
+                        backToGames: "返回游戏列表",
+                        rules: "规则",
+                        rulesTitle: "游戏规则",
+                        rulesLoading: "正在加载规则...",
+                        rulesError: "无法加载规则。",
+                        backButton: "返回"
                     },
 
                     ranking: {

@@ -12,6 +12,7 @@ import ActualizarPassword from "./pages/ActualizarPassword";
 import GameplayPage from "./pages/GamePlay";
 import PerfilUsuario from './pages/PerfilUsuario';
 import Cuenta from './pages/Cuenta'; 
+import GameRules from "./pages/GameRules";
 import Ayuda from './pages/Ayuda';
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
             <Route path="/ranking" element={<Ranking />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/game/:id" element={<GameplayPage />} />
+            <Route path="/juegos/:id/reglas" element={<GameRules />} />
             
             {/* Cuenta */}
             <Route path="/cuenta" element={<Cuenta />} /> 
