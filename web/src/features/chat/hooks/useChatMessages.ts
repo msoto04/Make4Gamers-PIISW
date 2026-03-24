@@ -21,7 +21,7 @@ export function useChatMessages(roomId: string | null, currentUserId: string | n
                 console.error("Error cargando historial:", error);
             } else {
                 setMessages(data as Message[]);
-                // Marcamos como leídos los que estaban pendientes
+               
                 await markMessagesAsRead(roomId, currentUserId);
             }
             setLoading(false);
@@ -29,7 +29,7 @@ export function useChatMessages(roomId: string | null, currentUserId: string | n
 
         fetchMessages();
 
-        // 🌟 Canal de Tiempo Real sin el filtro estricto de Supabase
+       
         const channel = supabase.channel(`room_${roomId}`)
             .on('postgres_changes', {
                 event: '*',
@@ -39,7 +39,7 @@ export function useChatMessages(roomId: string | null, currentUserId: string | n
                 
                 if (payload.eventType === 'INSERT') {
                     const newMessage = payload.new as Message;
-                    // Confirmamos que el mensaje es para esta sala
+                   
                     if (newMessage.room_id === roomId) {
                         setMessages((prev) => [...prev, newMessage]);
                         
@@ -51,10 +51,10 @@ export function useChatMessages(roomId: string | null, currentUserId: string | n
                 else if (payload.eventType === 'UPDATE') {
                     const partialUpdate = payload.new; 
                     
-                    // 🌟 LA MAGIA: Buscamos el mensaje y lo "fusionamos" con los datos nuevos
+                    
                     setMessages((prev) => prev.map(msg =>
                         msg.id === partialUpdate.id
-                            ? { ...msg, ...partialUpdate } // Combina el texto antiguo con el is_read: true
+                            ? { ...msg, ...partialUpdate }
                             : msg
                     ));
                 }
