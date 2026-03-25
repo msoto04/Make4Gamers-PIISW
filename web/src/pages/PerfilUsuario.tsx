@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { User as UserIcon, Activity, ArrowLeft, Trophy, Calendar, Gamepad2 } from 'lucide-react';
+
+
 import { supabase } from '../supabase';
 import { removeFriend } from '../features/chat/services/friend.service';
+import { useParams, Link, useNavigate } from 'react-router-dom'; 
+
+import { User as UserIcon, Activity, ArrowLeft, Trophy, Calendar, Gamepad2, Check, AlertCircle, AlertTriangle } from 'lucide-react';
+
 
 export default function PerfilUsuario() {
   const { username } = useParams(); 
@@ -10,6 +14,10 @@ export default function PerfilUsuario() {
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteSuccessMsg, setDeleteSuccessMsg] = useState('');
+  const [deleteErrorMsg, setDeleteErrorMsg] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfileAndActivity = async () => {
@@ -89,17 +97,33 @@ export default function PerfilUsuario() {
     );
   }
 
-  const handleRemoveFriend = async () => {
+
+  const handleOpenDeleteModal = () => {
+    setShowDeleteModal(true);
+  };
+
+ 
+  const executeRemoveFriend = async () => {
     if (!currentUserId || !profile?.id) return;
     
-    if (window.confirm(`¿Estás seguro de que quieres eliminar a ${profile.username} de tus amigos?`)) {
+    setDeleteErrorMsg('');
+    try {
         const success = await removeFriend(currentUserId, profile.id);
         if (success) {
-            alert("Amigo eliminado correctamente");
-            window.location.reload(); 
+            setShowDeleteModal(false);
+            setDeleteSuccessMsg("Amigo eliminado correctamente");
+            
+           
+            setTimeout(() => {
+                navigate('/cuenta');
+            }, 2000);
         } else {
-            alert("Hubo un error al eliminar al amigo");
+            setDeleteErrorMsg("Hubo un error al eliminar al amigo");
+            setShowDeleteModal(false);
         }
+    } catch (error) {
+        setDeleteErrorMsg("Error de conexión al eliminar.");
+        setShowDeleteModal(false);
     }
   };
 
@@ -112,7 +136,6 @@ export default function PerfilUsuario() {
           <ArrowLeft size={20} /> Volver a mis amigos
         </Link>
 
-        {/* TARJETA DEL PERFIL */}
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
           
@@ -131,15 +154,34 @@ export default function PerfilUsuario() {
                 <div>
                     <h1 className="text-3xl font-bold text-white">{profile?.username}</h1>
                 </div>
+
+            {deleteSuccessMsg && (
+                <div className="mb-4 p-3 bg-green-500/10 border border-green-500/50 text-green-400 rounded-lg text-sm flex items-center gap-2 animate-pulse w-full">
+                    <Check size={18} />
+                    {deleteSuccessMsg}
+                </div>
+            )}
+            {deleteErrorMsg && (
+                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 text-red-400 rounded-lg text-sm flex items-center gap-2 w-full">
+                    <AlertCircle size={18} />
+                    {deleteErrorMsg}
+                </div>
+            )}
+
+            <div className="flex items-center justify-between">
+
+            
                 {currentUserId && profile?.id && currentUserId !== profile.id && (
                     <button 
-                        onClick={handleRemoveFriend}
-                        className="flex items-center gap-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 px-4 py-2 rounded-lg font-medium transition-colors border border-red-500/20"
+                        onClick={handleOpenDeleteModal}
+                        disabled={!!deleteSuccessMsg} 
+                        className="flex items-center gap-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 px-4 py-2 rounded-lg font-medium transition-colors border border-red-500/20 disabled:opacity-50"
                     >
                         <UserIcon size={18} />
                         Eliminar amigo
                     </button>
                 )}
+            </div>
             </div>
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm text-slate-400">
                 <span className="flex items-center gap-1.5">
@@ -191,6 +233,38 @@ export default function PerfilUsuario() {
         </div>
 
       </div>
+      
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="p-3 bg-red-500/10 rounded-full text-red-500">
+                <AlertTriangle size={32} />
+              </div>
+              <h3 className="text-xl font-bold text-white">¿Eliminar amigo?</h3>
+              <p className="text-slate-400 text-sm">
+                Estás a punto de eliminar a <span className="text-indigo-400 font-medium">{profile?.username}</span> de tus amigos. Esta acción no se puede deshacer.
+              </p>
+              
+              <div className="flex gap-3 w-full pt-4">
+                <button 
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-medium transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  onClick={executeRemoveFriend}
+                  className="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-colors"
+                >
+                  Sí, eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
     </div>
   );
 }

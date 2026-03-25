@@ -128,7 +128,7 @@ const handleSendRequest = async (e: React.FormEvent) => {
             </div>
         )}
 
-        {/* 🌟 NUEVO: Mostrar mensaje de éxito elegante */}
+       
         {successMsg && (
             <div className="mb-6 p-3 bg-green-500/10 border border-green-500/50 text-green-400 rounded-lg text-sm flex items-center gap-2 animate-pulse">
             <Check size={18} />
