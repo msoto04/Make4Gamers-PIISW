@@ -47,6 +47,7 @@ i18n
                         username: "Nombre de usuario",
                         loginButton: "Iniciar sesión",
                         registerButton: "Crear cuenta",
+                        loading: "Cargando...",
                         noAccount: "¿No tienes cuenta?",
                         haveAccount: "¿Ya tienes cuenta?",
                         loginLink: "Inicia sesión",
@@ -203,6 +204,96 @@ i18n
                             title: "Escala en nuestra clasificación",
                             firstButton: "Comenzar  ➜"
                         }
+                    },
+                    account: {
+                        locale: "es-ES",
+                        common: {
+                            cancel: "Cancelar"
+                        },
+                        alerts: {
+                            saveConfigError: "Hubo un error al guardar la configuración.",
+                            emptyUsername: "El nombre de usuario no puede estar vacío.",
+                            saveUsernameError: "Hubo un error al guardar. Es posible que ese nombre de usuario ya esté en uso.",
+                            avatarUpdated: "Foto de perfil actualizada con éxito.",
+                            avatarUploadError: "Error al subir la imagen"
+                        },
+                        states: {
+                            profileLoadError: "No se pudo cargar el perfil. Asegúrate de haber iniciado sesión."
+                        },
+                        sidebar: {
+                            title: "Mi Cuenta",
+                            dashboard: "Panel",
+                            personal: "Personal",
+                            friends: "Amigos",
+                            payments: "Pagos",
+                            security: "Seguridad"
+                        },
+                        dashboard: {
+                            defaultUser: "Usuario",
+                            role: "Rol",
+                            defaultRole: "Jugador",
+                            noLocation: "Sin localización",
+                            lastGames: "Últimas partidas",
+                            unknownGame: "Juego desconocido",
+                            vs: "Vs.",
+                            defaultOpponent: "OpponentName",
+                            status: "Estado",
+                            finished: "Finalizado"
+                        },
+                        personal: {
+                            noUsername: "Usuario Sin Nombre",
+                            name: "Nombre",
+                            lastName: "Apellido",
+                            username: "Usuario",
+                            email: "Correo",
+                            birthDate: "Fecha de nacimiento",
+                            phone: "Teléfono",
+                            notDefined: "No definido"
+                        },
+                        friends: {
+                            title: "Amigos",
+                            searchPlaceholder: "Buscar amigo...",
+                            sendMessage: "Enviar mensaje",
+                            noResults: "No se encontraron amigos con ese filtro."
+                        },
+                        payments: {
+                            title: "Payments",
+                            subscriptionType: "Tipo de suscripción",
+                            defaultSubscription: "Pro Gamer Monthly",
+                            paymentMethods: "Métodos de pago",
+                            defaultMethod: "Predeterminado",
+                            addMethod: "Agregar nuevo método",
+                            subscriptionInfo: "Info de la suscripción",
+                            benefitEarlyAccess: "Permite acceso temprano a juegos",
+                            benefitLeagues: "Permite crear ligas",
+                            renewalNote: "La suscripción se renueva automáticamente al final de cada periodo."
+                        },
+                        security: {
+                            title: "Security",
+                            personalSection: "Cuenta personal",
+                            changePassword: "Cambiar contraseña",
+                            accountInfo: "Información de la cuenta",
+                            deactivateAccount: "Desactivar cuenta",
+                            accountSecuritySection: "Seguridad de la cuenta",
+                            enable2fa: "Activar doble factor",
+                            changePaymentMethod: "Cambiar método de pago",
+                            verifyEmail: "Verificar correo electrónico",
+                            socialSupportSection: "Social and support",
+                            reportPlayer: "Report jugador",
+                            reportGame: "Report game",
+                            reportIncident: "Report incident",
+                            friendPrivacy: "Privacidad de amistad",
+                            requestsEnabled: "Recibiendo solicitudes",
+                            requestsBlocked: "Solicitudes bloqueadas"
+                        },
+                        avatarPolicy: {
+                            title: "Normativa de imágenes",
+                            description: "Antes de subir una nueva foto de perfil, por favor recuerda las normas de la comunidad para asegurar un entorno agradable para todos:",
+                            rule1: "No se permiten imágenes con contenido adulto o violento",
+                            rule2: "Prohibido material ofensivo, discriminatorio o de odio",
+                            rule3: "Cualquier infracción resultará en la eliminación de la foto o de la cuenta",
+                            accept: "He leído y acepto"
+                        }
                     }
                 }
             },
@@ -263,6 +354,7 @@ i18n
                         username: "Username",
                         loginButton: "Sign In",
                         registerButton: "Create Account",
+                        loading: "Loading...",
                         noAccount: "Don't have an account?",
                         haveAccount: "Already have an account?",
                         loginLink: "Sign in here",
@@ -400,10 +492,100 @@ i18n
                             title: "Climb our ranking",
                             firstButton: "Start ➜"
                         }
+                    },
+                    account: {
+                        locale: "en-US",
+                        common: {
+                            cancel: "Cancel"
+                        },
+                        alerts: {
+                            saveConfigError: "There was an error saving the settings.",
+                            emptyUsername: "Username cannot be empty.",
+                            saveUsernameError: "There was an error saving. That username may already be in use.",
+                            avatarUpdated: "Profile picture updated successfully.",
+                            avatarUploadError: "Error uploading image"
+                        },
+                        states: {
+                            profileLoadError: "Profile could not be loaded. Make sure you are signed in."
+                        },
+                        sidebar: {
+                            title: "My Account",
+                            dashboard: "Dashboard",
+                            personal: "Personal",
+                            friends: "Friends",
+                            payments: "Payments",
+                            security: "Security"
+                        },
+                        dashboard: {
+                            defaultUser: "User",
+                            role: "Role",
+                            defaultRole: "Player",
+                            noLocation: "No location",
+                            lastGames: "Last games",
+                            unknownGame: "Unknown game",
+                            vs: "Vs.",
+                            defaultOpponent: "OpponentName",
+                            status: "Status",
+                            finished: "Finished"
+                        },
+                        personal: {
+                            noUsername: "Unnamed user",
+                            name: "Name",
+                            lastName: "Last name",
+                            username: "Username",
+                            email: "Email",
+                            birthDate: "Birth date",
+                            phone: "Phone",
+                            notDefined: "Not defined"
+                        },
+                        friends: {
+                            title: "Friends",
+                            searchPlaceholder: "Search friend...",
+                            sendMessage: "Send message",
+                            noResults: "No friends found for that filter."
+                        },
+                        payments: {
+                            title: "Payments",
+                            subscriptionType: "Subscription type",
+                            defaultSubscription: "Pro Gamer Monthly",
+                            paymentMethods: "Payment methods",
+                            defaultMethod: "Default",
+                            addMethod: "Add new method",
+                            subscriptionInfo: "Subscription info",
+                            benefitEarlyAccess: "Early access to games",
+                            benefitLeagues: "Create leagues",
+                            renewalNote: "Subscription renews automatically at the end of each billing period."
+                        },
+                        security: {
+                            title: "Security",
+                            personalSection: "Personal account",
+                            changePassword: "Change password",
+                            accountInfo: "Account information",
+                            deactivateAccount: "Deactivate account",
+                            accountSecuritySection: "Account security",
+                            enable2fa: "Enable two-factor authentication",
+                            changePaymentMethod: "Change payment method",
+                            verifyEmail: "Verify email",
+                            socialSupportSection: "Social and support",
+                            reportPlayer: "Report player",
+                            reportGame: "Report game",
+                            reportIncident: "Report incident",
+                            friendPrivacy: "Friend request privacy",
+                            requestsEnabled: "Receiving requests",
+                            requestsBlocked: "Requests blocked"
+                        },
+                        avatarPolicy: {
+                            title: "Image policy",
+                            description: "Before uploading a new profile photo, please keep these community guidelines in mind to maintain a friendly environment:",
+                            rule1: "Images with adult or violent content are not allowed",
+                            rule2: "Offensive, discriminatory, or hateful material is forbidden",
+                            rule3: "Any violation may result in profile image or account removal",
+                            accept: "I have read and accept"
+                        }
                     }
                 }
             },
-            cn: {
+            zh: {
                 translation: {
                     nav: {
                         games: "游戏",
@@ -443,6 +625,7 @@ i18n
                         username: "用户名",
                         loginButton: "登录",
                         registerButton: "创建账户",
+                        loading: "加载中...",
                         noAccount: "没有账户？",
                         haveAccount: "已有账户？",
                         loginLink: "在这里登录",
@@ -596,6 +779,96 @@ i18n
                         ranks: {
                             title: "提升我们的排名",
                             firstButton: "开始 ➜"
+                        }
+                    },
+                    account: {
+                        locale: "zh-CN",
+                        common: {
+                            cancel: "取消"
+                        },
+                        alerts: {
+                            saveConfigError: "保存设置时出错。",
+                            emptyUsername: "用户名不能为空。",
+                            saveUsernameError: "保存时出错，该用户名可能已被占用。",
+                            avatarUpdated: "头像更新成功。",
+                            avatarUploadError: "上传图片时出错"
+                        },
+                        states: {
+                            profileLoadError: "无法加载个人资料，请确认你已登录。"
+                        },
+                        sidebar: {
+                            title: "我的账户",
+                            dashboard: "概览",
+                            personal: "个人信息",
+                            friends: "好友",
+                            payments: "支付",
+                            security: "安全"
+                        },
+                        dashboard: {
+                            defaultUser: "用户",
+                            role: "角色",
+                            defaultRole: "玩家",
+                            noLocation: "未设置位置",
+                            lastGames: "最近对局",
+                            unknownGame: "未知游戏",
+                            vs: "对战",
+                            defaultOpponent: "未知对手",
+                            status: "状态",
+                            finished: "已结束"
+                        },
+                        personal: {
+                            noUsername: "未命名用户",
+                            name: "名字",
+                            lastName: "姓氏",
+                            username: "用户名",
+                            email: "邮箱",
+                            birthDate: "出生日期",
+                            phone: "电话",
+                            notDefined: "未定义"
+                        },
+                        friends: {
+                            title: "好友",
+                            searchPlaceholder: "搜索好友...",
+                            sendMessage: "发送消息",
+                            noResults: "没有符合筛选条件的好友。"
+                        },
+                        payments: {
+                            title: "支付",
+                            subscriptionType: "订阅类型",
+                            defaultSubscription: "Pro Gamer 月度",
+                            paymentMethods: "支付方式",
+                            defaultMethod: "默认",
+                            addMethod: "添加新方式",
+                            subscriptionInfo: "订阅信息",
+                            benefitEarlyAccess: "可提前体验游戏",
+                            benefitLeagues: "可创建联赛",
+                            renewalNote: "订阅将在每个计费周期结束时自动续费。"
+                        },
+                        security: {
+                            title: "安全",
+                            personalSection: "个人账户",
+                            changePassword: "更改密码",
+                            accountInfo: "账户信息",
+                            deactivateAccount: "停用账户",
+                            accountSecuritySection: "账户安全",
+                            enable2fa: "启用双重验证",
+                            changePaymentMethod: "更改支付方式",
+                            verifyEmail: "验证邮箱",
+                            socialSupportSection: "社交与支持",
+                            reportPlayer: "举报玩家",
+                            reportGame: "举报游戏",
+                            reportIncident: "举报事件",
+                            friendPrivacy: "好友申请隐私",
+                            requestsEnabled: "接收申请中",
+                            requestsBlocked: "已屏蔽申请"
+                        },
+                        avatarPolicy: {
+                            title: "图片规范",
+                            description: "上传新头像前，请遵守社区规范以维护良好环境：",
+                            rule1: "禁止上传成人或暴力内容",
+                            rule2: "禁止上传冒犯、歧视或仇恨内容",
+                            rule3: "违规可能导致头像或账户被移除",
+                            accept: "我已阅读并同意"
                         }
                     }
                 }
