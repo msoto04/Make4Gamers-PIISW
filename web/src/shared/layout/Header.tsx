@@ -34,8 +34,10 @@ const Header = () => {
 
    
     useEffect(() => {
-        if (location.pathname === '/chat') {
-            setHasUnread(false);
+        // Reset unread badge when navigating to chat
+        const inChat = location.pathname === '/chat';
+        if (inChat) {
+            queueMicrotask(() => setHasUnread(false));
         }
     }, [location.pathname]);
 
