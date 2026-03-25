@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { UserPlus, Check, X, Users, AlertCircle, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { friendshipService } from '../services/friendship.service';
 import { supabase } from '../../../supabase';
 
@@ -9,6 +10,7 @@ export default function FriendManager() {
     const [friends, setFriends] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
     const [usernameToAdd, setUsernameToAdd] = useState('');
 
   //Al abrir el componente, busca quien es el usuario logueado
@@ -60,14 +62,15 @@ export default function FriendManager() {
         }
     };
 
-    const handleSendRequest = async (e: React.FormEvent) => {
+const handleSendRequest = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setSuccessMsg(''); 
         
         if (!usernameToAdd.trim() || !currentUserId) return;
 
         try {
-        //Buscamos en la BBDD si existe ese nombre de usuario
+      
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('id')
@@ -82,10 +85,15 @@ export default function FriendManager() {
             throw new Error('No puedes enviarte una solicitud a ti mismo.');
         }
 
-        //Enviamos la solicitud usando nuestro servicio
+       
         await friendshipService.sendFriendRequest(currentUserId, profile.id);
         setUsernameToAdd('');
-        alert('¡Solicitud enviada con éxito!');
+        
+      
+        setSuccessMsg('¡Solicitud enviada con éxito!');
+        setTimeout(() => {
+            setSuccessMsg(''); 
+        }, 3000);
         
         } catch (err: any) {
         setError(err.message);
@@ -120,9 +128,16 @@ export default function FriendManager() {
             </div>
         )}
 
+       
+        {successMsg && (
+            <div className="mb-6 p-3 bg-green-500/10 border border-green-500/50 text-green-400 rounded-lg text-sm flex items-center gap-2 animate-pulse">
+            <Check size={18} />
+            {successMsg}
+            </div>
+        )}
         <div className="space-y-8">
             
-            {/* SECCIÓN 1: Buscador para añadir amigos */}
+            {/* Buscador para añadir amigos */}
             <section>
             <h3 className="text-sm font-medium text-slate-400 mb-3 uppercase tracking-wider">Añadir nuevo amigo</h3>
             <form onSubmit={handleSendRequest} className="flex gap-2">
@@ -147,7 +162,7 @@ export default function FriendManager() {
             </form>
             </section>
 
-            {/* SECCIÓN 2: Solicitudes Pendientes */}
+            {/* Solicitudes pendientes */}
             {pendingRequests.length > 0 && (
             <section>
                 <h3 className="text-sm font-medium text-amber-400 mb-3 uppercase tracking-wider flex items-center gap-2">
@@ -191,7 +206,7 @@ export default function FriendManager() {
             </section>
             )}
 
-            {/* SECCIÓN 3: Lista de Amigos */}
+            {/* Lista de amigos */}
             <section>
             <h3 className="text-sm font-medium text-slate-400 mb-3 uppercase tracking-wider">Mis Amigos ({friends.length})</h3>
             {friends.length === 0 ? (
@@ -202,23 +217,30 @@ export default function FriendManager() {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {friends.map((friend) => (
-                    <div key={friend.friendshipId} className="flex items-center gap-3 p-3 bg-slate-800/40 border border-slate-700/50 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">
-                    <div className="relative">
-                        <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-300 font-bold overflow-hidden">
-                        {friend.friendProfile?.avatar_url ? (
-                            <img src={friend.friendProfile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
-                        ) : (
-                            friend.friendProfile?.username?.charAt(0).toUpperCase() || '?'
-                        )}
-                        </div>
-                        {/* Indicador de estado (Online/Offline) basado en tu BD */}
-                        <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-slate-900 ${friend.friendProfile?.status === 'Disponible' ? 'bg-green-500' : 'bg-slate-500'}`}></div>
-                    </div>
-                    <div>
-                        <p className="text-white font-medium text-sm">{friend.friendProfile?.username}</p>
-                        <p className="text-xs text-slate-400">{friend.friendProfile?.status || 'Desconectado'}</p>
-                    </div>
-                    </div>
+                    // NUEVO: Cambiamos div por Link y le pasamos la URL con el nombre del amigo
+                    <Link 
+                      to={`/usuario/${friend.friendProfile?.username}`}
+                      key={friend.friendshipId} 
+                      className="flex items-center gap-3 p-3 bg-slate-800/40 border border-slate-700/50 rounded-lg hover:bg-slate-800 hover:border-indigo-500/50 transition-all cursor-pointer group"
+                    >
+                      <div className="relative">
+                          <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-300 font-bold overflow-hidden">
+                          {friend.friendProfile?.avatar_url ? (
+                              <img src={friend.friendProfile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                          ) : (
+                              friend.friendProfile?.username?.charAt(0).toUpperCase() || '?'
+                          )}
+                          </div>
+                          {/* Indicador de estado (Online/Offline) */}
+                          <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-slate-900 ${friend.friendProfile?.status === 'Disponible' ? 'bg-green-500' : 'bg-slate-500'}`}></div>
+                      </div>
+                      <div>
+                          <p className="text-white font-medium text-sm group-hover:text-indigo-400 transition-colors">
+                            {friend.friendProfile?.username}
+                          </p>
+                          <p className="text-xs text-slate-400">{friend.friendProfile?.status || 'Desconectado'}</p>
+                      </div>
+                    </Link>
                 ))}
                 </div>
             )}
