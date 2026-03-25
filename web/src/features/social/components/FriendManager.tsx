@@ -10,6 +10,7 @@ export default function FriendManager() {
     const [friends, setFriends] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
     const [usernameToAdd, setUsernameToAdd] = useState('');
 
   //Al abrir el componente, busca quien es el usuario logueado
@@ -61,14 +62,15 @@ export default function FriendManager() {
         }
     };
 
-    const handleSendRequest = async (e: React.FormEvent) => {
+const handleSendRequest = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setSuccessMsg(''); 
         
         if (!usernameToAdd.trim() || !currentUserId) return;
 
         try {
-        //Buscamos en la BBDD si existe ese nombre de usuario
+      
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('id')
@@ -83,10 +85,15 @@ export default function FriendManager() {
             throw new Error('No puedes enviarte una solicitud a ti mismo.');
         }
 
-        //Enviamos la solicitud usando nuestro servicio
+       
         await friendshipService.sendFriendRequest(currentUserId, profile.id);
         setUsernameToAdd('');
-        alert('¡Solicitud enviada con éxito!');
+        
+      
+        setSuccessMsg('¡Solicitud enviada con éxito!');
+        setTimeout(() => {
+            setSuccessMsg(''); 
+        }, 3000);
         
         } catch (err: any) {
         setError(err.message);
@@ -121,6 +128,13 @@ export default function FriendManager() {
             </div>
         )}
 
+       
+        {successMsg && (
+            <div className="mb-6 p-3 bg-green-500/10 border border-green-500/50 text-green-400 rounded-lg text-sm flex items-center gap-2 animate-pulse">
+            <Check size={18} />
+            {successMsg}
+            </div>
+        )}
         <div className="space-y-8">
             
             {/* Buscador para añadir amigos */}
