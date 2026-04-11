@@ -184,7 +184,7 @@ i18n
                         splitHero: {
                             one: {
                                 imageAlt: "Producto",
-                                prefix: "A medida que el mundo gaming evoluciona, en",
+                                prefix: "As el mundo gaming evoluciona, en",
                                 brand: "Made",
                                 suffix: "4Gamers tú también puedes hacerlo."
                             },
@@ -203,6 +203,10 @@ i18n
                             title: "Escala en nuestra clasificación",
                             firstButton: "Comenzar  ➜"
                         }
+                    },
+                    dashboard: {
+                        welcomePrefix: "Bienvenido,",
+                        userFallback: "Jugador"
                     },
                     seo: {
                         default: {
@@ -443,6 +447,10 @@ i18n
                             firstButton: "Start ➜"
                         }
                     },
+                    dashboard: {
+                        welcomePrefix: "Welcome,",
+                        userFallback: "Player"
+                    },
                     seo: {
                         default: {
                             title: "Gaming platform",
@@ -681,6 +689,10 @@ i18n
                             title: "提升我们的排名",
                             firstButton: "开始 ➜"
                         }
+                    },
+                    dashboard: {
+                        welcomePrefix: "欢迎你，",
+                        userFallback: "玩家"
                     },
                     seo: {
                         default: {
