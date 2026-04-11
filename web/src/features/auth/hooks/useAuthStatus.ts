@@ -4,18 +4,21 @@ import {
   subscribeToAuthState,
 } from "../services/auth.service";
 
+type AuthUser = Awaited<ReturnType<typeof getAuthenticatedUser>>;
+
 export const useAuthStatus = () => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<AuthUser>(null);
 
   useEffect(() => {
     let mounted = true;
 
     const checkUser = async () => {
-      const user = await getAuthenticatedUser();
-
+      const userObj = await getAuthenticatedUser();
       if (!mounted) return;
-      setIsAuthenticated(!!user);
+      setUser(userObj);
+      setIsAuthenticated(!!userObj);
       setLoading(false);
     };
 
@@ -24,6 +27,7 @@ export const useAuthStatus = () => {
     const {
       data: { subscription },
     } = subscribeToAuthState((_event, session) => {
+      setUser(session?.user ?? null);
       setIsAuthenticated(!!session?.user);
       setLoading(false);
     });
@@ -34,5 +38,5 @@ export const useAuthStatus = () => {
     };
   }, []);
 
-  return { loading, isAuthenticated };
+  return { loading, isAuthenticated, user };
 };
