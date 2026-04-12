@@ -184,7 +184,7 @@ i18n
                         splitHero: {
                             one: {
                                 imageAlt: "Producto",
-                                prefix: "A medida que el mundo gaming evoluciona, en",
+                                prefix: "As el mundo gaming evoluciona, en",
                                 brand: "Made",
                                 suffix: "4Gamers tú también puedes hacerlo."
                             },
@@ -202,6 +202,16 @@ i18n
                         ranks: {
                             title: "Escala en nuestra clasificación",
                             firstButton: "Comenzar  ➜"
+                        }
+                    },
+                    dashboard: {
+                        welcomePrefix: "Bienvenido,",
+                        userFallback: "Jugador",
+                        marquee: {
+                            play: "JUEGA",
+                            chat: "CHATEA",
+                            compete: "COMPITE",
+                            climb: "ESCALA"
                         }
                     },
                     seo: {
@@ -443,6 +453,16 @@ i18n
                             firstButton: "Start ➜"
                         }
                     },
+                    dashboard: {
+                        welcomePrefix: "Welcome,",
+                        userFallback: "Player",
+                        marquee: {
+                            play: "PLAY",
+                            chat: "CHAT",
+                            compete: "COMPETE",
+                            climb: "CLIMB"
+                        }
+                    },
                     seo: {
                         default: {
                             title: "Gaming platform",
@@ -680,6 +700,16 @@ i18n
                         ranks: {
                             title: "提升我们的排名",
                             firstButton: "开始 ➜"
+                        }
+                    },
+                    dashboard: {
+                        welcomePrefix: "欢迎你，",
+                        userFallback: "玩家",
+                        marquee: {
+                            play: "游玩",
+                            chat: "聊天",
+                            compete: "竞技",
+                            climb: "攀升"
                         }
                     },
                     seo: {
