@@ -18,7 +18,7 @@ export const NeonMarquee = () => {
   const doubleItems = [...items, ...items];
 
   return (
-    <div className="relative flex overflow-x-hidden bg-violet-700 py-4 shadow-[0_0_30px_rgba(88,101,242,0.4)] border-y border-white/10">
+    <div className="relative flex overflow-x-hidden bg-gradient-to-b from-[#4c48af] via-[#3a3692] to-[#2d2a70] py-4 shadow-[0_0_30px_rgba(88,101,242,0.4)] border-y border-white/10">
       {/* Usamos la animación definida en el CSS */}
       <div className="flex animate-marquee whitespace-nowrap will-change-transform">
         {doubleItems.map((item, index) => (
