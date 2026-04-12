@@ -185,7 +185,7 @@ i18n
                         splitHero: {
                             one: {
                                 imageAlt: "Producto",
-                                prefix: "A medida que el mundo gaming evoluciona, en",
+                                prefix: "As el mundo gaming evoluciona, en",
                                 brand: "Made",
                                 suffix: "4Gamers tú también puedes hacerlo."
                             },
@@ -293,6 +293,16 @@ i18n
                             rule2: "Prohibido material ofensivo, discriminatorio o de odio",
                             rule3: "Cualquier infracción resultará en la eliminación de la foto o de la cuenta",
                             accept: "He leído y acepto"
+                    dashboard: {
+                        welcomePrefix: "Bienvenido,",
+                        userFallback: "Jugador",
+                        marquee: {
+                            play: "JUEGA",
+                            chat: "CHATEA",
+                            compete: "COMPITE",
+                            climb: "ESCALA"
+                        }
+                    },
                     seo: {
                         default: {
                             title: "Plataforma de videojuegos",
@@ -621,6 +631,16 @@ i18n
                             rule2: "Offensive, discriminatory, or hateful material is forbidden",
                             rule3: "Any violation may result in profile image or account removal",
                             accept: "I have read and accept"
+                    dashboard: {
+                        welcomePrefix: "Welcome,",
+                        userFallback: "Player",
+                        marquee: {
+                            play: "PLAY",
+                            chat: "CHAT",
+                            compete: "COMPETE",
+                            climb: "CLIMB"
+                        }
+                    },
                     seo: {
                         default: {
                             title: "Gaming platform",
@@ -949,6 +969,16 @@ i18n
                             rule2: "禁止上传冒犯、歧视或仇恨内容",
                             rule3: "违规可能导致头像或账户被移除",
                             accept: "我已阅读并同意"
+                    dashboard: {
+                        welcomePrefix: "欢迎你，",
+                        userFallback: "玩家",
+                        marquee: {
+                            play: "游玩",
+                            chat: "聊天",
+                            compete: "竞技",
+                            climb: "攀升"
+                        }
+                    },
                     seo: {
                         default: {
                             title: "游戏平台",

@@ -54,21 +54,16 @@ export default function GameViewport({
   }, [size, targetRatio]);
 
   return (
-    <div ref={containerRef} className={`relative w-full h-full bg-black overflow-hidden ${className}`}>
+    <div
+      className={`relative w-full h-full ${className}`}
+      style={{ aspectRatio: ratio }}
+    >
       <iframe
-        title={title}
         src={src}
-        allow="fullscreen"
-        className="absolute border-0"
-        style={{
-          width: `${frameSize.w}px`,
-          height: `${frameSize.h}px`,
-          left: "50%",
-          top: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
+        title={title}
+        className="absolute inset-0 w-full h-full border-0"
+        allowFullScreen
       />
     </div>
   );
 }
-
