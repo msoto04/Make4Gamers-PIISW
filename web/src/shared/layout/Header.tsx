@@ -34,8 +34,10 @@ const Header = () => {
 
    
     useEffect(() => {
-        if (location.pathname === '/chat') {
-            setHasUnread(false);
+        // Reset unread badge when navigating to chat
+        const inChat = location.pathname === '/chat';
+        if (inChat) {
+            queueMicrotask(() => setHasUnread(false));
         }
     }, [location.pathname]);
 
@@ -171,7 +173,7 @@ const Header = () => {
                                 <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" onClick={() => changeLanguage('en')}>
                                     <span>🇬🇧</span> English
                                 </button>
-                                <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" onClick={() => changeLanguage('cn')}>
+                                <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" onClick={() => changeLanguage('zh')}>
                                     <span>🇨🇳</span> 中文
                                 </button>
                             </div>

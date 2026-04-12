@@ -60,7 +60,7 @@ export default function AuthHeader() {
                                 </button>
                                 <button 
                                     className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" 
-                                    onClick={() => changeLanguage('cn')}
+                                    onClick={() => changeLanguage('zh')}
                                 >
                                     <span>🇨🇳</span> 中文
                                 </button>
