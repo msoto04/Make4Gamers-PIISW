@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-// 1. NUEVO: Importamos icons y useRef
-import { User as UserIcon, Mail, Activity, Shield, ShieldAlert, Edit2, Check, X, Camera, AlertTriangle } from 'lucide-react'; 
+
+import { User as UserIcon, Mail, Activity, Shield, ShieldAlert, Edit2, Check, X, Camera, AlertTriangle, Medal } from 'lucide-react'; 
 import { supabase } from '../supabase';
 import FriendManager from '../features/social/components/FriendManager';
 
@@ -10,15 +10,16 @@ export default function Cuenta() {
   const [allowRequests, setAllowRequests] = useState(true);
   const [savingPrivacy, setSavingPrivacy] = useState(false);
 
-  // Estados para controlar la edición del nombre
+  
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState("");
   const [savingName, setSavingName] = useState(false);
 
-  // 2. NUEVO: Estados para la foto de perfil y el Modal
+  
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [showAvatarPolicyModal, setShowAvatarPolicyModal] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null); // Ref para el input file oculto
+  const fileInputRef = useRef<HTMLInputElement>(null); 
+  const [highScores, setHighScores] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -36,7 +37,29 @@ export default function Cuenta() {
           setProfile(data);
           setAllowRequests(data.allow_requests !== false); 
           setEditNameValue(data.username || ""); 
+          const { data: scoresData, error: scoresError } = await supabase
+            .from('scores')
+            .select(`id, score, game:games(title)`)
+            .eq('user_id', user.id)
+            .order('score', { ascending: false });
+
+          if (!scoresError && scoresData) {
+            const bestScores: any[] = [];
+            const seenGames = new Set();
+            
+            scoresData.forEach((item: any) => {
+              const gameData = item.game;
+              const gameTitle = (Array.isArray(gameData) ? gameData[0]?.title : gameData?.title) || 'Desconocido';
+              
+              if (!seenGames.has(gameTitle)) {
+                seenGames.add(gameTitle);
+                bestScores.push({ ...item, displayTitle: gameTitle });
+              }
+            });
+            setHighScores(bestScores.slice(0, 3)); 
+          }
         }
+        
       } catch (error) {
         console.error("Error cargando el perfil:", error);
       } finally {
@@ -116,7 +139,7 @@ export default function Cuenta() {
     }
   };
 
-  // 3. NUEVO: Función para subir la imagen a Supabase
+
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploadingAvatar(true);
@@ -127,22 +150,22 @@ export default function Cuenta() {
 
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      // Creamos un path único: user_id/avatar_timestamp.ext
+     
       const filePath = `${profile.id}/avatar_${Date.now()}.${fileExt}`;
 
-      // A. Subimos al Bucket 'avatars'
+     
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      // B. Obtenemos la URL Pública
+     
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
-      // C. Actualizamos la tabla 'profiles'
+     
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ avatar_url: publicUrl })
@@ -150,7 +173,7 @@ export default function Cuenta() {
 
       if (updateError) throw updateError;
 
-      // Actualizamos la interfaz local
+    
       setProfile({ ...profile, avatar_url: publicUrl });
       alert('¡Foto de perfil actualizada con éxito!');
 
@@ -182,17 +205,17 @@ export default function Cuenta() {
     <div className="min-h-screen bg-slate-950 text-slate-300 py-10 px-4">
       <div className="max-w-4xl mx-auto space-y-8">
         
-        {/* CABECERA DEL PERFIL */}
+     
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
           
           <div className="relative flex flex-col md:flex-row items-center gap-6">
             
-            {/* 4. NUEVO: Foto de Perfil Interactiva */}
+    
             <div className="relative group shrink-0">
               <div className="w-24 h-24 bg-slate-800 border-2 border-indigo-500 rounded-full flex items-center justify-center overflow-hidden shadow-lg">
                 {uploadingAvatar ? (
-                  // Spinner durante la subida
+                 
                   <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
                 ) : profile.avatar_url ? (
                   <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
@@ -201,10 +224,10 @@ export default function Cuenta() {
                 )}
               </div>
               
-              {/* Overlay con icono de cámara (aparece en hover) */}
+             
               <button
                 title='Cambiar foto de perfil'
-                onClick={() => setShowAvatarPolicyModal(true)} // Primero el Modal, luego la selección
+                onClick={() => setShowAvatarPolicyModal(true)} 
                 disabled={uploadingAvatar}
                 className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer border border-indigo-500"
               >
@@ -212,7 +235,7 @@ export default function Cuenta() {
               </button>
             </div>
             
-            {/* Input file oculto con ref */}
+       
             <input
               title='Subir nueva foto de perfil'
               type="file"
@@ -225,9 +248,9 @@ export default function Cuenta() {
             />
 
             <div className="text-center md:text-left flex-1">
-              {/* Lógica condicional para mostrar el input o el texto */}
+             
               {isEditingName ? (
-                // Modo edicion
+          
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
                   <input
                     type="text"
@@ -323,6 +346,39 @@ export default function Cuenta() {
           </div>
         </div>
 
+
+      {highScores.length > 0 && (
+        <section className="mb-10">
+          <h2 className="text-xl font-bold text-white mb-5 flex items-center gap-2">
+            <Medal className="text-amber-400" size={24} />
+            Mis Mejores Marcas
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {highScores.map((record) => (
+              <div 
+                key={record.id} 
+                className="p-5 bg-gradient-to-br from-amber-500/10 to-orange-600/5 border border-amber-500/20 rounded-2xl relative overflow-hidden group"
+              >
+                {/* Icono de medalla decorativo al fondo */}
+                <div className="absolute -right-2 -bottom-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Medal size={64} className="text-amber-500" />
+                </div>
+                
+                <div className="relative z-10">
+                  <p className="text-xs text-amber-200/60 font-bold uppercase tracking-wider mb-1">
+                    {record.displayTitle}
+                  </p>
+                  <p className="text-3xl font-black text-white">
+                    {record.score}
+                  </p>
+                  <p className="text-[10px] text-amber-500/40 font-bold uppercase mt-1">Puntuación Máxima</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
         {/* Gestion de amigos */}
         <div className="animate-fade-in">
           <FriendManager />
@@ -359,7 +415,7 @@ export default function Cuenta() {
               <button 
                 onClick={() => {
                   setShowAvatarPolicyModal(false);
-                  fileInputRef.current?.click(); //Selector de archivos
+                  fileInputRef.current?.click(); 
                 }}
                 className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
               >

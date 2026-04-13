@@ -5,7 +5,7 @@ import { supabase } from '../supabase';
 import { removeFriend } from '../features/chat/services/friend.service';
 import { useParams, Link, useNavigate } from 'react-router-dom'; 
 
-import { User as UserIcon, Activity, ArrowLeft, Trophy, Calendar, Gamepad2, Check, AlertCircle, AlertTriangle } from 'lucide-react';
+import { User as UserIcon, Activity, ArrowLeft, Trophy, Calendar, Gamepad2, Check, AlertCircle, AlertTriangle, Medal } from 'lucide-react';
 
 
 export default function PerfilUsuario() {
@@ -18,6 +18,7 @@ export default function PerfilUsuario() {
   const [deleteSuccessMsg, setDeleteSuccessMsg] = useState('');
   const [deleteErrorMsg, setDeleteErrorMsg] = useState('');
   const navigate = useNavigate();
+  const [highScores, setHighScores] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchProfileAndActivity = async () => {
@@ -37,22 +38,45 @@ export default function PerfilUsuario() {
             setCurrentUserId(user.id);
         }
 
-        //Buscar su actividad reciente (ultimas 5)
+
         if (profileData) {
+         
           const { data: activityData, error: activityError } = await supabase
             .from('scores')
-            .select(`
-              id,
-              score,
-              created_at,
-              game:games(title)
-            `)
+            .select(`id, score, created_at, game:games(title)`)
             .eq('user_id', profileData.id)
             .order('created_at', { ascending: false })
             .limit(5);
 
           if (!activityError && activityData) {
             setRecentActivity(activityData);
+          }
+
+        
+          const { data: scoresData, error: scoresError } = await supabase
+            .from('scores')
+            .select(`id, score, created_at, game:games(title)`)
+            .eq('user_id', profileData.id)
+            .order('score', { ascending: false }); 
+
+          if (!scoresError && scoresData) {
+           
+            const bestScores: any[] = [];
+            const seenGames = new Set();
+            
+            scoresData.forEach((item: any) => {
+             
+              const gameData = item.game;
+              const gameTitle = (Array.isArray(gameData) ? gameData[0]?.title : gameData?.title) || 'Desconocido';
+              
+              if (!seenGames.has(gameTitle)) {
+                seenGames.add(gameTitle);
+                bestScores.push(item);
+              }
+            });
+            
+         
+            setHighScores(bestScores.slice(0, 3));
           }
         }
 
@@ -68,7 +92,7 @@ export default function PerfilUsuario() {
     }
   }, [username]);
 
-  //Funcion auxiliar para formatear la fecha
+ 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('es-ES', { 
@@ -196,6 +220,50 @@ export default function PerfilUsuario() {
             </div>
           </div>
         </div>
+
+     
+          {highScores.length > 0 && (
+            <div className="mb-10">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <Medal className="text-amber-400" size={24} />
+                Mejores Récords
+              </h2>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {highScores.map((record) => {
+                
+                  const gameData = record.game;
+                  const gameTitle = (Array.isArray(gameData) ? gameData[0]?.title : gameData?.title) || 'Desconocido';
+                  
+                  return (
+                    <div 
+                      key={`record-${record.id}`} 
+                      className="p-5 bg-gradient-to-br from-amber-500/10 to-orange-600/5 border border-amber-500/30 rounded-2xl relative overflow-hidden group hover:border-amber-400/50 transition-colors"
+                    >
+                      {/* Icono gigante de fondo */}
+                      <div className="absolute -right-4 -bottom-4 p-3 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-300">
+                        <Medal size={80} className="text-amber-500" />
+                      </div>
+                      
+                      {/* Contenido del récord */}
+                      <div className="relative z-10">
+                        <p className="text-sm text-amber-200/80 font-medium mb-1 truncate">
+                          {gameTitle}
+                        </p>
+                        <p className="text-4xl font-black text-amber-400 tracking-tight">
+                          {record.score}
+                        </p>
+                        <p className="text-[10px] font-bold text-amber-500/50 uppercase tracking-widest mt-1">
+                          Max Puntuación
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
 
         {/* Actividad reciente */}
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl">
