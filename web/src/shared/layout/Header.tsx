@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, Globe, ChevronDown, User, LogOut, Activity, BarChart2, Shield, Calculator, LifeBuoy, MessageSquare} from 'lucide-react';
+import { Menu, Globe, ChevronDown, User, LogOut,  Calculator, LifeBuoy, MessageSquare} from 'lucide-react';
 import { Logo } from '../icons/Logo';
 import { logout } from '../../features/auth/services/logout.service';
 import { useAuthStatus } from '../../features/auth/hooks/useAuthStatus';
