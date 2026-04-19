@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 import { useNavigate } from 'react-router-dom';
-import { Settings2, Save, Info, Check, Calculator } from 'lucide-react';
+import { Settings2, Save, Info, Check} from 'lucide-react';
 import { getScoringSettings, updateScoringSetting } from '../features/admin/services/settings.service';
 
 export default function AdminFormulas() {
@@ -26,7 +26,7 @@ export default function AdminFormulas() {
         return;
       }
 
-      // Verificamos si es administrador (admin)
+     
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
@@ -38,7 +38,7 @@ export default function AdminFormulas() {
         return;
       }
 
-      // Cargamos las fórmulas desde la base de datos
+    
       const res = await getScoringSettings(supabase);
       if (res.success && res.data) {
         setSettings(res.data);
@@ -60,7 +60,7 @@ export default function AdminFormulas() {
     setSaving(true);
     setMessage(null);
     try {
-      // Guardamos cada configuración una por una
+     
       for (const setting of settings) {
         await updateScoringSetting(supabase, setting.setting_key, Number(setting.setting_value));
       }
@@ -81,7 +81,7 @@ export default function AdminFormulas() {
     );
   }
 
-  // Simulador visual para el multiplicador de ranking
+ 
   const rankingMultiplier = Number(settings.find(s => s.setting_key === 'ranking_multiplier')?.setting_value || 1);
   const baseScore = Number(settings.find(s => s.setting_key === 'base_score')?.setting_value || 100);
 

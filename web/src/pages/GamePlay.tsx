@@ -14,6 +14,7 @@ import PlayersBar from "../features/gameplay/components/PlayersBar";
 import { useActiveMatch } from "../features/gameplay/hooks/useActiveMatch";
 import { useMatchMovements } from "../features/gameplay/hooks/useMatchMovements";
 
+
 export default function Gameplay() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
