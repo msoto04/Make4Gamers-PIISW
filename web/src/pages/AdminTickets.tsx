@@ -36,7 +36,7 @@ export default function AdminTickets() {
               .eq('id', user.id)
               .single();
 
-          if (profile?.role !== 'developer') {
+          if (profile?.role !== 'admin') {
               setIsAdmin(false);
               setLoading(false);
               return;

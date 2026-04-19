@@ -26,14 +26,14 @@ export default function AdminFormulas() {
         return;
       }
 
-      // Verificamos si es administrador (developer)
+      // Verificamos si es administrador (admin)
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', user.id)
         .single();
 
-      if (profile?.role !== 'developer') {
+      if (profile?.role !== 'admin') {
         navigate('/');
         return;
       }
@@ -92,7 +92,7 @@ export default function AdminFormulas() {
         {/* Cabecera */}
         <div className="flex items-center gap-4 border-b border-slate-800 pb-6">
           <div className="p-3 bg-indigo-500/10 rounded-xl text-indigo-400">
-            <Calculator size={32} />
+           
           </div>
           <div>
             <h1 className="text-3xl font-bold text-white">Laboratorio de Fórmulas</h1>
