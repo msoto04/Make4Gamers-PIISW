@@ -42,7 +42,11 @@ const handleSendMessage = async (e: React.FormEvent) => {
 
     setIsSending(true);
     try {
-      await sendMessage(roomId, currentUserId, newMessage.trim());
+      //Aplicacion del filtro
+      const mensajeSeguro = censorMessage(newMessage.trim());
+      
+      await sendMessage(roomId, currentUserId, mensajeSeguro);
+      
       setNewMessage(''); 
     
       setTimeout(() => inputRef.current?.focus(), 10);

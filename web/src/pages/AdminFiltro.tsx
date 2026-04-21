@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabase';
-import { ShieldAlert, Trash2, Plus } from 'lucide-react';
+import { ShieldAlert, Trash2, Plus, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 export default function AdminFiltro() {
@@ -45,6 +46,13 @@ export default function AdminFiltro() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 mt-10 bg-slate-900 border border-slate-800 rounded-2xl">
+        <Link 
+        to="/" 
+        className="inline-flex items-center gap-2 text-slate-400 hover:text-indigo-400 mb-8 transition-colors font-medium">
+        <ArrowLeft size={20} />
+        Volver al inicio
+      </Link>
+
       <div className="flex items-center gap-3 mb-8">
         <ShieldAlert className="text-red-500" size={32} />
         <div>
@@ -58,7 +66,7 @@ export default function AdminFiltro() {
           type="text"
           value={newWord}
           onChange={(e) => setNewWord(e.target.value)}
-          placeholder="Ej: palabra_ofensiva"
+          placeholder="Escriba una palabra"
           className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-white"
         />
         <button type="submit" className="bg-red-600 hover:bg-red-500 text-white px-6 py-2 rounded-lg flex items-center gap-2">
