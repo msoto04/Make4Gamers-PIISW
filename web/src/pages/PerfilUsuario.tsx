@@ -5,8 +5,9 @@ import { supabase } from '../supabase';
 import { removeFriend } from '../features/chat/services/friend.service';
 import { useParams, Link, useNavigate } from 'react-router-dom'; 
 
-import { User as UserIcon, Activity, ArrowLeft, Trophy, Calendar, Gamepad2, Check, AlertCircle, AlertTriangle, Medal } from 'lucide-react';
+import { User as UserIcon, Activity, ArrowLeft, Trophy, Calendar, Gamepad2, Check, AlertCircle, AlertTriangle, Medal, Flag } from 'lucide-react';
 import { getAccountHighScores } from '../features/account/services/account.service';
+import { reportUser } from '../../../packages/api/src/services/reports.service';
 
 
 export default function PerfilUsuario() {
@@ -20,6 +21,12 @@ export default function PerfilUsuario() {
   const [deleteSuccessMsg, setDeleteSuccessMsg] = useState('');
   const [deleteErrorMsg, setDeleteErrorMsg] = useState('');
   const navigate = useNavigate();
+  // Estados para el sistema de reportes
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [reportDetails, setReportDetails] = useState('');
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [reportFeedback, setReportFeedback] = useState<{type: 'success' | 'error', text: string} | null>(null);
 
   useEffect(() => {
     const fetchProfileAndActivity = async () => {
@@ -133,6 +140,34 @@ export default function PerfilUsuario() {
     }
   };
 
+  const handleSubmitReport = async () => {
+    if (!reportReason) {
+      setReportFeedback({ type: 'error', text: 'Por favor, selecciona un motivo.' });
+      return;
+    }
+    if (!currentUserId || !profile?.id) return;
+
+    setIsSubmittingReport(true);
+    setReportFeedback(null);
+
+    const result = await reportUser(supabase, currentUserId, profile.id, reportReason, reportDetails);
+
+    setIsSubmittingReport(false);
+
+    if (result.success) {
+      setReportFeedback({ type: 'success', text: 'Reporte enviado. Gracias por ayudar a mantener la comunidad segura.' });
+      // Cerramos el modal después de 3 segundos
+      setTimeout(() => {
+        setShowReportModal(false);
+        setReportFeedback(null);
+        setReportReason('');
+        setReportDetails('');
+      }, 3000);
+    } else {
+      setReportFeedback({ type: 'error', text: result.error || 'Error al enviar el reporte.' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-300 py-10 px-4">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -153,43 +188,48 @@ export default function PerfilUsuario() {
                 <UserIcon size={40} className="text-indigo-400" />
               )}
             </div>
-            
+ 
             <div className="text-center md:text-left flex-1">
-  
-            <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">{profile?.username}</h1>
-                </div>
-
-            {deleteSuccessMsg && (
-                <div className="mb-4 p-3 bg-green-500/10 border border-green-500/50 text-green-400 rounded-lg text-sm flex items-center gap-2 animate-pulse w-full">
-                    <Check size={18} />
-                    {deleteSuccessMsg}
-                </div>
-            )}
-            {deleteErrorMsg && (
-                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/50 text-red-400 rounded-lg text-sm flex items-center gap-2 w-full">
-                    <AlertCircle size={18} />
-                    {deleteErrorMsg}
-                </div>
-            )}
-
-            <div className="flex items-center justify-between">
-
-            
-                {currentUserId && profile?.id && currentUserId !== profile.id && (
+                  <h1 className="text-3xl font-bold text-white">{profile?.username}</h1>
+                  
+                  {/* BOTÓN DE REPORTAR (Debajo del nombre en móvil, al lado en escritorio) */}
+                  {currentUserId && currentUserId !== profile?.id && (
                     <button 
-                        onClick={handleOpenDeleteModal}
-                        disabled={!!deleteSuccessMsg} 
-                        className="flex items-center gap-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 px-4 py-2 rounded-lg font-medium transition-colors border border-red-500/20 disabled:opacity-50"
+                      onClick={() => setShowReportModal(true)}
+                      className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors mt-2"
                     >
-                        <UserIcon size={18} />
-                        Eliminar amigo
+                      <Flag size={16} />
+                      Reportar jugador
                     </button>
-                )}
-            </div>
-            </div>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm text-slate-400">
+                  )}
+                </div>
+
+                <div className="flex flex-col items-center md:items-end gap-2">
+                  {/* Botón de Eliminar Amigo */}
+                  {currentUserId && profile?.id && currentUserId !== profile.id && (
+                    <button 
+                      onClick={handleOpenDeleteModal}
+                      disabled={!!deleteSuccessMsg} 
+                      className="flex items-center gap-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 px-4 py-2 rounded-lg font-medium transition-colors border border-red-500/20 disabled:opacity-50"
+                    >
+                      <UserIcon size={18} />
+                      Eliminar amigo
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Mensajes de éxito/error */}
+              {deleteSuccessMsg && (
+                <div className="mt-4 p-3 bg-green-500/10 border border-green-500/50 text-green-400 rounded-lg text-sm flex items-center gap-2 animate-pulse">
+                  <Check size={18} />
+                  {deleteSuccessMsg}
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm text-slate-400 mt-6">
                 <span className="flex items-center gap-1.5">
                   <Activity size={16} /> 
                   Estado: <span className="text-green-400">{profile.status || 'Disponible'}</span>
@@ -315,7 +355,82 @@ export default function PerfilUsuario() {
           </div>
         </div>
       )}
+
+
+    {/* Modal de Reporte */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <div className="flex items-center gap-3 mb-4 text-red-400">
+              <Flag size={24} />
+              <h3 className="text-xl font-bold text-white">Reportar a {profile?.username}</h3>
+            </div>
+            
+            <p className="text-slate-400 text-sm mb-4">
+              Ayúdanos a entender qué está pasando. Los reportes son anónimos.
+            </p>
+
+            {reportFeedback && (
+              <div className={`p-3 rounded-lg mb-4 text-sm ${reportFeedback.type === 'success' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+                {reportFeedback.text}
+              </div>
+            )}
+
+            {!reportFeedback || reportFeedback.type === 'error' ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Motivo del reporte *</label>
+                  <select 
+                    value={reportReason}
+                    onChange={(e) => setReportReason(e.target.value)}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="">Selecciona un motivo...</option>
+                    <option value="Trampas / Hacks">Trampas / Uso de Hacks</option>
+                    <option value="Lenguaje Tóxico">Lenguaje Tóxico u Ofensivo</option>
+                    <option value="Acoso">Acoso a otros jugadores</option>
+                    <option value="Nombre Inapropiado">Nombre o Avatar inapropiado</option>
+                    <option value="Spam">Spam / Publicidad</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Detalles adicionales (Opcional)</label>
+                  <textarea 
+                    value={reportDetails}
+                    onChange={(e) => setReportDetails(e.target.value)}
+                    placeholder="Describe brevemente lo ocurrido..."
+                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 h-24 resize-none"
+                  />
+                </div>
+
+                <div className="flex gap-3 w-full pt-4">
+                  <button 
+                    onClick={() => {
+                      setShowReportModal(false);
+                      setReportFeedback(null);
+                    }}
+                    disabled={isSubmittingReport}
+                    className="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-medium transition-colors disabled:opacity-50"
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    onClick={handleSubmitReport}
+                    disabled={isSubmittingReport}
+                    className="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-colors flex justify-center items-center gap-2 disabled:opacity-50"
+                  >
+                    {isSubmittingReport ? 'Enviando...' : 'Enviar Reporte'}
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      )}
       
     </div>
+
+
   );
 }
