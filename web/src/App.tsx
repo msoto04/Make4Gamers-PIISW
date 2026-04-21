@@ -18,12 +18,12 @@ import Ayuda from './pages/Ayuda';
 import Contacto from './pages/Contacto';
 import AdminSugerencias from './pages/AdminSugerencias';
 import AdminTickets from './pages/AdminTickets';
-
+import Estadisticas from './pages/Estadisticas';
 
 function App() {
   return (
     <>
-      {/* 2. COMPONENTE TOASTER GLOBAL PARA LAS NOTIFICACIONES */}
+     
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -60,6 +60,7 @@ function App() {
             <Route path="/cuenta" element={<Cuenta />} /> 
             <Route path="/usuario/:username" element={<PerfilUsuario />} />
             <Route path="/ayuda" element={<Ayuda />} />
+            <Route path="/estadisticas" element={<Estadisticas />} />
           </Route>
         </Routes>
       </HashRouter>
