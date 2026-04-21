@@ -9,6 +9,7 @@ export {
   recoverSessionWithOtpToken,
   recoverSessionWithTokens,
   updatePassword,
+  verifyCurrentPassword,
   logout,
   getAuthenticatedUserId,
   getAuthenticatedUser,
@@ -23,6 +24,8 @@ export {
   getAccountRecentGames,
   getAccountFriends,
 } from "./services/account.service";
+export { reportUser, searchReportableUsers, reportGame, searchReportableGames } from "./services/reports.service";
 
 export type { Game } from "./types/game";
 export type { AccountProfile, AccountRecentGame, AccountFriend } from "./types/account";
+export type { ReportableUser, ReportableGame } from "./services/reports.service";
