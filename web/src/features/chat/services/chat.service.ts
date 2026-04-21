@@ -2,8 +2,6 @@
 import { supabase } from '../../../supabase';
 import type { ChatProfile } from '../types/chat.types';
 
-const { censorMessage } = useChatFilter();
-
 export const getFriendsList = async (currentUserId: string): Promise<ChatProfile[]> => {
 
     const { data: friendships, error: friendError } = await supabase
