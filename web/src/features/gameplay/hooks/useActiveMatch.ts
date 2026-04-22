@@ -51,7 +51,6 @@ async function fetchActiveMatch(
   gameId: string,
   userId: string,
 ): Promise<ActiveMatchData | null> {
-  // Intento 1: buscar por game_id exacto
   const { data: match, error } = await supabase
     .from("matches")
     .select("id, game_id, player_1, player_2, status")
@@ -67,12 +66,9 @@ async function fetchActiveMatch(
     return null;
   }
 
-  console.log("[useActiveMatch] intento 1 — gameId:", gameId, "resultado:", match?.id ?? "no encontrado");
-
   if (match) return loadMatchWithPlayers(match as RawMatch);
 
-  // Intento 2 (fallback): la partida fue creada por el juego con su propio game_id
-  // → buscar la más reciente en_progreso de este usuario sin filtrar por game_id
+  // Fallback: la partida fue creada por el juego con su propio game_id
   const { data: fallbackMatch, error: fallbackError } = await supabase
     .from("matches")
     .select("id, game_id, player_1, player_2, status")
@@ -87,8 +83,6 @@ async function fetchActiveMatch(
     return null;
   }
 
-  console.log("[useActiveMatch] intento 2 (fallback) — resultado:", fallbackMatch?.id ?? "no encontrado");
-
   if (!fallbackMatch) return null;
   return loadMatchWithPlayers(fallbackMatch as RawMatch);
 }
@@ -99,7 +93,6 @@ export function useActiveMatch(
 ) {
   const [match, setMatch] = useState<ActiveMatchData | null>(null);
   const [loading, setLoading] = useState(false);
-  // Guardamos los ids para usarlos dentro del callback del canal sin dependencias extra
   const gameIdRef = useRef(gameId);
   const userIdRef = useRef(userId);
   gameIdRef.current = gameId;
@@ -111,7 +104,6 @@ export function useActiveMatch(
     let isMounted = true;
     setLoading(true);
 
-    // Carga inicial
     fetchActiveMatch(gameId, userId)
       .then((data) => {
         if (isMounted) setMatch(data);
@@ -121,17 +113,11 @@ export function useActiveMatch(
         if (isMounted) setLoading(false);
       });
 
-    // Suscripción realtime a la tabla matches
-    // Detecta cuando se inserta o actualiza una partida para este juego
     const channel = supabase
       .channel(`active-match-${gameId}-${userId}`)
       .on(
         "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "matches",
-        },
+        { event: "*", schema: "public", table: "matches" },
         (payload) => {
           const row = (payload.new ?? payload.old) as RawMatch | null;
           if (!row) return;
@@ -139,28 +125,19 @@ export function useActiveMatch(
           const currentGameId = gameIdRef.current;
           const currentUserId = userIdRef.current;
 
-          // Filtrar: solo nos interesan partidas de este juego con este jugador
           if (row.game_id !== currentGameId) return;
           if (row.player_1 !== currentUserId && row.player_2 !== currentUserId) return;
 
-          console.log("[useActiveMatch] evento en matches:", payload.eventType, row);
-
           if (row.status === "in_progress") {
-            // Nueva partida activa o se unió un segundo jugador — cargar perfiles
             loadMatchWithPlayers(row)
-              .then((data) => {
-                if (isMounted) setMatch(data);
-              })
+              .then((data) => { if (isMounted) setMatch(data); })
               .catch(console.error);
           } else {
-            // La partida terminó o fue cancelada
             if (isMounted) setMatch(null);
           }
         },
       )
-      .subscribe((status) => {
-        console.log("[useActiveMatch] canal:", status);
-      });
+      .subscribe();
 
     return () => {
       isMounted = false;

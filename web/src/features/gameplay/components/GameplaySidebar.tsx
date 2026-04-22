@@ -1,26 +1,75 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameScore } from "../hooks/useGameScore";
-import { useMatchMovements } from "../hooks/useMatchMovements";
+import type { MatchMovement } from "../hooks/useMatchMovements";
 
 export type GameplayTab = "chat" | "history";
+
+// Claves internas que no tienen valor para el jugador
+const SKIP_KEYS = new Set(["game_id"]);
+
+function formatKey(key: string): string {
+  return key
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function formatValue(val: unknown): string {
+  if (val === null || val === undefined) return "-";
+  if (typeof val === "boolean") return val ? "Sí" : "No";
+  return String(val);
+}
+
+function MoveCard({ movement }: { movement: MatchMovement }) {
+  const time = new Date(movement.server_timestamp).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
+  const entries = Object.entries(movement.move_data).filter(
+    ([key]) => !SKIP_KEYS.has(key),
+  );
+
+  return (
+    <li className="bg-slate-800 rounded-lg p-3 space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-400">
+          Turno {typeof movement.move_data.turn === "number" ? movement.move_data.turn : "—"}
+        </span>
+        <span className="text-[10px] text-slate-500">{time}</span>
+      </div>
+
+      <dl className="grid grid-cols-2 gap-x-3 gap-y-1">
+        {entries.map(([key, val]) => {
+          if (key === "turn") return null;
+          return (
+            <div key={key} className="flex flex-col">
+              <dt className="text-[10px] text-slate-500 leading-none">{formatKey(key)}</dt>
+              <dd className="text-xs font-semibold text-white leading-snug">{formatValue(val)}</dd>
+            </div>
+          );
+        })}
+      </dl>
+    </li>
+  );
+}
 
 type Props = {
   userId: string | null;
   gameId: string | null;
-  matchId: string | null;
+  movements: MatchMovement[];
   availableModes?: string[] | null;
 };
 
 export default function GameplaySidebar({
   userId,
   gameId,
-  matchId,
+  movements,
   availableModes,
 }: Props) {
   const { t } = useTranslation();
   const { score: myScore, loading: scoreLoading } = useGameScore(userId, gameId);
-  const { movements, loading: movementsLoading } = useMatchMovements(matchId, userId);
 
   const [tab, setTab] = useState<GameplayTab>("chat");
   const [chatInput, setChatInput] = useState("");
@@ -67,6 +116,11 @@ export default function GameplaySidebar({
           }`}
         >
           {t("gameplay.history")}
+          {movements.length > 0 && (
+            <span className="ml-1.5 text-[10px] bg-indigo-500/20 text-indigo-400 rounded-full px-1.5 py-0.5">
+              {movements.length}
+            </span>
+          )}
         </button>
       </div>
 
@@ -99,34 +153,17 @@ export default function GameplaySidebar({
           </div>
         </div>
       ) : (
-        /* Historial de movimientos en tiempo real */
+        /* Historial */
         <div className="flex-1 overflow-auto p-3">
           {!supportsHistory ? (
             <p className="text-slate-500 text-sm">{t("gameplay.noMovesRequired")}</p>
-          ) : movementsLoading ? (
-            <div className="space-y-2">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-10 rounded bg-slate-800 animate-pulse" />
-              ))}
-            </div>
           ) : movements.length === 0 ? (
             <p className="text-slate-500 text-sm">{t("gameplay.noMovesYet")}</p>
           ) : (
             <ul className="space-y-2">
-              {[...movements].reverse().map((m) => {
-                const moveLabel =
-                  typeof m.move_data?.move === "string"
-                    ? m.move_data.move
-                    : JSON.stringify(m.move_data);
-                const time = new Date(m.server_timestamp).toLocaleTimeString();
-
-                return (
-                  <li key={m.id} className="text-sm bg-slate-800 rounded p-2">
-                    <div className="font-medium text-white">{moveLabel}</div>
-                    <div className="text-xs text-slate-400">{time}</div>
-                  </li>
-                );
-              })}
+              {[...movements].reverse().map((m) => (
+                <MoveCard key={m.id} movement={m} />
+              ))}
             </ul>
           )}
         </div>

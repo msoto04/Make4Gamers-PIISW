@@ -9,6 +9,7 @@ import GameViewport from "../features/gameplay/components/GameViewport";
 import GameplaySidebar from "../features/gameplay/components/GameplaySidebar";
 import PlayersBar from "../features/gameplay/components/PlayersBar";
 import { useActiveMatch } from "../features/gameplay/hooks/useActiveMatch";
+import { useMatchMovements } from "../features/gameplay/hooks/useMatchMovements";
 
 export default function Gameplay() {
   const { id } = useParams<{ id: string }>();
@@ -32,6 +33,9 @@ export default function Gameplay() {
   const [iframeMatchId, setIframeMatchId] = useState<string | null>(null);
 
   const { match, loading: matchLoading } = useActiveMatch(id ?? null, userId);
+  const matchId = match?.id ?? iframeMatchId;
+  const { movements } = useMatchMovements(matchId, userId);
+  const lastMovedPlayerId = movements.at(-1)?.player_id ?? null;
 
 
   useEffect(() => {
@@ -248,6 +252,7 @@ export default function Gameplay() {
             <PlayersBar
               players={match?.players ?? []}
               currentUserId={userId}
+              lastMovedPlayerId={lastMovedPlayerId}
               loading={matchLoading}
             />
           )}
@@ -381,7 +386,7 @@ export default function Gameplay() {
             <GameplaySidebar
               userId={userId}
               gameId={game.id}
-              matchId={match?.id ?? iframeMatchId}
+              movements={movements}
               availableModes={game.available_modes}
             />
           </div>

@@ -10,18 +10,16 @@ export type MatchMovement = {
 };
 
 async function fetchMovements(matchId: string): Promise<MatchMovement[]> {
-  const { data, error, count } = await supabase
+  const { data, error } = await supabase
     .from("match_movements")
-    .select("id, match_id, player_id, move_data, server_timestamp", { count: "exact" })
+    .select("id, match_id, player_id, move_data, server_timestamp")
     .eq("match_id", matchId)
     .order("server_timestamp", { ascending: true });
 
   if (error) {
-    console.error("[useMatchMovements] ❌ Error fetch:", error.message, error.code);
+    console.error("[useMatchMovements] Error fetch:", error.message);
     return [];
   }
-
-  console.log(`[useMatchMovements] fetch matchId=${matchId} → ${count} filas`, data);
   return (data as MatchMovement[]) ?? [];
 }
 
@@ -41,11 +39,8 @@ export function useMatchMovements(matchId: string | null, userId?: string | null
 
     let isMounted = true;
     realtimeOkRef.current = false;
-
-    console.log("[useMatchMovements] iniciando — matchId:", matchId, "userId:", userId);
     setLoading(true);
 
-    // Carga inicial
     fetchMovements(matchId).then((data) => {
       if (isMounted) {
         setMovements(data);
@@ -53,7 +48,6 @@ export function useMatchMovements(matchId: string | null, userId?: string | null
       }
     });
 
-    // Realtime
     const channel = supabase
       .channel(`match-movements-${matchId}`)
       .on(
@@ -63,7 +57,6 @@ export function useMatchMovements(matchId: string | null, userId?: string | null
           const row = payload.new as MatchMovement;
           if (row.match_id !== matchId) return;
 
-          console.log("[useMatchMovements] ✅ evento realtime:", row);
           realtimeOkRef.current = true;
 
           if (pollRef.current) {
@@ -78,21 +71,13 @@ export function useMatchMovements(matchId: string | null, userId?: string | null
           }
         },
       )
-      .subscribe((status, err) => {
-        console.log("[useMatchMovements] estado canal:", status, err ?? "");
-
+      .subscribe((status) => {
         if (status === "SUBSCRIBED") {
-          // Si tras 4s no llegó ningún evento realtime, activamos polling
           setTimeout(() => {
-            if (!realtimeOkRef.current && isMounted) {
-              console.warn("[useMatchMovements] ⚠️ Sin eventos realtime — activando polling cada", POLL_MS / 1000, "s");
-              startPolling();
-            }
+            if (!realtimeOkRef.current && isMounted) startPolling();
           }, 4000);
         }
-
         if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-          console.warn("[useMatchMovements] canal con error — activando polling");
           startPolling();
         }
       });
@@ -101,14 +86,9 @@ export function useMatchMovements(matchId: string | null, userId?: string | null
       if (pollRef.current) return;
       pollRef.current = setInterval(async () => {
         if (!isMounted) return;
-        console.log("[useMatchMovements] polling tick — matchId:", matchId);
         const data = await fetchMovements(matchId);
         if (isMounted) {
-          setMovements((prev) => {
-            if (data.length === prev.length) return prev;
-            console.log("[useMatchMovements] polling actualizando:", data.length, "movimientos");
-            return data;
-          });
+          setMovements((prev) => (data.length === prev.length ? prev : data));
         }
       }, POLL_MS);
     };

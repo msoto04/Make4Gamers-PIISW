@@ -26,17 +26,11 @@ export function useGameScore(userId: string | null, gameId: string | null) {
 
     loadScore();
 
-    // Sin filtro server-side: Supabase requiere REPLICA IDENTITY FULL para
-    // que los filtros en postgres_changes funcionen. Filtramos en el callback.
     const channel = supabase
       .channel(`game-score-${userId}-${gameId}`)
       .on(
         "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "scores",
-        },
+        { event: "*", schema: "public", table: "scores" },
         (payload) => {
           const row = (payload.new ?? payload.old) as {
             user_id?: string;
@@ -44,23 +38,17 @@ export function useGameScore(userId: string | null, gameId: string | null) {
             score?: number;
           } | null;
 
-          console.log("[useGameScore] evento recibido:", payload.eventType, row);
-
-          // Filtrar en el cliente
           if (row?.user_id !== userId || row?.game_id !== gameId) return;
 
           const newScore = (payload.new as { score?: number } | null)?.score;
           if (typeof newScore === "number") {
-            console.log("[useGameScore] actualizando score a:", newScore);
             if (isMounted) setScore(newScore);
           } else {
             void loadScore(false);
           }
         },
       )
-      .subscribe((status, err) => {
-        console.log("[useGameScore] estado canal:", status, err ?? "");
-      });
+      .subscribe();
 
     return () => {
       isMounted = false;
