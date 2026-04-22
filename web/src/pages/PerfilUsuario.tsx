@@ -5,11 +5,22 @@ import { supabase } from '../supabase';
 import { removeFriend } from '../features/chat/services/friend.service';
 import { useParams, Link, useNavigate } from 'react-router-dom'; 
 
-import { User as UserIcon, Activity, ArrowLeft, Trophy, Calendar, Gamepad2, Check, AlertCircle, AlertTriangle, Medal, Flag } from 'lucide-react';
+import { User as UserIcon, Activity, ArrowLeft, Trophy, Calendar, Gamepad2, Check, AlertCircle, AlertTriangle, Medal, Flag, Swords, Flame, Zap,Star} from 'lucide-react';
 import { getAccountHighScores } from '../features/account/services/account.service';
-//import { reportUser } from '../../../packages/api/src/services/reports.service';
+import { reportUser } from '../../../packages/api/src/services/reports.service';
 
+import { getUserAchievements, 
+  checkMatchCountAchievements, checkScoreAchievements, checkSocialAchievements } from '../features/achievements/services/achievements.service';
 
+const IconMap: Record<string, any> = {
+  Gamepad2,
+  Swords,
+  Flame,
+  Zap,
+  Trophy,
+  Medal,
+  Star
+}; 
 export default function PerfilUsuario() {
   const { username } = useParams(); 
   const [profile, setProfile] = useState<any>(null);
@@ -21,6 +32,7 @@ export default function PerfilUsuario() {
   const [deleteSuccessMsg, setDeleteSuccessMsg] = useState('');
   const [deleteErrorMsg, setDeleteErrorMsg] = useState('');
   const navigate = useNavigate();
+  const [userAchievements, setUserAchievements] = useState<any[]>([]);
 
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState('');
@@ -28,10 +40,11 @@ export default function PerfilUsuario() {
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
   const [reportFeedback, setReportFeedback] = useState<{type: 'success' | 'error', text: string} | null>(null);
 
-  useEffect(() => {
+
+useEffect(() => {
     const fetchProfileAndActivity = async () => {
       try {
-        //Buscar perfil del usuario
+       
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
@@ -41,13 +54,16 @@ export default function PerfilUsuario() {
         if (profileError) throw profileError;
         setProfile(profileData);
 
+       
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
             setCurrentUserId(user.id);
         }
 
-        //Buscar su actividad reciente (ultimas 5)
+       
         if (profileData) {
+          
+         
           const { data: activityData, error: activityError } = await supabase
             .from('scores')
             .select(`
@@ -63,11 +79,18 @@ export default function PerfilUsuario() {
           if (!activityError && activityData) {
             setRecentActivity(activityData);
           }
-        }
 
-        
+         
+          await checkMatchCountAchievements(profileData.id);
+          await checkScoreAchievements(profileData.id);
+          await checkSocialAchievements(profileData.id);
+          const achievementsData = await getUserAchievements(profileData.id);
+          setUserAchievements(achievementsData);
+
+       
           const scores = await getAccountHighScores(profileData.id);
           setHighScores(scores);
+        }
 
       } catch (error) {
         console.error("Error cargando el perfil público:", error);
@@ -80,8 +103,7 @@ export default function PerfilUsuario() {
       fetchProfileAndActivity();
     }
   }, [username]);
-
-  //Funcion auxiliar para formatear la fecha
+ 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('es-ES', { 
@@ -156,7 +178,7 @@ export default function PerfilUsuario() {
 
     if (result.success) {
       setReportFeedback({ type: 'success', text: 'Reporte enviado. Gracias por ayudar a mantener la comunidad segura.' });
-      // Cerramos el modal después de 3 segundos
+   
       setTimeout(() => {
         setShowReportModal(false);
         setReportFeedback(null);
@@ -288,6 +310,49 @@ export default function PerfilUsuario() {
           </div>
         )}
 
+              {/* SECCIÓN DE EMBLEMAS / LOGROS */}
+<div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mt-6 shadow-xl">
+  <div className="flex items-center gap-3 mb-6 border-b border-slate-800 pb-4">
+    <Medal className="text-amber-400" size={24} />
+    <h3 className="text-xl font-bold text-white">Emblemas Obtenidos</h3>
+    <span className="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-full ml-auto">
+      {userAchievements.length}
+    </span>
+  </div>
+
+  {userAchievements.length === 0 ? (
+    <p className="text-slate-500 text-sm text-center py-6">
+      Aún no ha conseguido ningún emblema. ¡A jugar!
+    </p>
+  ) : (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {userAchievements.map((item) => {
+       
+        const IconComponent = IconMap[item.achievement.badge_icon] || Star;
+        
+        return (
+          <div 
+            key={item.id} 
+            className="flex flex-col items-center justify-center bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-indigo-500/50 rounded-xl p-4 transition-all group"
+            title={item.achievement.description}
+          >
+            <div className="w-14 h-14 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 text-indigo-400 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+              <IconComponent size={28} />
+            </div>
+            <h4 className="text-white font-bold text-sm text-center mb-1">
+              {item.achievement.title}
+            </h4>
+            <p className="text-slate-400 text-[10px] text-center line-clamp-2">
+              {item.achievement.description}
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  )}
+</div>
+      
+
         {/* Actividad reciente */}
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl">
           <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
@@ -324,7 +389,8 @@ export default function PerfilUsuario() {
         </div>
 
       </div>
-      
+
+
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-sm shadow-2xl">

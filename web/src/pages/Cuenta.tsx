@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Trophy } from 'lucide-react';
+import { checkMatchCountAchievements,checkScoreAchievements, getUserAchievements, checkSocialAchievements } from '../features/achievements/services/achievements.service';
 import {
   User as UserIcon,
   Activity,
@@ -22,6 +24,7 @@ import {
   Medal
 } from 'lucide-react';
 import { supabase } from '../supabase';
+
 import { getAuthenticatedUser, subscribeToAuthState, updatePassword, verifyCurrentPassword } from '../features/auth/services/auth.service';
 import {
   reportGame,
@@ -110,6 +113,7 @@ export default function Cuenta() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [showAvatarPolicyModal, setShowAvatarPolicyModal] = useState(false);
   const [activeSection, setActiveSection] = useState<AccountSection>('dashboard');
+  const [userAchievements, setUserAchievements] = useState<any[]>([]);
 
   // Change password modal
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
@@ -303,6 +307,13 @@ export default function Cuenta() {
     }
 
     setProfile(mergedProfile);
+    await checkMatchCountAchievements(user.id);
+    await checkScoreAchievements(user.id);
+    await checkSocialAchievements(user.id);
+    const achievementsData = await getUserAchievements(user.id);
+    if (achievementsData) {
+      setUserAchievements(achievementsData);
+    }
     setAllowRequests(mergedProfile.allow_requests !== false);
     setEditNameValue(mergedProfile.username || '');
     Promise.all([loadRecentGames(user.id), loadFriends(user.id), loadHighScores(user.id)]).catch(err => {
@@ -900,6 +911,9 @@ export default function Cuenta() {
                   </div>
                 </div>
 
+
+ 
+
               
                 {highScores.length > 0 && (
                   <div className="mb-8">
@@ -924,6 +938,41 @@ export default function Cuenta() {
                     </div>
                   </div>
                 )}
+
+
+                               {/* Sección de Emblemas */}
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg">
+                      <Trophy size={24} />
+                    </div>
+                    <h3 className="text-xl font-bold text-white">Mis Emblemas</h3>
+                  </div>
+
+                  {userAchievements && userAchievements.length > 0 ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {userAchievements.map((ua: any) => {
+                        
+                        const Icon = Activity;
+                        return (
+                          <div key={ua.id} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 flex flex-col items-center justify-center text-center hover:bg-slate-800 transition-colors">
+                            <div className="w-12 h-12 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-3 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                             
+                              <Trophy size={24} />
+                            </div>
+                            <h4 className="text-white font-bold text-sm mb-1">{ua.achievement?.title}</h4>
+                            <p className="text-slate-400 text-xs">{ua.achievement?.description}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 bg-slate-800/30 rounded-xl border border-slate-700/30 border-dashed">
+                      <Trophy size={48} className="mx-auto text-slate-600 mb-3" />
+                      <p className="text-slate-400">Aún no has desbloqueado ningún emblema.</p>
+                    </div>
+                  )}
+                </div>
 
                 <div>
                   <h3 className="text-lg text-white font-semibold mb-3 flex items-center gap-2">
