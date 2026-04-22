@@ -35,10 +35,10 @@ const Header = () => {
                     .eq('id', user.id)
                     .single();
                 
-                if (profile?.role === 'developer') {
+                if (profile?.role === 'admin') {
                     setIsAdmin(true);
                 }
-                // ------------------------------------
+             
             }
         };
         if (isAuthenticated) {

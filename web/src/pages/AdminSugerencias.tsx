@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../supabase'; // VOLVEMOS AL ORIGINAL
+import { supabase } from '../supabase'; 
 import { useNavigate } from 'react-router-dom';
 import { 
     CheckCircle, Clock, XCircle, Filter, MessageSquare,
@@ -35,7 +35,7 @@ export default function AdminSugerencias() {
               .eq('id', user.id)
               .single();
 
-          if (profile?.role !== 'developer') {
+          if (profile?.role !== 'admin') {
               setIsAdmin(false);
               setLoading(false);
               return;
