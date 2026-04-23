@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { checkMatchCountAchievements,checkScoreAchievements, getUserAchievements, checkSocialAchievements } from '../features/achievements/services/achievements.service';
+import { checkMatchCountAchievements, checkScoreAchievements, getUserAchievements, checkSocialAchievements } from '../features/achievements/services/achievements.service';
 import {
   User as UserIcon,
   Check,
@@ -348,7 +348,7 @@ export default function Cuenta() {
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Timeout cargando juegos')), 5000)
       );
-      
+
       const data = await Promise.race([
         getAccountRecentGames(userId, 5),
         timeoutPromise
@@ -382,7 +382,7 @@ export default function Cuenta() {
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Timeout cargando amigos')), 5000)
       );
-      
+
       const data = await Promise.race([
         getAccountFriends(userId),
         timeoutPromise
@@ -511,7 +511,7 @@ export default function Cuenta() {
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
       showToast(t('account.alerts.passwordChanged'));
     } catch (error) {
-      console.error('Error al cambiar contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a:', error);
+      console.error('Error al cambiar contraseña:', error);
       const message =
         error instanceof Error && /invalid login credentials/i.test(error.message)
           ? t('account.security.passwords.invalidCurrentPassword')
@@ -549,12 +549,12 @@ export default function Cuenta() {
       setProfile((prev) =>
         prev
           ? {
-              ...prev,
-              username: editProfileForm.username || null,
-              first_name: editProfileForm.firstName,
-              last_name: editProfileForm.lastName,
-              birth_date: editProfileForm.birthDate || null,
-            }
+            ...prev,
+            username: editProfileForm.username || null,
+            first_name: editProfileForm.firstName,
+            last_name: editProfileForm.lastName,
+            birth_date: editProfileForm.birthDate || null,
+          }
           : prev
       );
 
@@ -593,11 +593,10 @@ export default function Cuenta() {
       {toast && (
         <div className="fixed top-4 right-4 z-60 max-w-sm w-[calc(100%-2rem)] sm:w-auto">
           <div
-            className={`rounded-xl border px-4 py-3 shadow-2xl backdrop-blur-sm flex items-start gap-2 ${
-              toast.type === 'success'
+            className={`rounded-xl border px-4 py-3 shadow-2xl backdrop-blur-sm flex items-start gap-2 ${toast.type === 'success'
                 ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-100'
                 : 'bg-rose-500/15 border-rose-500/40 text-rose-100'
-            }`}
+              }`}
           >
             {toast.type === 'success' ? <Check size={16} className="mt-0.5" /> : <AlertTriangle size={16} className="mt-0.5" />}
             <p className="text-sm font-medium leading-5">{toast.message}</p>
@@ -610,7 +609,7 @@ export default function Cuenta() {
           <AccountSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
 
           <main className="space-y-6 lg:h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
-                        {activeSection === 'dashboard' && (
+            {activeSection === 'dashboard' && (
               <AccountDashboardSection
                 profile={profile}
                 highScores={highScores}
@@ -619,7 +618,7 @@ export default function Cuenta() {
                 formatDate={formatDate}
               />
             )}
-                        {activeSection === 'personal' && (
+            {activeSection === 'personal' && (
               <AccountPersonalSection
                 profile={profile}
                 uploadingAvatar={uploadingAvatar}
@@ -639,14 +638,14 @@ export default function Cuenta() {
                 onStatusChange={handleStatusChange}
               />
             )}
-                        {activeSection === 'friends' && (
+            {activeSection === 'friends' && (
               <AccountFriendsSection
                 friendsSearch={friendsSearch}
                 filteredFriends={filteredFriends}
                 onFriendsSearchChange={setFriendsSearch}
               />
             )}
-                        {activeSection === 'payments' && (
+            {activeSection === 'payments' && (
               <AccountPaymentsSection subscriptionTier={profile.subscription_tier} email={profile.email} />
             )}
             {activeSection === 'support' && (
