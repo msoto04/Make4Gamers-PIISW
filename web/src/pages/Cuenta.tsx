@@ -24,6 +24,7 @@ import { AccountFriendsSection } from '../features/account/components/sections/A
 import { AccountPaymentsSection } from '../features/account/components/sections/AccountPaymentsSection';
 import { AccountSecuritySection } from '../features/account/components/sections/AccountSecuritySection';
 import { AccountMatchesSection } from '../features/account/components/sections/AccountMatchesSection';
+import { AccountStatsSection } from '../features/account/components/sections/AccountStatsSection';
 import { AccountAchievementsSection } from '../features/account/components/sections/AccountAchievementsSection';
 import { AvatarPolicyModal } from '../features/account/components/modals/AvatarPolicyModal';
 import { ChangePasswordModal } from '../features/account/components/modals/ChangePasswordModal';
@@ -689,6 +690,12 @@ export default function Cuenta() {
                       recentGames={recentGames}
                       formatDate={formatDate}
                     />
+                  </div>
+                )}
+
+                {activeSection === 'stats' && profile?.id && (
+                  <div className="flex-1 overflow-y-auto">
+                    <AccountStatsSection userId={profile.id} />
                   </div>
                 )}
 

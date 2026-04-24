@@ -33,7 +33,7 @@ const Header = () => {
                     .from('profiles')
                     .select('role')
                     .eq('id', user.id)
-                    .single();
+                    .maybeSingle();
                 
                 if (profile?.role === 'admin') {
                     setIsAdmin(true);
