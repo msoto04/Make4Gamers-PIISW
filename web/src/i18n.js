@@ -230,7 +230,9 @@ i18n
                             friends: "Amigos",
                             payments: "Pagos",
                             security: "Seguridad",
-                            support: "Soporte"
+                            support: "Soporte",
+                            matches: "Partidas",
+                            achievements: "Emblemas"
                         },
                         dashboard: {
                             defaultUser: "Usuario",
@@ -242,7 +244,13 @@ i18n
                             vs: "Vs.",
                             defaultOpponent: "OpponentName",
                             status: "Estado",
-                            finished: "Finalizado"
+                            finished: "Finalizado",
+                            bestRecords: "Mis Mejores Marcas",
+                            achievements: "Mis Emblemas",
+                            noAchievements: "Aún no has desbloqueado ningún emblema.",
+                            recentGames: "Últimas partidas",
+                            noRecentGames: "No hay partidas recientes registradas.",
+                            score: "Puntos"
                         },
                         personal: {
                             noUsername: "Usuario Sin Nombre",
@@ -679,7 +687,9 @@ i18n
                             friends: "Friends",
                             payments: "Payments",
                             security: "Security",
-                            support: "Support"
+                            support: "Support",
+                            matches: "Matches",
+                            achievements: "Emblems"
                         },
                         dashboard: {
                             defaultUser: "User",
@@ -691,7 +701,13 @@ i18n
                             vs: "Vs.",
                             defaultOpponent: "OpponentName",
                             status: "Status",
-                            finished: "Finished"
+                            finished: "Finished",
+                            bestRecords: "My Best Records",
+                            achievements: "My Emblems",
+                            noAchievements: "You haven't unlocked any emblem yet.",
+                            recentGames: "Recent matches",
+                            noRecentGames: "No recent matches recorded.",
+                            score: "Score"
                         },
                         personal: {
                             noUsername: "Unnamed user",
@@ -1128,7 +1144,9 @@ i18n
                             friends: "好友",
                             payments: "支付",
                             security: "安全",
-                            support: "支持"
+                            support: "支持",
+                            matches: "对局",
+                            achievements: "徽章"
                         },
                         dashboard: {
                             defaultUser: "用户",
@@ -1140,7 +1158,13 @@ i18n
                             vs: "对战",
                             defaultOpponent: "未知对手",
                             status: "状态",
-                            finished: "已结束"
+                            finished: "已结束",
+                            bestRecords: "我的最佳纪录",
+                            achievements: "我的徽章",
+                            noAchievements: "你还没有解锁任何徽章。",
+                            recentGames: "最近对局",
+                            noRecentGames: "没有记录的对局。",
+                            score: "分数"
                         },
                         personal: {
                             noUsername: "未命名用户",
