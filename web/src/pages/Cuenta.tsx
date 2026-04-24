@@ -614,10 +614,6 @@ export default function Cuenta() {
             {activeSection === 'dashboard' && (
               <AccountDashboardSection
                 profile={profile}
-                highScores={highScores}
-                userAchievements={userAchievements}
-                recentGames={recentGames}
-                formatDate={formatDate}
               />
             )}
             {activeSection === 'personal' && (
