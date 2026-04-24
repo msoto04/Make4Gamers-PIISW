@@ -610,7 +610,7 @@ export default function Cuenta() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[250px_minmax(0,1fr)] lg:items-stretch">
           <AccountSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
 
-          <main className="space-y-6 lg:h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
+          <main className="space-y-6">
             {activeSection === 'dashboard' && (
               <AccountDashboardSection
                 profile={profile}
