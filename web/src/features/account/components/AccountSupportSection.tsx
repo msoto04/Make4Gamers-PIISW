@@ -57,7 +57,7 @@ export function AccountSupportSection({
     'rounded-2xl border border-slate-800 bg-[linear-gradient(180deg,rgba(30,41,59,0.40),rgba(15,23,42,0.55))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]';
 
   return (
-    <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5">
+    <section className="h-full bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h3 className="text-xl font-semibold text-white flex items-center gap-2">
@@ -115,7 +115,7 @@ export function AccountSupportSection({
         <div className="space-y-3 max-h-[300px] overflow-y-auto hide-scrollbar">
           {activeSupportTab === 'tickets' &&
             (supportTickets.length > 0 ? (
-              supportTickets.slice(0, 3).map((ticket) => (
+              supportTickets.map((ticket) => (
                 <article key={ticket.id} className={supportCardClass}>
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -152,7 +152,7 @@ export function AccountSupportSection({
 
           {activeSupportTab === 'users' &&
             (sentUserReports.length > 0 ? (
-              sentUserReports.slice(0, 3).map((report) => (
+              sentUserReports.map((report) => (
                 <article key={report.id} className={supportCardClass}>
                   <div className="flex items-start gap-4">
                     {report.reportedUser?.avatar_url ? (
@@ -204,7 +204,7 @@ export function AccountSupportSection({
 
           {activeSupportTab === 'games' &&
             (sentGameReports.length > 0 ? (
-              sentGameReports.slice(0, 3).map((report) => (
+              sentGameReports.map((report) => (
                 <article key={report.id} className={supportCardClass}>
                   <div className="flex items-start gap-4">
                     {report.game?.thumbnail_url ? (

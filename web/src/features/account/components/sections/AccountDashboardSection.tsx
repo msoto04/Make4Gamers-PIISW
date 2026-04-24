@@ -18,7 +18,7 @@ export function AccountDashboardSection({
   const { t } = useTranslation();
 
   return (
-    <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5">
+    <section className="h-full bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5">
       <div className="rounded-2xl border border-slate-800 bg-slate-800/30 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <div className="w-16 h-16 rounded-full bg-slate-800 border border-indigo-500/40 overflow-hidden flex items-center justify-center">
           {profile.avatar_url ? (
