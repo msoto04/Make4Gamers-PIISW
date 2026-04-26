@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../supabase';
 import { useNavigate } from 'react-router-dom';
 import { 
-    CheckCircle, Clock, Filter, MessageSquare,
+    CheckCircle, Clock, MessageSquare,
     User as UserIcon, Calendar, ShieldAlert, LifeBuoy, AlertTriangle
 } from 'lucide-react';
 
@@ -36,7 +36,7 @@ export default function AdminTickets() {
               .eq('id', user.id)
               .single();
 
-          if (profile?.role !== 'developer') {
+          if (profile?.role !== 'admin') {
               setIsAdmin(false);
               setLoading(false);
               return;

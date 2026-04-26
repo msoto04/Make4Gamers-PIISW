@@ -12,9 +12,17 @@ i18n
                     nav: {
                         games: "Juegos",
                         ranking: "Ranking",
+                        stats: "Estadísticas",
                         chat: "Chat",
                         account: "Cuenta",
                         logout: "Cerrar sesión"
+                    },
+                    admin: {
+                        management: "Gestión",
+                        formulas: "Fórmulas",
+                        tickets: "Tickets",
+                        suggestions: "Sugerencias",
+                        wordFilter: "Filtro de Palabras"
                     },
                     footer: {
                         description: "La plataforma definitiva para descubrir, jugar y compartir tus experiencias de juego favoritas.",
@@ -229,7 +237,11 @@ i18n
                             personal: "Personal",
                             friends: "Amigos",
                             payments: "Pagos",
-                            security: "Seguridad"
+                            security: "Seguridad",
+                            support: "Soporte",
+                            matches: "Partidas",
+                            stats: "Estadisticas",
+                            achievements: "Logros"
                         },
                         dashboard: {
                             defaultUser: "Usuario",
@@ -241,7 +253,29 @@ i18n
                             vs: "Vs.",
                             defaultOpponent: "OpponentName",
                             status: "Estado",
-                            finished: "Finalizado"
+                            finished: "Finalizado",
+                            bestRecords: "Mis Mejores Marcas",
+                            achievements: "Mis Logros",
+                            noAchievements: "Aun no has desbloqueado ningun logro.",
+                            achievementFallbackTitle: "Logro desbloqueado",
+                            achievementFallbackDescription: "Este logro no tiene descripcion disponible.",
+                            recentGames: "Últimas partidas",
+                            noRecentGames: "No hay partidas recientes registradas.",
+                            score: "Puntos"
+                        },
+                        stats: {
+                            title: "Estadisticas",
+                            subtitle: "Analisis detallado de tu rendimiento en juegos.",
+                            totalMatches: "Partidas totales",
+                            highestScore: "Puntuacion maxima",
+                            favoriteGame: "Juego favorito",
+                            favoriteGamePlays: "{{count}} partidas jugadas",
+                            gamesChart: "Partidas por juego",
+                            recentActivity: "Actividad reciente",
+                            matches: "Partidas",
+                            emptyTitle: "Aun no hay estadisticas",
+                            emptyDescription: "Juega algunas partidas para empezar a ver tus graficas.",
+                            emptyActivity: "Aun no hay actividad reciente."
                         },
                         personal: {
                             noUsername: "Usuario Sin Nombre",
@@ -271,6 +305,26 @@ i18n
                             benefitLeagues: "Permite crear ligas",
                             renewalNote: "La suscripción se renueva automáticamente al final de cada periodo."
                         },
+                        support: {
+                            title: "Soporte",
+                            subtitle: "Consulta tus tickets y reportes enviados al equipo.",
+                            openTicket: "Abrir ticket",
+                            loading: "Cargando historial de soporte...",
+                            reason: "Motivo",
+                            unknownUser: "Usuario desconocido",
+                            unknownGame: "Juego desconocido",
+                            emptyTickets: "Todavía no has abierto ningún ticket.",
+                            emptyUserReports: "Todavía no has reportado ningún jugador.",
+                            emptyGameReports: "Todavía no has reportado ningún juego.",
+                            tabs: {
+                                tickets: "Tickets",
+                                users: "Jugadores",
+                                games: "Juegos"
+                            },
+                            status: {
+                                pending: "Pendiente"
+                            }
+                        },
                         security: {
                             title: "Seguridad",
                             personalSection: "Cuenta personal",
@@ -283,11 +337,12 @@ i18n
                             verifyEmail: "Verificar correo electrónico",
                             socialSupportSection: "Social y soporte",
                             reportPlayer: "Reportar jugador",
-                            reportGame: "Reportar game",
-                            reportIncident: "Reportar incident",
+                            reportGame: "Reportar juego",
+                            reportIncident: "Reportar incidente",
+                            openTicket: "Abrir ticket",
                             friendPrivacy: "Privacidad de amistad",
                             requestsEnabled: "Recibiendo solicitudes",
-                            requestsBlocked: "Solicitudes bloqueadas", 
+                            requestsBlocked: "Solicitudes bloqueadas",
                             passwords: {
                                 currentPassword: "Contraseña actual",
                                 enterCurrentPassword: "Introduce tu contraseña actual",
@@ -349,6 +404,24 @@ i18n
                                     inappropriate: "Contenido inapropiado",
                                     brokenLink: "No carga o enlace roto",
                                     copyright: "Problema de derechos",
+                                    other: "Otro"
+                                }
+                            },
+                            ticketModal: {
+                                title: "Abrir ticket de soporte",
+                                subject: "Asunto",
+                                subjectPlaceholder: "Ej: Problema al iniciar una partida",
+                                category: "Categoría",
+                                message: "Descripción",
+                                messagePlaceholder: "Cuéntanos qué ocurre con el mayor detalle posible...",
+                                requiredFields: "El asunto y la descripción son obligatorios.",
+                                createError: "No se pudo abrir el ticket.",
+                                created: "Ticket {{ticketNumber}} abierto correctamente.",
+                                submit: "Enviar ticket",
+                                categories: {
+                                    technical: "Problema técnico",
+                                    payments: "Pagos y facturación",
+                                    abuse: "Denunciar un abuso",
                                     other: "Otro"
                                 }
                             }
@@ -421,9 +494,17 @@ i18n
                     nav: {
                         games: "Games",
                         ranking: "Ranking",
+                        stats: "Stats",
                         chat: "Chat",
                         account: "Account",
                         logout: "Sign Out"
+                    },
+                    admin: {
+                        management: "Management",
+                        formulas: "Formulas",
+                        tickets: "Tickets",
+                        suggestions: "Suggestions",
+                        wordFilter: "Word Filter"
                     },
                     footer: {
                         description: "The ultimate platform to discover, play and share your favorite gaming experiences.",
@@ -638,7 +719,11 @@ i18n
                             personal: "Personal",
                             friends: "Friends",
                             payments: "Payments",
-                            security: "Security"
+                            security: "Security",
+                            support: "Support",
+                            matches: "Matches",
+                            stats: "Stats",
+                            achievements: "Achievements"
                         },
                         dashboard: {
                             defaultUser: "User",
@@ -650,7 +735,29 @@ i18n
                             vs: "Vs.",
                             defaultOpponent: "OpponentName",
                             status: "Status",
-                            finished: "Finished"
+                            finished: "Finished",
+                            bestRecords: "My Best Records",
+                            achievements: "My Achievements",
+                            noAchievements: "You have not unlocked any achievement yet.",
+                            achievementFallbackTitle: "Achievement unlocked",
+                            achievementFallbackDescription: "This achievement has no description available.",
+                            recentGames: "Recent matches",
+                            noRecentGames: "No recent matches recorded.",
+                            score: "Score"
+                        },
+                        stats: {
+                            title: "Stats",
+                            subtitle: "Detailed analysis of your game performance.",
+                            totalMatches: "Total matches",
+                            highestScore: "Highest score",
+                            favoriteGame: "Favorite game",
+                            favoriteGamePlays: "{{count}} matches played",
+                            gamesChart: "Matches by game",
+                            recentActivity: "Recent activity",
+                            matches: "Matches",
+                            emptyTitle: "No stats yet",
+                            emptyDescription: "Play a few matches to start seeing your charts.",
+                            emptyActivity: "No recent activity yet."
                         },
                         personal: {
                             noUsername: "Unnamed user",
@@ -680,6 +787,26 @@ i18n
                             benefitLeagues: "Create leagues",
                             renewalNote: "Subscription renews automatically at the end of each billing period."
                         },
+                        support: {
+                            title: "Support",
+                            subtitle: "Review your tickets and reports sent to the team.",
+                            openTicket: "Open ticket",
+                            loading: "Loading support history...",
+                            reason: "Reason",
+                            unknownUser: "Unknown user",
+                            unknownGame: "Unknown game",
+                            emptyTickets: "You have not opened any tickets yet.",
+                            emptyUserReports: "You have not reported any players yet.",
+                            emptyGameReports: "You have not reported any games yet.",
+                            tabs: {
+                                tickets: "Tickets",
+                                users: "Players",
+                                games: "Games"
+                            },
+                            status: {
+                                pending: "Pending"
+                            }
+                        },
                         security: {
                             title: "Security",
                             personalSection: "Personal account",
@@ -694,6 +821,7 @@ i18n
                             reportPlayer: "Report player",
                             reportGame: "Report game",
                             reportIncident: "Report incident",
+                            openTicket: "Open ticket",
                             friendPrivacy: "Friend request privacy",
                             requestsEnabled: "Receiving requests",
                             requestsBlocked: "Requests blocked",
@@ -758,6 +886,24 @@ i18n
                                     inappropriate: "Inappropriate content",
                                     brokenLink: "Won't load or broken link",
                                     copyright: "Copyright issue",
+                                    other: "Other"
+                                }
+                            },
+                            ticketModal: {
+                                title: "Open support ticket",
+                                subject: "Subject",
+                                subjectPlaceholder: "Example: Problem starting a match",
+                                category: "Category",
+                                message: "Description",
+                                messagePlaceholder: "Tell us what is happening with as much detail as possible...",
+                                requiredFields: "Subject and description are required.",
+                                createError: "The ticket could not be opened.",
+                                created: "Ticket {{ticketNumber}} opened successfully.",
+                                submit: "Send ticket",
+                                categories: {
+                                    technical: "Technical issue",
+                                    payments: "Payments and billing",
+                                    abuse: "Report abuse",
                                     other: "Other"
                                 }
                             }
@@ -830,9 +976,17 @@ i18n
                     nav: {
                         games: "游戏",
                         ranking: "排行榜",
+                        stats: "统计数据",
                         chat: "聊天",
                         account: "账户",
                         logout: "退出登录"
+                    },
+                    admin: {
+                        management: "管理",
+                        formulas: "公式",
+                        tickets: "工单",
+                        suggestions: "建议",
+                        wordFilter: "词语过滤"
                     },
                     footer: {
                         description: "发现、玩耍和分享您最喜爱的游戏体验的终极平台。",
@@ -1047,7 +1201,11 @@ i18n
                             personal: "个人信息",
                             friends: "好友",
                             payments: "支付",
-                            security: "安全"
+                            security: "安全",
+                            support: "支持",
+                            matches: "对局",
+                            stats: "统计",
+                            achievements: "成就"
                         },
                         dashboard: {
                             defaultUser: "用户",
@@ -1059,7 +1217,29 @@ i18n
                             vs: "对战",
                             defaultOpponent: "未知对手",
                             status: "状态",
-                            finished: "已结束"
+                            finished: "已结束",
+                            bestRecords: "我的最佳纪录",
+                            achievements: "我的成就",
+                            noAchievements: "你还没有解锁任何成就。",
+                            achievementFallbackTitle: "已解锁成就",
+                            achievementFallbackDescription: "该成就暂无详细说明。",
+                            recentGames: "最近对局",
+                            noRecentGames: "没有记录的对局。",
+                            score: "分数"
+                        },
+                        stats: {
+                            title: "统计",
+                            subtitle: "你的游戏表现详细分析。",
+                            totalMatches: "总对局",
+                            highestScore: "最高分",
+                            favoriteGame: "最常玩游戏",
+                            favoriteGamePlays: "已玩 {{count}} 场",
+                            gamesChart: "各游戏对局数",
+                            recentActivity: "最近活动",
+                            matches: "对局",
+                            emptyTitle: "暂无统计数据",
+                            emptyDescription: "先玩几场游戏，就能看到你的统计图表。",
+                            emptyActivity: "暂无最近活动。"
                         },
                         personal: {
                             noUsername: "未命名用户",
@@ -1088,6 +1268,26 @@ i18n
                             benefitEarlyAccess: "可提前体验游戏",
                             benefitLeagues: "可创建联赛",
                             renewalNote: "订阅将在每个计费周期结束时自动续费。"
+                        },
+                        support: {
+                            title: "支持",
+                            subtitle: "查看你发送给团队的工单和举报。",
+                            openTicket: "打开工单",
+                            loading: "正在加载支持历史...",
+                            reason: "原因",
+                            unknownUser: "未知用户",
+                            unknownGame: "未知游戏",
+                            emptyTickets: "你还没有打开任何工单。",
+                            emptyUserReports: "你还没有举报任何玩家。",
+                            emptyGameReports: "你还没有举报任何游戏。",
+                            tabs: {
+                                tickets: "工单",
+                                users: "玩家",
+                                games: "游戏"
+                            },
+                            status: {
+                                pending: "待处理"
+                            }
                         },
                         security: {
                             title: "安全",
