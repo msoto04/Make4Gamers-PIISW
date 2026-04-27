@@ -54,28 +54,9 @@ export default function Juegos() {
 
   return (
     <div className="min-h-screen bg-linear-to-b from-indigo-950/20 to-slate-950">
-      {/* Hero - Juegos populares */}
-      <section className="pt-8 pb-6">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-white mb-4">{t("game.popular")}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {popularGames.map((game) => (
-              <Link key={game.id} to={`/game/${game.id}`} className="block">
-                <GameCard
-                  title={game.title ?? "Unknown game"}
-                  image={game.thumbnail_url ?? "https://via.placeholder.com/400x300?text=No+Image"}
-                  genre={game.genre ?? t("gameplay.noGenre")}
-                  rating={typeof game.rating === "number" ? game.rating : 0}
-                  players={game.players ?? 0}
-                />
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* All Games */}
-      <section className="container mx-auto px-4 pb-12">
+      <section className="container mx-auto pt-12 px-4 pb-12">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white">{t("game.allGames")}</h2>
           <span className="text-slate-400">{filteredGames.length} {t("game.gamesCount")}</span>
