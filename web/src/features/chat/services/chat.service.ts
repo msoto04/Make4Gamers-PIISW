@@ -73,29 +73,32 @@ export const getFriendsList = async (currentUserId: string): Promise<ChatProfile
 
 
 export const getOrCreateChatRoom = async (myId: string, friendId: string): Promise<string | null> => {
-
+  // 1. Buscamos SOLO las salas normales donde yo participo
   const { data: myRooms, error: myRoomsError } = await supabase
     .from('chat_participants')
-    .select('room_id')
-    .eq('user_id', myId);
+    .select('room_id, chat_rooms!inner(is_group)')
+    .eq('user_id', myId)
+    .eq('chat_rooms.is_group', false);
 
   if (myRoomsError || !myRooms) return null;
 
   const myRoomIds = myRooms.map(r => r.room_id);
 
   if (myRoomIds.length > 0) {
-  
-    const { data: sharedRoom } = await supabase
+    // 2. Buscamos si mi amigo está en alguna de mis salas
+    const { data: sharedRooms, error } = await supabase
       .from('chat_participants')
       .select('room_id')
       .in('room_id', myRoomIds)
       .eq('user_id', friendId)
-      .single();
+      .limit(1); // ✨ LA CLAVE: Si hay salas duplicadas por bugs antiguos, pillamos solo la primera y evitamos que explote.
 
-    if (sharedRoom) return sharedRoom.room_id; 
+    if (sharedRooms && sharedRooms.length > 0) {
+      return sharedRooms[0].room_id; 
+    }
   }
 
- 
+  // 3. Si no hay sala, creamos una nueva
   const { data: newRoom, error: roomError } = await supabase
     .from('chat_rooms')
     .insert([{ is_group: false }])
@@ -104,7 +107,7 @@ export const getOrCreateChatRoom = async (myId: string, friendId: string): Promi
 
   if (roomError || !newRoom) return null;
 
-
+  // 4. Añadimos a los participantes
   await supabase.from('chat_participants').insert([
     { room_id: newRoom.id, user_id: myId },
     { room_id: newRoom.id, user_id: friendId }
