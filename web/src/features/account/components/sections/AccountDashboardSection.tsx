@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { MapPin } from 'lucide-react';
+import { Trophy, Star } from 'lucide-react';
 import UserAvatar from '../../../../shared/components/UserAvatar';
+import { getTierForScore, getGlobalTier, calculateLazyGlobalScore } from '../../../progression/services/progression.service';
 
 type ProfileSummary = {
   username: string | null;
@@ -9,28 +10,148 @@ type ProfileSummary = {
   location?: string | null;
 };
 
-type AccountDashboardSectionProps = {
-  profile: ProfileSummary;
+type HighScoreEntry = {
+  displayTitle: string;
+  score: number;
 };
 
-export function AccountDashboardSection({
-  profile,
-}: AccountDashboardSectionProps) {
+type AccountDashboardSectionProps = {
+  profile: ProfileSummary;
+  highScores: HighScoreEntry[];
+};
+
+const getGlobalControllerData = (tier: string) => {
+  const basePath = '/assets';
+  switch(tier) {
+    case 'Hierro': return { name: 'Hierro', image: `${basePath}/hierro.png`, color: 'text-slate-400', glow: 'shadow-slate-500/40' };
+    case 'Bronce': return { name: 'Bronce', image: `${basePath}/bronce.png`, color: 'text-orange-400', glow: 'shadow-orange-500/40' };
+    case 'Plata': return { name: 'Plata', image: `${basePath}/plata.png`, color: 'text-slate-200', glow: 'shadow-slate-300/50' };
+    case 'Oro': return { name: 'Oro', image: `${basePath}/oro.png`, color: 'text-yellow-400', glow: 'shadow-yellow-500/50' };
+    case 'Obsidiana': return { name: 'Obsidiana', image: `${basePath}/obsidiana.png`, color: 'text-fuchsia-400', glow: 'shadow-fuchsia-500/60' };
+    default: return { name: 'Hierro', image: `${basePath}/hierro.png`, color: 'text-slate-500', glow: 'shadow-slate-500/20' };
+  }
+};
+
+const getGameControllerData = (tier: string) => {
+  const basePath = '/assets/emblems';
+  switch(tier) {
+    case 'Iniciado': return { name: 'Iniciado', image: `${basePath}/nintendoEmblem.png`, color: 'text-slate-400', glow: 'shadow-slate-500/40', border: 'hover:border-slate-500/50' };
+    case 'Amateur': return { name: 'Amateur', image: `${basePath}/ps1Emblem.png`, color: 'text-orange-400', glow: 'shadow-orange-500/40', border: 'hover:border-orange-500/50' };
+    case 'Profesional': return { name: 'Profesional', image: `${basePath}/ps3Emblem.png`, color: 'text-slate-200', glow: 'shadow-slate-300/50', border: 'hover:border-slate-300/50' };
+    case 'Veterano': return { name: 'Veterano', image: `${basePath}/ps4Emblem.png`, color: 'text-yellow-400', glow: 'shadow-yellow-500/50', border: 'hover:border-yellow-500/50' };
+    case 'Elite': return { name: 'Élite', image: `${basePath}/ps5Emblem.png`, color: 'text-fuchsia-400', glow: 'shadow-fuchsia-500/60', border: 'hover:border-fuchsia-500/50' };
+    default: return { name: 'Iniciado', image: `${basePath}/nintendoEmblem.png`, color: 'text-slate-500', glow: 'shadow-slate-500/20', border: 'hover:border-slate-500/50' };
+  }
+};
+
+export function AccountDashboardSection({ profile, highScores }: AccountDashboardSectionProps) {
   const { t } = useTranslation();
+  const globalScore = calculateLazyGlobalScore(highScores || []);
+  const globalTier = getGlobalTier(globalScore);
+  const globalEmblem = getGlobalControllerData(globalTier);
 
   return (
-    <section className="h-full bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5">
-      <div className="rounded-2xl border border-slate-800 bg-slate-800/30 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <UserAvatar src={profile.avatar_url} name={profile.username} size={64} />
-        <div className="space-y-1">
-          <p className="text-white text-xl font-semibold">{profile.username || t('account.dashboard.defaultUser')}</p>
-          <p className="text-sm text-slate-400">
-            {t('account.dashboard.role')}: {profile.role || t('account.dashboard.defaultRole')}
-          </p>
-          <p className="text-sm text-slate-400 flex items-center gap-1">
-            <MapPin size={14} /> {profile.location || t('account.dashboard.noLocation')}
-          </p>
+    <section className="space-y-6 w-full pb-8">
+      
+    
+      <div className="relative w-full overflow-hidden bg-slate-950 border border-slate-700/50 rounded-[2.5rem] p-5 sm:p-8 shadow-[0_0_40px_-10px_rgba(0,0,0,0.5)]">
+        
+  
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f46e510_1px,transparent_1px),linear-gradient(to_bottom,#4f46e510_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+       
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-[80px]"></div>
+      
+        <div className={`absolute bottom-0 left-10 w-64 h-64 ${globalEmblem.color} opacity-20 blur-[60px] rounded-full bg-current`}></div>
+        
+
+        <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-8 w-full min-w-0">
+          
+          {/* Contenedor del Mando */}
+          <div className="relative group shrink-0">
+            <div className={`absolute inset-0 blur-[40px] opacity-40 bg-current ${globalEmblem.color}`}></div>
+            <img 
+              src={globalEmblem.image} 
+              alt={globalEmblem.name} 
+              className="relative z-10 w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)] transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-6"
+            />
+          </div>
+
+          {/* Textos y Puntuación */}
+          <div className="text-center md:text-left space-y-2 flex-1 min-w-0 w-full overflow-hidden">
+            <span className="inline-block px-3 sm:px-4 py-1.5 bg-slate-900/80 text-slate-300 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] border border-slate-700 backdrop-blur-sm">
+              Rango de Plataforma
+            </span>
+            <h2 className={`text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tighter ${globalEmblem.color} italic break-all md:break-words w-full drop-shadow-lg`}>
+              {globalEmblem.name}
+            </h2>
+            <div className="flex items-center justify-center md:justify-start gap-2 mt-2">
+              <Star className="text-yellow-500 shrink-0" size={20} fill="currentColor" />
+              <p className="text-white text-lg sm:text-xl font-bold truncate">
+                {globalScore} <span className="text-slate-400 text-xs sm:text-sm font-normal">Puntos Globales</span>
+              </p>
+            </div>
+            
+           
+            <p className="text-slate-400 text-xs sm:text-sm max-w-md mx-auto md:mx-0 mt-4 line-clamp-2">
+              Juega a más juegos y mejora tus récords individuales para subir tu Rango Global a lo más alto.
+            </p>
+          </div>
+
         </div>
+      </div>
+
+      {/* INFO DEL PERFIL DE USUARIO */}
+      <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 flex flex-col sm:flex-row items-center gap-6 shadow-xl w-full">
+        <UserAvatar src={profile.avatar_url} name={profile.username} size={80} />
+        <div className="flex-1 text-center sm:text-left min-w-0 w-full">
+          <h3 className="text-white text-2xl font-bold truncate">{profile.username || t('account.dashboard.defaultUser')}</h3>
+          <div className="flex flex-wrap justify-center sm:justify-start gap-4 mt-2">
+            <p className="text-sm text-slate-400 flex items-center gap-1.5 truncate">
+              <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0"></span>
+              {profile.role || t('account.dashboard.defaultRole')}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* SALA DE TROFEOS POR JUEGO */}
+      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl w-full">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg shrink-0"><Trophy size={24} /></div>
+          <h3 className="text-xl font-bold text-white truncate">Récords por Juego</h3>
+        </div>
+
+        {highScores && highScores.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            {highScores.map((record, index) => {
+              const tier = getTierForScore(record.displayTitle, record.score);
+              const consoleEmblem = getGameControllerData(tier);
+              return (
+                <div key={index} className={`group relative bg-gradient-to-b from-slate-800/40 to-slate-900/90 border border-slate-700/50 rounded-3xl p-1 transition-all duration-500 ${consoleEmblem.border} hover:shadow-2xl`}>
+                  <div className="bg-slate-900/40 rounded-[22px] p-5 h-full flex flex-col items-center">
+                    <div className="w-full flex justify-between items-center mb-4">
+                      <span className="text-xs font-medium text-slate-400 truncate">{record.displayTitle}</span>
+                      <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 bg-slate-950/50 rounded-lg ${consoleEmblem.color}`}>{consoleEmblem.name}</span>
+                    </div>
+                    <div className="relative w-full h-24 flex items-center justify-center mb-4">
+                      <div className={`absolute w-20 h-20 rounded-full blur-[40px] opacity-20 ${consoleEmblem.glow} bg-current ${consoleEmblem.color}`}></div>
+                      <img src={consoleEmblem.image} className="relative z-10 h-full object-contain group-hover:scale-110 transition-all duration-500" alt="rank" />
+                    </div>
+                    <div className="text-center w-full mt-auto">
+                      <span className="text-3xl font-black text-white tracking-tighter">{record.score}</span>
+                      <span className="text-indigo-400 text-xs font-bold uppercase ml-1">PTS</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-12 bg-slate-800/30 rounded-xl border border-slate-700/30 border-dashed">
+            <Trophy size={48} className="mx-auto text-slate-600 mb-3 opacity-50" />
+            <p className="text-slate-400">Aún no tienes récords. ¡Juega para subir tu Nivel Global!</p>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -11,47 +11,40 @@ type AchievementEntry = {
   }[];
 };
 
-type AccountAchievementsSectionProps = {
-  userAchievements: AchievementEntry[];
-};
-
-export function AccountAchievementsSection({
-  userAchievements,
-}: AccountAchievementsSectionProps) {
+export function AccountAchievementsSection({ userAchievements }: { userAchievements: AchievementEntry[] }) {
   const { t } = useTranslation();
 
   return (
-    <section className="h-full bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-5">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg">
+    <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-8 shadow-xl">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="p-2 bg-amber-500/20 text-amber-400 rounded-lg">
           <Trophy size={24} />
         </div>
-        <h3 className="text-xl font-bold text-white">{t('account.dashboard.achievements')}</h3>
+        <h3 className="text-2xl font-bold text-white">{t('account.dashboard.achievements')}</h3>
       </div>
 
       {userAchievements.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {userAchievements.map((ua) => (
-            <div
-              key={ua.id}
-              className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 flex flex-col items-center justify-center text-center hover:bg-slate-800 transition-colors"
-            >
-              <div className="w-12 h-12 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-3 shadow-[0_0_15px_rgba(99,102,241,0.2)] overflow-hidden">
-                {ua.achievement[0]?.badge_icon ? (
-                  <img src={ua.achievement[0].badge_icon} alt={ua.achievement[0]?.title || t('account.dashboard.achievementFallbackTitle')} className="w-full h-full object-cover" />
-                ) : (
-                  <Trophy size={24} />
-                )}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          {userAchievements.map((ua) => {
+            const data = ua.achievement[0]; 
+            return (
+              <div key={ua.id} className="group relative bg-slate-800/40 border border-slate-700/50 rounded-2xl p-6 flex flex-col items-center text-center transition-all hover:bg-slate-800 hover:border-indigo-500/50">
+                <div className="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center mb-4 ring-1 ring-white/10 group-hover:ring-indigo-500/50 transition-all overflow-hidden">
+                  {data?.badge_icon ? (
+                    <img src={data.badge_icon} alt={data?.title || ''} className="w-full h-full object-cover" />
+                  ) : (
+                    <Trophy size={28} className="text-indigo-400" />
+                  )}
+                </div>
+                <h4 className="text-white font-bold text-sm mb-1">{data?.title || 'Logro Oculto'}</h4>
+                <p className="text-slate-500 text-xs leading-relaxed">{data?.description || 'Continúa jugando para desbloquear'}</p>
               </div>
-              <h4 className="text-white font-bold text-sm mb-1">{ua.achievement[0]?.title || t('account.dashboard.achievementFallbackTitle')}</h4>
-              <p className="text-slate-400 text-xs">{ua.achievement[0]?.description || t('account.dashboard.achievementFallbackDescription')}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
-        <div className="text-center py-12 bg-slate-800/30 rounded-xl border border-slate-700/30 border-dashed">
-          <Trophy size={64} className="mx-auto text-slate-600 mb-4" />
-          <p className="text-slate-400 text-lg">{t('account.dashboard.noAchievements')}</p>
+        <div className="text-center py-16 bg-slate-800/20 rounded-2xl border border-dashed border-slate-700">
+          <p className="text-slate-500">Aún no has desbloqueado ningún logro.</p>
         </div>
       )}
     </section>
