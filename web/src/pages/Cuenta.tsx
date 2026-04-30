@@ -641,17 +641,18 @@ export default function Cuenta() {
         </div>
       )}
 
-<div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[250px_1fr] lg:items-stretch" style={{ height: '600px' }}>
             <AccountSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
 
             <main className="space-y-6 h-full flex flex-col">
-              <div className="flex-1 flex flex-col min-h-0">
+                  <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar"> 
                 {activeSection === 'dashboard' && (
-                  <div className="flex-1">
-                    <AccountDashboardSection profile={profile} />
+                  <div className="h-[450px] overflow-y-auto pr-4 pb-10 custom-scrollbar">
+                    <AccountDashboardSection profile={profile} highScores={highScores} />
                   </div>
                 )}
+                
                 {activeSection === 'personal' && (
                   <div className="flex-1 overflow-y-auto">
                     <AccountPersonalSection
@@ -674,6 +675,7 @@ export default function Cuenta() {
                     />
                   </div>
                 )}
+                
                 {activeSection === 'friends' && (
                   <div className="flex-1 overflow-y-auto">
                     <AccountFriendsSection
@@ -683,11 +685,13 @@ export default function Cuenta() {
                     />
                   </div>
                 )}
+                
                 {activeSection === 'payments' && (
                   <div className="flex-1">
                     <AccountPaymentsSection subscriptionTier={profile.subscription_tier} email={profile.email} />
                   </div>
                 )}
+                
                 {activeSection === 'support' && (
                   <div className="flex-1">
                     <AccountSupportSection
@@ -719,8 +723,8 @@ export default function Cuenta() {
 
                 {activeSection === 'matches' && (
                   <div className="flex-1 overflow-y-auto">
+                 
                     <AccountMatchesSection
-                      highScores={highScores}
                       recentGames={recentGames}
                       formatDate={formatDate}
                     />
@@ -740,6 +744,7 @@ export default function Cuenta() {
                     />
                   </div>
                 )}
+                
               </div>
             </main>
         </div>

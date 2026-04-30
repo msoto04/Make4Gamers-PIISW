@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 
+import { 
+  getGlobalTier, 
+  calculateLazyGlobalScore 
+} from '../features/progression/services/progression.service';
 
+import { getTierForScore } from '../features/progression/services/progression.service';
 import { supabase } from '../supabase';
 import { removeFriend } from '../features/chat/services/friend.service';
 import { useParams, Link, useNavigate } from 'react-router-dom'; 
@@ -9,7 +14,7 @@ import { User as UserIcon, Activity, ArrowLeft, Trophy, Calendar, Gamepad2, Chec
 import UserAvatar from '../shared/components/UserAvatar';
 import { getAccountHighScores } from '../features/account/services/account.service';
 import { reportUser } from '../../../packages/api/src/services/reports.service';
-
+import { type Tier } from '../features/progression/config/progression.config';
 import { getUserAchievements, 
   checkMatchCountAchievements, checkScoreAchievements, checkSocialAchievements } from '../features/achievements/services/achievements.service';
 
@@ -22,6 +27,35 @@ const IconMap: Record<string, any> = {
   Medal,
   Star
 }; 
+const getTierColor = (tier: string) => {
+  switch(tier) {
+    case 'Hierro': return 'text-slate-400 bg-slate-400/10 border-slate-400/30';
+    case 'Bronce': return 'text-orange-500 bg-orange-500/10 border-orange-500/30';
+    case 'Plata': return 'text-blue-300 bg-blue-300/10 border-blue-300/30'; 
+    case 'Oro': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30';
+    case 'Obsidiana': return 'text-fuchsia-400 bg-fuchsia-400/10 border-fuchsia-400/30';
+    default: return 'text-indigo-400 bg-indigo-400/10 border-indigo-400/30';
+  }
+};
+
+const getControllerData = (tier: string) => {
+  const basePath = '/assets/emblems';
+  
+  switch(tier) {
+    case 'Iniciado': 
+      return { name: 'Rango Iniciado', image: `${basePath}/nintendoEmblem.png`, color: 'text-slate-400', glow: 'shadow-slate-500/40' };
+    case 'Amateur': 
+      return { name: 'Rango Amateur', image: `${basePath}/ps1Emblem.png`, color: 'text-orange-400', glow: 'shadow-orange-500/40' };
+    case 'Profesional': 
+      return { name: 'Rango Profesional', image: `${basePath}/ps3Emblem.png`, color: 'text-slate-200', glow: 'shadow-slate-300/50' };
+    case 'Veterano': 
+      return { name: 'Rango Veterano', image: `${basePath}/ps4Emblem.png`, color: 'text-yellow-400', glow: 'shadow-yellow-500/50' };
+    case 'Elite': 
+      return { name: 'Rango Élite', image: `${basePath}/ps5Emblem.png`, color: 'text-fuchsia-400', glow: 'shadow-fuchsia-500/60' };
+    default: 
+      return { name: 'Iniciado', image: `${basePath}/nintendoEmblem.png`, color: 'text-slate-500', glow: 'shadow-slate-500/20' };
+  }
+};
 export default function PerfilUsuario() {
   const { username } = useParams(); 
   const [profile, setProfile] = useState<any>(null);
@@ -34,7 +68,9 @@ export default function PerfilUsuario() {
   const [deleteErrorMsg, setDeleteErrorMsg] = useState('');
   const navigate = useNavigate();
   const [userAchievements, setUserAchievements] = useState<any[]>([]);
-
+  const globalScore = calculateLazyGlobalScore(highScores || []);
+  const globalTier = getGlobalTier(globalScore);
+  const tierStyles = getTierColor(globalTier);
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [reportDetails, setReportDetails] = useState('');
@@ -212,6 +248,21 @@ useEffect(() => {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   <h1 className="text-3xl font-bold text-white">{profile?.username}</h1>
+
+               
+                  <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 mt-2">
+                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full border shadow-sm ${tierStyles}`}>
+                        <Star size={14} fill="currentColor" />
+                        <span className="text-xs font-black uppercase tracking-widest">
+                          Rango {globalTier}
+                        </span>
+                    </div>
+                    
+                    <div className="text-slate-500 text-xs font-bold uppercase tracking-tighter">
+                      {globalScore} Puntos de Plataforma
+                    </div>
+                  </div>
+                  
                   
                
                   {currentUserId && currentUserId !== profile?.id && (
@@ -265,49 +316,67 @@ useEffect(() => {
 
   
         {highScores.length > 0 && (
-          <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl relative overflow-hidden">
-            {/* Brillo de fondo sutil */}
-            <div className="absolute top-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -ml-20 -mt-20 pointer-events-none"></div>
-            
-            <h3 className="text-xl font-semibold text-white mb-6 flex items-center gap-2 relative z-10">
-              <Medal className="text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" /> 
-              Salón de la Fama
+          <div className="mt-8">
+            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+              <Trophy className="text-yellow-500" size={24} />
+              Récords de Temporada
             </h3>
             
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 relative z-10">
-              {highScores.map((record, index) => (
-                <div 
-                  key={`record-${record.id}`} 
-                  className="p-5 bg-gradient-to-br from-slate-800/80 to-slate-800/30 border border-slate-700/50 hover:border-amber-500/40 rounded-2xl relative overflow-hidden group transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_20px_-6px_rgba(245,158,11,0.15)]"
-                >
-                  {/* Número de Top y Medalla de fondo */}
-                  <div className="absolute -right-4 -bottom-4 p-3 opacity-5 group-hover:opacity-10 transition-opacity transform group-hover:scale-110 duration-500">
-                    <Medal size={90} className="text-amber-400" />
-                  </div>
-                  
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold border border-amber-500/20">
-                        {index + 1}
-                      </span>
-                      <p className="text-sm text-slate-300 font-medium truncate">
-                        {record.displayTitle}
-                      </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {highScores.map((record, index) => {
+                const tier = getTierForScore(record.displayTitle, record.score);
+                const controller = getControllerData(tier);
+
+                return (
+                  <div 
+                    key={`record-${index}`} 
+                    className="group relative bg-gradient-to-b from-slate-800/40 to-slate-900/90 border border-slate-700/50 rounded-3xl p-1 transition-all duration-500 hover:border-indigo-500/50 hover:shadow-[0_0_30px_rgba(79,70,229,0.15)]"
+                  >
+                    <div className="bg-slate-900/40 rounded-[22px] p-6 h-full flex flex-col items-center">
+                      
+                      {/* Cabecera de la carta */}
+                      <div className="w-full flex justify-between items-center mb-4">
+                        <span className="px-2 py-1 bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
+                          TOP {index + 1}
+                        </span>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${controller.color}`}>
+                          {controller.name}
+                        </span>
+                      </div>
+
+                     
+                      <div className="relative w-full h-40 flex items-center justify-center mb-6">
+                        {/* Resplandor de fondo */}
+                        <div className={`absolute w-24 h-24 rounded-full blur-[40px] opacity-20 ${controller.glow} bg-current`}></div>
+                        
+                        <img 
+                          src={controller.image} 
+                          alt={controller.name}
+                          className="relative z-10 h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500"
+                        />
+                      </div>
+
+                      {/* Info de puntuación */}
+                      <div className="text-center w-full mt-auto">
+                        <h4 className="text-slate-400 text-xs font-medium mb-1 truncate px-2">
+                          {record.displayTitle}
+                        </h4>
+                        <div className="flex items-baseline justify-center gap-1">
+                          <span className="text-4xl font-black text-white tracking-tighter">
+                            {record.score}
+                          </span>
+                          <span className="text-indigo-400 text-xs font-bold uppercase">PTS</span>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500 tracking-tight">
-                      {record.score}
-                    </p>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
-                      Puntuación Máxima
-                    </p>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
 
-              {/* SECCIÓN DE EMBLEMAS / LOGROS */}
+             
 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mt-6 shadow-xl">
   <div className="flex items-center gap-3 mb-6 border-b border-slate-800 pb-4">
     <Medal className="text-amber-400" size={24} />
@@ -324,23 +393,32 @@ useEffect(() => {
   ) : (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {userAchievements.map((item) => {
+        
+        
+        let badgeData = item.achievement || item.achievements || item;
+        
+        
+        if (Array.isArray(badgeData)) {
+          badgeData = badgeData[0];
+        }
        
-        const IconComponent = IconMap[item.achievement.badge_icon] || Star;
+        
+        const IconComponent = IconMap[badgeData?.badge_icon] || Star;
         
         return (
           <div 
             key={item.id} 
             className="flex flex-col items-center justify-center bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 hover:border-indigo-500/50 rounded-xl p-4 transition-all group"
-            title={item.achievement.description}
+            title={badgeData?.description}
           >
             <div className="w-14 h-14 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 text-indigo-400 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <IconComponent size={28} />
             </div>
             <h4 className="text-white font-bold text-sm text-center mb-1">
-              {item.achievement.title}
+              {badgeData?.title || 'Emblema'}
             </h4>
             <p className="text-slate-400 text-[10px] text-center line-clamp-2">
-              {item.achievement.description}
+              {badgeData?.description}
             </p>
           </div>
         );
