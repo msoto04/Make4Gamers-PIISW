@@ -8,11 +8,12 @@ export function getTierForScore(gameTitle: string, score: number): Tier {
 
   const thresholds = config.thresholds;
 
-  if (score >= thresholds.Elite) return 'Elite';
-  if (score >= thresholds.Veterano) return 'Veterano';
-  if (score >= thresholds.Profesional) return 'Profesional';
-  if (score >= thresholds.Amateur) return 'Amateur';
-  return 'Iniciado'; 
+
+  if (score >= thresholds.PS5) return 'PS5';
+  if (score >= thresholds.PS4) return 'PS4';
+  if (score >= thresholds.PS3) return 'PS3';
+  if (score >= thresholds.PS1) return 'PS1';
+  return 'SNES'; 
 }
 
 export function getGlobalTier(totalScore: number): GlobalTier {
@@ -26,13 +27,25 @@ export function getGlobalTier(totalScore: number): GlobalTier {
 export function calculateLazyGlobalScore(highScores: {displayTitle: string, score: number}[]): number {
   if (!highScores || highScores.length === 0) return 0;
   
-  let totalScore = 0;
-  highScores.forEach(record => {
+
+  const gamePoints = highScores.map(record => {
     const tier = getTierForScore(record.displayTitle, record.score);
-    const config = progressionConfig.find(c => c.gameTitle.toLowerCase() === record.displayTitle.toLowerCase()) || defaultTierConfig;
-    totalScore += config.multipliers[tier];
+    const config = progressionConfig.find(
+      c => c.gameTitle.toLowerCase() === record.displayTitle.toLowerCase()
+    ) || defaultTierConfig;
+    
+    return config.multipliers[tier];
   });
+
   
+  gamePoints.sort((a, b) => b - a);
+
+
+  const top10Games = gamePoints.slice(0, 10);
+
+
+  const totalScore = top10Games.reduce((sum, points) => sum + points, 0);
+
   return totalScore;
 }
 
