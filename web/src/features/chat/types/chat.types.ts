@@ -8,6 +8,7 @@ export interface ChatProfile {
   status: string;
   is_group?: boolean;
   room_id?: string;
+  subscription_tier?: string | null;
 }
 
 export interface ChatRoom {

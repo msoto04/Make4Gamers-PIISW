@@ -1,6 +1,6 @@
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Check, CheckCheck } from 'lucide-react';
+import { Send, Check, CheckCheck, Save } from 'lucide-react';
 import { useChatMessages } from '../hooks/useChatMessages';
 import { sendMessage } from '../services/chat.service';
 import type { ChatProfile } from '../types/chat.types';
@@ -68,19 +68,19 @@ const handleSendMessage = async (e: React.FormEvent) => {
 
   return (
     <div className="flex flex-col h-full bg-slate-900/50 rounded-xl overflow-hidden border border-slate-700/50 shadow-inner">
-{/* Cabecera del chat */}
-      <div className="px-6 py-4 bg-slate-800/80 border-b border-slate-700/50 flex items-center gap-3 shadow-sm z-10">
+      {/* Cabecera del chat */}
+      <div className="px-6 py-4 bg-slate-800/80 border-b border-slate-700/50 flex items-center justify-between shadow-sm z-10">
+        <div className="flex items-center gap-3">
           
-            <Link
-              to={`/usuario/${friendProfile.username}`}
-              className="hover:opacity-80 transition-opacity cursor-pointer"
-              title={`Ver perfil de ${friendProfile.username}`}
-            >
-              <UserAvatar src={friendProfile.avatar_url} name={friendProfile.username} size={40} className="shadow-md" />
-            </Link>
+          {/* Imagen de perfil (Avatar) */}
+          <UserAvatar 
+            src={friendProfile.avatar_url} 
+            size={36}
+          />
 
-            <div>
-          
+          <div className="flex flex-col">
+            {/* Nombre e Insignia Premium en la misma línea */}
+            <div className="flex items-center gap-1.5">
               <Link 
                 to={`/usuario/${friendProfile.username}`}
                 className="font-semibold text-slate-100 hover:text-indigo-400 transition-colors cursor-pointer"
@@ -89,26 +89,32 @@ const handleSendMessage = async (e: React.FormEvent) => {
                 {friendProfile.username}
               </Link>
               
-              <span className={`text-xs flex items-center gap-1.5 mt-0.5 ${
-                  friendProfile.status === 'Ocupado' ? 'text-red-400' :
-                  friendProfile.status === 'Ausente' ? 'text-yellow-400' :
-                  friendProfile.status === 'Invisible' ? 'text-slate-400' :
-                  'text-green-400' 
-              }`}>
-                <span className={`w-2 h-2 rounded-full inline-block ${
-                    friendProfile.status === 'Ocupado' ? 'bg-red-500' :
-                    friendProfile.status === 'Ausente' ? 'bg-yellow-500' :
-                    friendProfile.status === 'Invisible' ? 'bg-slate-500' :
-                    'bg-green-500'
-                }`}></span> 
-                
-              
-                {friendProfile.status === 'Invisible' ? t('chat.status.disconnected') : 
-                 friendProfile.status === 'Ocupado' ? t('chat.status.busy') : 
-                 friendProfile.status === 'Ausente' ? t('chat.status.away') : 
-                 t('chat.status.online')}
-              </span>
+              {friendProfile.subscription_tier === 'premium' && (
+                <span title="Usuario Premium" className="flex items-center cursor-help">
+                  <Save size={14} className="text-yellow-500 fill-yellow-500/20 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]" />
+                </span>
+              )}
             </div>
+
+            <span className={`text-xs flex items-center gap-1.5 mt-0.5 ${
+              friendProfile.status === 'Ocupado' ? 'text-red-400' :
+              friendProfile.status === 'Ausente' ? 'text-yellow-400' :
+              friendProfile.status === 'Invisible' ? 'text-slate-400' :
+              'text-green-400' 
+            }`}>
+              <span className={`w-2 h-2 rounded-full inline-block ${
+                friendProfile.status === 'Ocupado' ? 'bg-red-500' :
+                friendProfile.status === 'Ausente' ? 'bg-yellow-500' :
+                friendProfile.status === 'Invisible' ? 'bg-slate-500' :
+                'bg-green-500'
+              }`}></span> 
+              {friendProfile.status === 'Invisible' ? t('chat.status.disconnected') : 
+               friendProfile.status === 'Ocupado' ? t('chat.status.busy') : 
+               friendProfile.status === 'Ausente' ? t('chat.status.away') : 
+               t('chat.status.online')}
+            </span>
+          </div>
+        </div>
       </div>
       {/* Lista de Mensajes */}
       <div 
@@ -185,6 +191,8 @@ const handleSendMessage = async (e: React.FormEvent) => {
           <button
             type="submit"
             disabled={!newMessage.trim() || isSending}
+            title={t('chat.send') || 'Enviar'}
+            aria-label={t('chat.send') || 'Enviar'}
             className="p-3 bg-indigo-600 rounded-full text-white hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-lg shadow-indigo-600/20"
           >
             <Send size={18} />

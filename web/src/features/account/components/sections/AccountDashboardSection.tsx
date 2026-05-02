@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Trophy, Star, ChevronRight } from 'lucide-react';
+import { Trophy, Star, ChevronRight, Save } from 'lucide-react';
 import UserAvatar from '../../../../shared/components/UserAvatar';
 import { 
   getTierForScore, 
@@ -13,6 +13,7 @@ type ProfileSummary = {
   avatar_url: string | null;
   role?: string | null;
   location?: string | null;
+  subscription_tier?: string | null;
 };
 
 type HighScoreEntry = {
@@ -142,12 +143,19 @@ export function AccountDashboardSection({ profile, highScores }: AccountDashboar
       <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 flex flex-col sm:flex-row items-center gap-6 shadow-xl w-full">
         <UserAvatar src={profile.avatar_url} name={profile.username} size={80} />
         <div className="flex-1 text-center sm:text-left min-w-0 w-full">
-          <h3 className="text-white text-2xl font-bold truncate">{profile.username || t('account.dashboard.defaultUser')}</h3>
-          <div className="flex flex-wrap justify-center sm:justify-start gap-4 mt-2">
-            <p className="text-sm text-slate-400 flex items-center gap-1.5 truncate">
-              <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0"></span>
-              {profile.role || t('account.dashboard.defaultRole')}
-            </p>
+          <div className="flex items-center justify-center sm:justify-start gap-2">
+            <h3 className="text-white text-2xl font-bold truncate">
+              {profile.username || t('account.dashboard.defaultUser')}
+            </h3>
+
+            {profile.subscription_tier === 'premium' && (
+              <span title="Usuario Premium" className="flex items-center">
+                <Save 
+                  size={24} 
+                  className="text-yellow-500 fill-yellow-500/20 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)] shrink-0 animate-pulse" 
+                />
+              </span>
+            )}
           </div>
         </div>
       </div>

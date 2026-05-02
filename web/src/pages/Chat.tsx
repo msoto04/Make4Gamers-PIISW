@@ -10,7 +10,7 @@ import AddFriendModal from '../features/chat/components/AddFriendModal';
 import { Plus } from 'lucide-react'; 
 import { useTranslation } from 'react-i18next';
 import CreateGroupModal from '../features/chat/components/CreateGroupModal';
-import { Users } from 'lucide-react'; // Para el icono
+import { Users } from 'lucide-react';
 
 export default function Chat() {
     const { t } = useTranslation();

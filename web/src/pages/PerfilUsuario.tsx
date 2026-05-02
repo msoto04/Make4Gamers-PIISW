@@ -10,7 +10,7 @@ import { supabase } from '../supabase';
 import { removeFriend } from '../features/chat/services/friend.service';
 import { useParams, Link, useNavigate } from 'react-router-dom'; 
 
-import { User as UserIcon, Activity, ArrowLeft, Trophy, Calendar, Gamepad2, Check, AlertCircle, AlertTriangle, Medal, Flag, Swords, Flame, Zap, Star } from 'lucide-react';
+import { User as UserIcon, Activity, ArrowLeft, Trophy, Calendar, Gamepad2, Check, AlertCircle, AlertTriangle, Medal, Flag, Swords, Flame, Zap, Star, Save } from 'lucide-react';
 import UserAvatar from '../shared/components/UserAvatar';
 import { getAccountHighScores } from '../features/account/services/account.service';
 import { reportUser } from '../../../packages/api/src/services/reports.service';
@@ -254,8 +254,19 @@ useEffect(() => {
             <div className="text-center md:text-left flex-1">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-white">{profile?.username}</h1>
-
+                  <div className="flex items-center gap-2 mb-1 justify-center md:justify-start">
+                    <h1 className="text-3xl font-bold text-white">{profile.username}</h1>
+                    
+                    {/* Emblema Premium */}
+                    {profile?.subscription_tier === 'premium' && (
+                      <span title="Usuario Premium" className="flex items-center cursor-help mt-1">
+                        <Save 
+                          size={22} 
+                          className="text-yellow-500 fill-yellow-500/20 drop-shadow-[0_0_10px_rgba(234,179,8,0.6)]" 
+                        />
+                      </span>
+                    )}
+                  </div>
                
                   <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 mt-2">
                     <div className={`flex items-center gap-2 px-3 py-1 rounded-full border shadow-sm ${tierStyles}`}>
