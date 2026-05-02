@@ -41,12 +41,12 @@ const getGlobalControllerData = (tier: string) => {
 const getGameControllerData = (tier: string) => {
   const basePath = '/assets/emblems';
   switch(tier) {
-    case 'Iniciado': return { name: 'Iniciado', image: `${basePath}/nintendoEmblem.png`, color: 'text-slate-400', glow: 'shadow-slate-500/40', border: 'hover:border-slate-500/50' };
-    case 'Amateur': return { name: 'Amateur', image: `${basePath}/ps1Emblem.png`, color: 'text-orange-400', glow: 'shadow-orange-500/40', border: 'hover:border-orange-500/50' };
-    case 'Profesional': return { name: 'Profesional', image: `${basePath}/ps3Emblem.png`, color: 'text-slate-200', glow: 'shadow-slate-300/50', border: 'hover:border-slate-300/50' };
-    case 'Veterano': return { name: 'Veterano', image: `${basePath}/ps4Emblem.png`, color: 'text-yellow-400', glow: 'shadow-yellow-500/50', border: 'hover:border-yellow-500/50' };
-    case 'Elite': return { name: 'Élite', image: `${basePath}/ps5Emblem.png`, color: 'text-fuchsia-400', glow: 'shadow-fuchsia-500/60', border: 'hover:border-fuchsia-500/50' };
-    default: return { name: 'Iniciado', image: `${basePath}/nintendoEmblem.png`, color: 'text-slate-500', glow: 'shadow-slate-500/20', border: 'hover:border-slate-500/50' };
+    case 'SNES': return { name: 'SNES', image: `${basePath}/nintendoEmblem.png`, color: 'text-slate-400', glow: 'shadow-slate-500/40', border: 'hover:border-slate-500/50' };
+    case 'PS1': return { name: 'PS1', image: `${basePath}/ps1Emblem.png`, color: 'text-orange-400', glow: 'shadow-orange-500/40', border: 'hover:border-orange-500/50' };
+    case 'PS3': return { name: 'PS3', image: `${basePath}/ps3Emblem.png`, color: 'text-slate-200', glow: 'shadow-slate-300/50', border: 'hover:border-slate-300/50' };
+    case 'PS4': return { name: 'PS4', image: `${basePath}/ps4Emblem.png`, color: 'text-yellow-400', glow: 'shadow-yellow-500/50', border: 'hover:border-yellow-500/50' };
+    case 'PS5': return { name: 'PS5', image: `${basePath}/ps5Emblem.png`, color: 'text-fuchsia-400', glow: 'shadow-fuchsia-500/60', border: 'hover:border-fuchsia-500/50' };
+    default: return { name: 'SNES', image: `${basePath}/nintendoEmblem.png`, color: 'text-slate-500', glow: 'shadow-slate-500/20', border: 'hover:border-slate-500/50' };
   }
 };
 
