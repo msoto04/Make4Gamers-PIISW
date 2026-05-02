@@ -12,7 +12,7 @@ import GameplaySidebar from "../features/gameplay/components/GameplaySidebar";
 import AgeGuard from "../features/chat/components/AgeGuard";
 import PlayersBar from "../features/gameplay/components/PlayersBar";
 import RulesReminderModal from "../features/gameplay/components/RulesReminderModal";
-import { useActiveMatch } from "../features/gameplay/hooks/useActiveMatch";
+import { useActiveMatch, type MatchPlayer } from "../features/gameplay/hooks/useActiveMatch";
 import { useMatchMovements } from "../features/gameplay/hooks/useMatchMovements";
 import { useLastPlayed } from "../features/gameplay/hooks/useLastPlayed";
 
@@ -48,6 +48,32 @@ export default function Gameplay() {
   const matchId = match?.id ?? iframeMatchId;
   const { movements } = useMatchMovements(matchId, userId);
   const lastMovedPlayerId = movements.at(-1)?.player_id ?? null;
+
+  const [extraPlayers, setExtraPlayers] = useState<MatchPlayer[]>([]);
+
+  useEffect(() => {
+    const knownIds = new Set((match?.players ?? []).map((p) => p.id));
+    const extraIds = [...new Set(movements.map((m) => m.player_id))].filter(
+      (pid) => !knownIds.has(pid),
+    );
+    if (!extraIds.length) {
+      setExtraPlayers([]);
+      return;
+    }
+    supabase
+      .from("profiles")
+      .select("id, username, avatar_url")
+      .in("id", extraIds)
+      .then(({ data }) => {
+        if (data) setExtraPlayers(data as MatchPlayer[]);
+      });
+  }, [movements, match]);
+
+  const allPlayers = useMemo(() => {
+    const base = match?.players ?? [];
+    const knownIds = new Set(base.map((p) => p.id));
+    return [...base, ...extraPlayers.filter((p) => !knownIds.has(p.id))];
+  }, [match, extraPlayers]);
 
 
   const [edadMinima, setEdadMinima] = useState<number>(3);
@@ -282,7 +308,7 @@ export default function Gameplay() {
           {/* Barra de jugadores — visible cuando hay partida activa */}
           {(match || matchLoading) && (
             <PlayersBar
-              players={match?.players ?? []}
+              players={allPlayers}
               currentUserId={userId}
               lastMovedPlayerId={lastMovedPlayerId}
               loading={matchLoading}
@@ -441,6 +467,7 @@ export default function Gameplay() {
               userId={userId}
               gameId={game.id}
               movements={movements}
+              players={allPlayers}
               availableModes={game.available_modes}
             />
           </div>

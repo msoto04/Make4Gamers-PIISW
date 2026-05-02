@@ -2,11 +2,11 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameScore } from "../hooks/useGameScore";
 import type { MatchMovement } from "../hooks/useMatchMovements";
+import type { MatchPlayer } from "../hooks/useActiveMatch";
 
 export type GameplayTab = "chat" | "history";
 
-// Claves internas que no tienen valor para el jugador
-const SKIP_KEYS = new Set(["game_id"]);
+const SKIP_KEYS = new Set(["game_id", "territory"]);
 
 function formatKey(key: string): string {
   return key
@@ -20,7 +20,7 @@ function formatValue(val: unknown): string {
   return String(val);
 }
 
-function MoveCard({ movement }: { movement: MatchMovement }) {
+function MoveCard({ movement, playerName }: { movement: MatchMovement; playerName?: string }) {
   const time = new Date(movement.server_timestamp).toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
@@ -34,9 +34,14 @@ function MoveCard({ movement }: { movement: MatchMovement }) {
   return (
     <li className="bg-slate-800 rounded-lg p-3 space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-400">
-          Turno {typeof movement.move_data.turn === "number" ? movement.move_data.turn : "—"}
-        </span>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-400">
+            Turno {typeof movement.move_data.turn === "number" ? movement.move_data.turn : "—"}
+          </span>
+          {playerName && (
+            <span className="text-xs font-medium text-white">{playerName}</span>
+          )}
+        </div>
         <span className="text-[10px] text-slate-500">{time}</span>
       </div>
 
@@ -59,6 +64,7 @@ type Props = {
   userId: string | null;
   gameId: string | null;
   movements: MatchMovement[];
+  players?: MatchPlayer[];
   availableModes?: string[] | null;
 };
 
@@ -66,6 +72,7 @@ export default function GameplaySidebar({
   userId,
   gameId,
   movements,
+  players,
   availableModes,
 }: Props) {
   const { t } = useTranslation();
@@ -161,9 +168,16 @@ export default function GameplaySidebar({
             <p className="text-slate-500 text-sm">{t("gameplay.noMovesYet")}</p>
           ) : (
             <ul className="space-y-2">
-              {[...movements].reverse().map((m) => (
-                <MoveCard key={m.id} movement={m} />
-              ))}
+              {[...movements].reverse().map((m) => {
+                const player = players?.find((p) => p.id === m.player_id);
+                return (
+                  <MoveCard
+                    key={m.id}
+                    movement={m}
+                    playerName={player?.username ?? undefined}
+                  />
+                );
+              })}
             </ul>
           )}
         </div>
