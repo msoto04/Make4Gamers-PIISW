@@ -11,11 +11,14 @@ export const getFriendsList = async (currentUserId: string): Promise<ChatProfile
 
     let friendProfiles: ChatProfile[] = [];
 
+    // ✨ Aquí hemos quitado el bloque duplicado que daba error con friendIds
+
     if (!friendError && friendships && friendships.length > 0) {
         const friendIds = friendships.map(f => f.user_a === currentUserId ? f.user_b : f.user_a);
+        
         const { data: profiles, error: profileError } = await supabase
             .from('profiles')
-            .select('id, username, avatar_url, status') 
+            .select('id, username, avatar_url, status, subscription_tier') 
             .in('id', friendIds);
 
         if (!profileError && profiles) {
@@ -24,10 +27,11 @@ export const getFriendsList = async (currentUserId: string): Promise<ChatProfile
                 username: profile.username || 'Usuario',
                 avatar_url: profile.avatar_url,
                 status: profile.status || 'Disponible',
+                subscription_tier: profile.subscription_tier,
                 is_group: false
-            }));
+            })); // ✨ Llaves y paréntesis corregidos aquí
         }
-    }
+    } // ✨ Llave de cierre del if que faltaba
 
     const { data: myGroups, error: groupError } = await supabase
         .from('chat_participants')

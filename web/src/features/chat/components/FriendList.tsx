@@ -4,6 +4,7 @@ import type { ChatProfile } from '../types/chat.types';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../../supabase';
 import UserAvatar from '../../../shared/components/UserAvatar';
+import { Save } from 'lucide-react';
 
 interface FriendListProps {
     currentUserId: string | null;
@@ -112,8 +113,13 @@ export default function FriendList({ currentUserId, onSelectFriend, selectedFrie
                     {/* Nombre y texto de estado */}
                     <div className="flex-1 overflow-hidden flex justify-between items-center">
                         <div>
-                            <h4 className={`font-semibold truncate ${unreadSenders[friend.id] ? 'text-white' : 'text-slate-200'}`}>
+                            <h4 className={`text-sm font-semibold truncate flex items-center gap-1 ${unreadSenders[friend.id] ? 'text-white' : 'text-slate-200'}`}>
                                 {friend.username}
+                                {friend.subscription_tier === 'premium' && (
+                                    <span title="Usuario Premium" className="shrink-0">
+                                        <Save size={14} className="text-yellow-500 fill-yellow-500/20 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]" />
+                                    </span>
+                                )}
                             </h4>
                             <p className={`text-xs truncate mt-0.5 ${unreadSenders[friend.id] ? 'text-indigo-300 font-medium' : 'text-slate-400'}`}>
                                 {unreadSenders[friend.id] 

@@ -5,12 +5,12 @@ const PLANS = [
     {
         area: 'Cuenta y progreso',
         gratis: 'Perfil, sesión y guardado base',
-        premium: 'Más personalización del perfil',
+        premium: 'Más personalización del perfil e icono único',
     },
     {
         area: 'Juegos y ranking',
-        gratis: 'Catálogo y tablas principales',
-        premium: 'Retos destacados y prioridad en novedades',
+        gratis: 'Catálogo limitado y tablas principales',
+        premium: 'Juegos exclusivos, eetos destacados y prioridad en novedades',
     },
     {
         area: 'Social',
@@ -20,7 +20,7 @@ const PLANS = [
     {
         area: 'Logros',
         gratis: 'Logros base de móvil',
-        premium: 'Insignias y recompensas visuales',
+        premium: 'Insignias, recompensas visuales y mayor puntos en juegos seleccionados',
     },
 ]
 
@@ -172,12 +172,10 @@ export default function SubscriptionPlans() {
                     <div className="mt-3 mb-7 h-px w-20 bg-gradient-to-r from-violet-500/90 via-violet-400/35 to-transparent shadow-[0_0_8px_rgba(167,139,250,0.35)]" />
 
                     {/* Price */}
-                    <div className="mb-8 flex items-center gap-3">
-                        <span className="inline-flex items-center rounded-lg border border-violet-500/30 bg-violet-500/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-violet-300 shadow-[0_0_12px_rgba(139,92,246,0.2)]">
-                            Próximamente
-                        </span>
-                        <span className="text-xs text-slate-600">Precio anunciado pronto</span>
-                    </div>
+                        <div className="mb-8 flex items-baseline gap-2">
+                            <span className="text-5xl font-black tracking-tighter text-white">4,99€</span>
+                            <span className="text-xs font-medium uppercase tracking-wider text-slate-500">/ mes</span>
+                        </div>
 
                     {/* Features */}
                     <ul className="mb-8 flex-1 space-y-4">

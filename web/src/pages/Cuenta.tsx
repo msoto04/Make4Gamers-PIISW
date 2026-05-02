@@ -688,7 +688,11 @@ export default function Cuenta() {
                 
                 {activeSection === 'payments' && (
                   <div className="flex-1">
-                    <AccountPaymentsSection subscriptionTier={profile.subscription_tier} email={profile.email} />
+                    <AccountPaymentsSection 
+                      userId={profile.id}
+                      currentTier={profile.subscription_tier || 'free'}
+                      onUpgradeSuccess={() => window.location.reload()}
+                    />
                   </div>
                 )}
                 
