@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, Globe, ChevronDown, User, LogOut, Calculator, LifeBuoy, MessageSquare, Filter } from 'lucide-react';
+import { Menu, Globe, ChevronDown, User, LogOut } from 'lucide-react';
 import { Logo } from '../icons/Logo';
 import { logout } from '../../features/auth/services/logout.service';
 import { useAuthStatus } from '../../features/auth/hooks/useAuthStatus';
 import { supabase } from '../../supabase';
+
+
+import { calculateLazyGlobalScore, getGlobalProgress } from '../../features/progression/services/progression.service';
 
 const Header = () => {
     const { t, i18n } = useTranslation();
@@ -14,13 +17,15 @@ const Header = () => {
     const [isLangOpen, setIsLangOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const [isAdminOpen, setIsAdminOpen] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
 
 
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [hasUnread, setHasUnread] = useState(false);
 
+
+    const [globalProgress, setGlobalProgress] = useState<{ percentage: number, nextTierName: string, pointsNeeded: number } | null>(null);
+   
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -40,6 +45,36 @@ const Header = () => {
                     setIsAdmin(true);
                 }
 
+
+                try {
+            
+                    const { data: userScores, error } = await supabase
+                        .from('scores') 
+                        .select(`
+                            score,
+                            games (
+                                title
+                            )
+                        `) 
+                        .eq('user_id', user.id);
+
+                    if (error) throw error;
+
+                    if (userScores) {
+                    
+                        const highScores = userScores.map((row: any) => ({
+                            
+                            displayTitle: row.games?.title || 'Juego Desconocido',
+                            score: row.score
+                        }));
+                        
+                        const totalScore = calculateLazyGlobalScore(highScores);
+                        setGlobalProgress(getGlobalProgress(totalScore));
+                    }
+                } catch (error) {
+                    console.error("Error cargando progreso global:", error);
+                }
+               
             }
         };
         if (isAuthenticated) {
@@ -49,7 +84,7 @@ const Header = () => {
 
 
     useEffect(() => {
-        // Reset unread badge when navigating to chat
+       
         const inChat = location.pathname === '/chat';
         if (inChat) {
             queueMicrotask(() => setHasUnread(false));
@@ -107,7 +142,7 @@ const Header = () => {
 
                 {/* Desktop Nav */}
                 <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-<Link to="/juegos" className="hover:text-indigo-400 transition-colors">{t('nav.games')}</Link>
+                    <Link to="/juegos" className="hover:text-indigo-400 transition-colors">{t('nav.games')}</Link>
                     <Link to="/ranking" className="hover:text-indigo-400 transition-colors">{t('nav.ranking')}</Link>
 
                     <Link to="/chat" className="relative hover:text-indigo-400 transition-colors flex items-center">
@@ -125,37 +160,59 @@ const Header = () => {
                 <div className="flex items-center gap-4">
 
                     {isAuthenticated ? (
-                        <div className="relative">
-                            <button
-                                onClick={() => { setIsProfileOpen(!isProfileOpen); setIsLangOpen(false); }}
-                                className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-                            >
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 border border-slate-700 text-slate-300">
-                                    <User size={16} />
-                                </div>
-                                <ChevronDown size={14} className={`text-slate-400 hidden sm:block transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
-                            </button>
-
-                            {isProfileOpen && (
-                                <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden py-1 z-50">
-                                    <Link to="/cuenta" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" onClick={() => setIsProfileOpen(false)}>
-                                        <User size={16} />
-                                        <span>{t('nav.account')}</span>
-                                    </Link>
-
-
-
-
-                                    <div className="h-px bg-slate-800 my-1"></div>
-                                    <button
-                                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-slate-800 hover:text-red-300 transition-colors"
-                                        onClick={handleLogout}
-                                    >
-                                        <LogOut size={16} />
-                                        <span>{t('nav.logout')}</span>
-                                    </button>
+                       
+                        <div className="flex items-center gap-4">
+                            
+                           
+                            {globalProgress && globalProgress.nextTierName !== 'MAX' && (
+                                <div className="hidden md:flex flex-col items-end justify-center group cursor-help">
+                                    <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-amber-400 transition-colors mb-0.5">
+                                        Faltan {globalProgress.pointsNeeded} pts para <span className="text-amber-400">{globalProgress.nextTierName}</span>
+                                    </span>
+                                    <div className="h-1.5 w-28 bg-slate-900 rounded-full overflow-hidden border border-slate-800 shadow-inner">
+                                        <div 
+                                            className="h-full bg-gradient-to-r from-amber-600 to-amber-400 rounded-full transition-all duration-1000 ease-out relative"
+                                            style={{ width: `${globalProgress.percentage}%` }}
+                                        >
+                                            <div className="absolute top-0 right-0 bottom-0 w-4 bg-white/30 blur-[2px]"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
+                           
+
+                            <div className="relative">
+                                <button
+                                    onClick={() => { setIsProfileOpen(!isProfileOpen); setIsLangOpen(false); }}
+                                    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                                >
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 border border-slate-700 text-slate-300">
+                                        <User size={16} />
+                                    </div>
+                                    <ChevronDown size={14} className={`text-slate-400 hidden sm:block transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
+                                </button>
+
+                                {isProfileOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden py-1 z-50">
+                                        <Link to="/cuenta" className="flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors" onClick={() => setIsProfileOpen(false)}>
+                                            <User size={16} />
+                                            <span>{t('nav.account')}</span>
+                                        </Link>
+
+
+
+
+                                        <div className="h-px bg-slate-800 my-1"></div>
+                                        <button
+                                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-slate-800 hover:text-red-300 transition-colors"
+                                            onClick={handleLogout}
+                                        >
+                                            <LogOut size={16} />
+                                            <span>{t('nav.logout')}</span>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     ) : (
                         <Link
@@ -173,58 +230,12 @@ const Header = () => {
 
 
                     {isAdmin && (
-                        <div className="relative">
-                            <button
-                                className="flex items-center gap-1.5 hover:text-indigo-400 text-slate-300 transition-colors font-bold tracking-tight"
-                                onClick={() => {
-                                    setIsAdminOpen(!isAdminOpen);
-                                    setIsProfileOpen(false);
-                                    setIsLangOpen(false);
-                                }}
-                            >
-
-                                <span className="hidden md:inline uppercase text-[11px] bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
-                                    Admin
-                                </span>
-                                <ChevronDown size={14} className={`transition-transform ${isAdminOpen ? 'rotate-180' : ''} text-slate-500`} />
-                            </button>
-
-                            {isAdminOpen && (
-                                <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl overflow-hidden py-1 z-50 animate-in fade-in zoom-in duration-100">
-                                    <div className="px-4 py-2 border-b border-slate-800">
-                                        <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Gestión</span>
-                                    </div>
-                                    <Link
-                                        to="/admin/formulas"
-                                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-indigo-600/10 hover:text-indigo-400 transition-colors"
-                                        onClick={() => setIsAdminOpen(false)}
-                                    >
-                                        <Calculator size={16} /> Fórmulas
-                                    </Link>
-                                    <Link
-                                        to="/admin/tickets"
-                                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-indigo-600/10 hover:text-indigo-400 transition-colors"
-                                        onClick={() => setIsAdminOpen(false)}
-                                    >
-                                        <LifeBuoy size={16} /> Tickets
-                                    </Link>
-                                    <Link
-                                        to="/admin/sugerencias"
-                                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-indigo-600/10 hover:text-indigo-400 transition-colors"
-                                        onClick={() => setIsAdminOpen(false)}
-                                    >
-                                        <MessageSquare size={16} /> Sugerencias
-                                    </Link>
-                                    <Link
-                                        to="/admin/filtro"
-                                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-300 hover:bg-indigo-600/10 hover:text-indigo-400 transition-colors"
-                                        onClick={() => setIsAdminOpen(false)}
-                                    >
-                                        <Filter size={16} /> Filtro de Palabras
-                                    </Link>
-                                </div>
-                            )}
-                        </div>
+                        <Link
+                            to="/admin"
+                            className="hidden md:inline uppercase text-[11px] bg-slate-800 px-2 py-0.5 rounded border border-slate-700 text-slate-300 hover:text-indigo-300 hover:border-indigo-500/40 transition-colors"
+                        >
+                            {t('admin.panelButton', { defaultValue: 'Admin' })}
+                        </Link>
                     )}
 
 

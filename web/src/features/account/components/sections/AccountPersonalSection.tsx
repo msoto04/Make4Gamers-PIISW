@@ -1,6 +1,6 @@
 import type { ChangeEvent, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Activity, Camera, Check, Edit2, X } from 'lucide-react';
+import { Activity, Camera, Check, Edit2, X, Save } from 'lucide-react';
 import AvatarPlaceholder from '../../../../shared/components/AvatarPlaceholder';
 
 type ProfileDetails = {
@@ -12,6 +12,12 @@ type ProfileDetails = {
   last_name?: string | null;
   birth_date?: string | null;
   subscription_tier?: string | null;
+  role?: string | null;
+};
+
+type DeveloperRequestSummary = {
+  estado: 'pendiente' | 'aceptada' | 'rechazada';
+  created_at: string;
 };
 
 type AccountPersonalSectionProps = {
@@ -28,6 +34,11 @@ type AccountPersonalSectionProps = {
   onCancelNameEdit: () => void;
   onSaveUsername: () => void;
   onStatusChange: (event: ChangeEvent<HTMLSelectElement>) => void;
+  developerRequest: DeveloperRequestSummary | null;
+  creatingDeveloperRequest: boolean;
+  cancellingDeveloperRequest: boolean;
+  onOpenDeveloperRequestModal: () => void;
+  onCancelDeveloperRequest: () => void;
 };
 
 export function AccountPersonalSection({
@@ -44,6 +55,11 @@ export function AccountPersonalSection({
   onCancelNameEdit,
   onSaveUsername,
   onStatusChange,
+  developerRequest,
+  creatingDeveloperRequest,
+  cancellingDeveloperRequest,
+  onOpenDeveloperRequestModal,
+  onCancelDeveloperRequest,
 }: AccountPersonalSectionProps) {
   const { t } = useTranslation();
 
@@ -53,7 +69,7 @@ export function AccountPersonalSection({
 
       <div className="relative flex flex-col xl:flex-row items-start xl:items-center gap-6 mb-6">
         <div className="relative group shrink-0">
-          <div className="w-24 h-24 bg-slate-800 border-2 border-indigo-500 rounded-full flex items-center justify-center overflow-hidden shadow-lg">
+          <div className={`w-24 h-24 bg-slate-800 border-2 rounded-full flex items-center justify-center overflow-hidden shadow-lg ${profile.subscription_tier === 'premium' ? 'border-yellow-500 shadow-yellow-500/50' : 'border-indigo-500'}`}>
             {uploadingAvatar ? (
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500" />
             ) : profile.avatar_url ? (
@@ -113,13 +129,25 @@ export function AccountPersonalSection({
             </div>
           ) : (
             <div className="flex items-center gap-3 mb-3 group">
-              <h1 className="text-3xl font-bold text-white truncate">{profile.username || t('account.personal.noUsername')}</h1>
+              <h1 className="text-3xl font-bold text-white truncate">
+                {profile.username || t('account.personal.noUsername')}
+              </h1>
+              
+              {profile.subscription_tier === 'premium' && (
+                <span title="Usuario Premium" className="flex items-center">
+                  <Save 
+                    size={28} 
+                    className="text-yellow-500 fill-yellow-500/20 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)] shrink-0 animate-pulse" 
+                  />
+                </span>
+              )}
+
               <button
                 onClick={onEnableNameEdit}
-                className="p-1.5 text-slate-500 hover:text-indigo-400 bg-slate-800/50 hover:bg-slate-800 rounded-full opacity-100 md:opacity-0 group-hover:opacity-100 transition-all"
+                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded transition-all opacity-0 group-hover:opacity-100"
                 title="Editar nombre"
               >
-                <Edit2 size={16} />
+                <Edit2 size={18} />
               </button>
             </div>
           )}
@@ -165,10 +193,62 @@ export function AccountPersonalSection({
           <p className="mt-1 text-sm text-white">{profile.birth_date || t('account.personal.notDefined')}</p>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-800/30 p-4">
+          <p className="text-xs uppercase tracking-wide text-slate-500">Rol</p>
+          <p className="mt-1 text-sm text-white">{profile.role || t('account.personal.notDefined')}</p>
+        </div>
+        <div className="rounded-xl border border-slate-800 bg-slate-800/30 p-4">
           <p className="text-xs uppercase tracking-wide text-slate-500">Tipo de suscripcion</p>
           <p className="mt-1 text-sm text-white">{profile.subscription_tier || t('account.personal.notDefined')}</p>
         </div>
       </div>
+
+      {profile.role !== 'developer' && profile.role !== 'admin' && (
+        <div className="mt-5 rounded-xl border border-slate-700 bg-slate-900/70 p-4">
+          <h3 className="text-base font-semibold text-white">Solicitud de rol developer</h3>
+          <p className="mt-1 text-sm text-slate-400">
+            Envia una solicitud para acceder al rol de developer.
+          </p>
+
+          {developerRequest && (
+            <div className="mt-3 rounded-lg border border-slate-700 bg-slate-800/70 px-3 py-2 text-sm">
+              <span className="text-slate-300">Estado actual: </span>
+              <span
+                className={
+                  developerRequest.estado === 'aceptada'
+                    ? 'text-emerald-400'
+                    : developerRequest.estado === 'rechazada'
+                      ? 'text-rose-400'
+                      : 'text-amber-400'
+                }
+              >
+                {developerRequest.estado}
+              </span>
+            </div>
+          )}
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {developerRequest?.estado === 'pendiente' ? (
+              <button
+                type="button"
+                onClick={onCancelDeveloperRequest}
+                disabled={cancellingDeveloperRequest}
+                className="w-fit rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {cancellingDeveloperRequest ? 'Cancelando...' : 'Cancelar solicitud'}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onOpenDeveloperRequestModal}
+                disabled={creatingDeveloperRequest}
+                className="w-fit rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {creatingDeveloperRequest ? 'Enviando...' : 'Solicitar rol developer'}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

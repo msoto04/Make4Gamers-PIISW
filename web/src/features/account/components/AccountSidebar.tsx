@@ -9,21 +9,27 @@ import {
   Gamepad2,
   BarChart3,
   Award,
+  Save
 } from 'lucide-react';
 import type { AccountSection } from '../types/account-ui.types';
 
 type AccountSidebarProps = {
   activeSection: AccountSection;
   onSectionChange: (section: AccountSection) => void;
+  isPremium?: boolean;
 };
 
-export function AccountSidebar({ activeSection, onSectionChange }: AccountSidebarProps) {
+export function AccountSidebar({ activeSection, onSectionChange, isPremium }: AccountSidebarProps) {
   const { t } = useTranslation();
 
   return (
     <aside className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5 shadow-xl h-[600px]">
       <div className="mb-6 flex items-center gap-2 text-white">
-        <UserIcon size={20} className="text-indigo-400" />
+        {isPremium ? (
+          <Save size={20} className="text-yellow-500 fill-yellow-500/20 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)] animate-pulse" />
+        ) : (
+          <UserIcon size={20} className="text-indigo-400" />
+        )}
         <h2 className="text-lg font-semibold">{t('account.sidebar.title')}</h2>
       </div>
 

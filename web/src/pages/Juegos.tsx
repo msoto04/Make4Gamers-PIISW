@@ -24,14 +24,18 @@ export default function Juegos() {
     { value: "puzzle", label: t("game.filters.puzzle") },
   ];
 
-  useEffect(() => {
+useEffect(() => {
     const loadGames = async () => {
       try {
+        
         const gamesData = await getGames();
-        setGames(gamesData);
+        
+        setGames([...gamesData, ...DUMMY_GAMES]);
+
       } catch (error) {
         console.error("Error loading games:", error);
-        setGames([]);
+
+        setGames(DUMMY_GAMES);
       }
     };
 
@@ -139,3 +143,40 @@ export default function Juegos() {
     </div>
   );
 }
+
+
+const DUMMY_GAMES: any[] = [
+  // --- ARCADE ---
+  { id: "mock-1", title: "Neon Rider", genre: "arcade", rating: 4.8, players: 1243, thumbnail_url: "/assets/mock-games/neon-rider.jpg" },
+  { id: "mock-2", title: "Ninja Dash", genre: "arcade", rating: 4.3, players: 750, thumbnail_url: "/assets/mock-games/ninja-dash.png" },
+  { id: "mock-3", title: "Asteroid Miner", genre: "arcade", rating: 4.4, players: 890, thumbnail_url: "/assets/mock-games/asteroid-miner.jpg" },
+  { id: "mock-4", title: "Retro Pinball", genre: "arcade", rating: 4.1, players: 320, thumbnail_url: "/assets/mock-games/retro-pinball.jpg" },
+  { id: "mock-5", title: "Cyber Pong", genre: "arcade", rating: 4.5, players: 2100, thumbnail_url: "/assets/mock-games/cyber-pong.jpg" },
+  { id: "mock-6", title: "Gravity Flip", genre: "arcade", rating: 4.2, players: 430, thumbnail_url: "/assets/mock-games/gravity-flip.jpg" },
+  { id: "mock-7", title: "Pixel Kart", genre: "arcade", rating: 4.7, players: 3100, thumbnail_url: "/assets/mock-games/pixel-kart.jpg" },
+
+  // --- ACTION ---
+  { id: "mock-8", title: "Galactic Wars", genre: "action", rating: 4.6, players: 5120, thumbnail_url: "/assets/mock-games/galactic-wars.jpg" },
+  { id: "mock-9", title: "Zombie Survival", genre: "action", rating: 4.1, players: 620, thumbnail_url: "/assets/mock-games/zombie-survival.jpg" },
+  { id: "mock-10", title: "Super Platformer", genre: "action", rating: 4.9, players: 1560, thumbnail_url: "/assets/mock-games/super-platformer.jpg" },
+  { id: "mock-11", title: "Mecha Assault", genre: "action", rating: 4.5, players: 890, thumbnail_url: "/assets/mock-games/mecha-assault.jpg" },
+  { id: "mock-12", title: "Wild West Shootout", genre: "action", rating: 4.0, players: 300, thumbnail_url: "/assets/mock-games/wild-west.jfif" },
+  { id: "mock-13", title: "Cyber Samurai", genre: "action", rating: 4.8, players: 2200, thumbnail_url: "/assets/mock-games/cyber-samurai.jpg" },
+  { id: "mock-14", title: "Dino Hunter", genre: "action", rating: 4.2, players: 780, thumbnail_url: "/assets/mock-games/dino-hunter.png" },
+
+  // --- RPG ---
+  { id: "mock-15", title: "Dungeon Crawler X", genre: "rpg", rating: 4.9, players: 3420, thumbnail_url: "/assets/mock-games/dungeon-crawler.png" },
+  { id: "mock-16", title: "Fantasy Quest", genre: "rpg", rating: 4.5, players: 1120, thumbnail_url: "/assets/mock-games/fantasy-quest.jpg" },
+  { id: "mock-17", title: "Dragon Slayer", genre: "rpg", rating: 4.7, players: 4500, thumbnail_url: "/assets/mock-games/dragon-slayer.jpg" },
+  { id: "mock-18", title: "Magic Academy", genre: "rpg", rating: 4.4, players: 900, thumbnail_url: "/assets/mock-games/magic-academy.jpg" },
+  { id: "mock-19", title: "Wasteland Wanderer", genre: "rpg", rating: 4.6, players: 1800, thumbnail_url: "/assets/mock-games/wasteland-wanderer.jpg" },
+  { id: "mock-20", title: "Pirate's Legacy", genre: "rpg", rating: 4.3, players: 600, thumbnail_url: "/assets/mock-games/pirates-legacy.png" },
+
+  // --- PUZZLE ---
+  { id: "mock-21", title: "Cyberpunk Tic-Tac-Toe", genre: "puzzle", rating: 4.8, players: 1205, thumbnail_url: "/assets/mock-games/cyber-tictactoe.jfif" },
+  { id: "mock-22", title: "Tetris 3D Hologram", genre: "puzzle", rating: 4.6, players: 930, thumbnail_url: "/assets/mock-games/tetris-3d.jpg" },
+  { id: "mock-23", title: "Chess Master AI", genre: "puzzle", rating: 4.9, players: 4100, thumbnail_url: "/assets/mock-games/chess-master.jfif" },
+  { id: "mock-24", title: "Mystic Runes", genre: "puzzle", rating: 4.2, players: 350, thumbnail_url: "/assets/mock-games/mystic-runes.jpg" },
+
+];
+// --- FIN DE DATOS FALSOS ---
