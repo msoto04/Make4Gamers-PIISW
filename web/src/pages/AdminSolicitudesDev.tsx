@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../supabase';
 
 type DeveloperRequestRow = {
@@ -12,6 +13,7 @@ type DeveloperRequestRow = {
 };
 
 export default function AdminSolicitudesDev() {
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<DeveloperRequestRow[]>([]);
 
@@ -58,18 +60,18 @@ export default function AdminSolicitudesDev() {
     }
   };
 
-  if (loading) return <div className="py-8 text-slate-300">Cargando solicitudes...</div>;
+  if (loading) return <div className="py-8 text-slate-300">{t('admin.requests.loading')}</div>;
 
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-semibold text-white">Solicitudes de developer</h2>
-        <p className="text-sm text-slate-400">Gestiona aprobaciones y rechazos.</p>
+        <h2 className="text-xl font-semibold text-white">{t('admin.requests.title')}</h2>
+        <p className="text-sm text-slate-400">{t('admin.requests.subtitle')}</p>
       </div>
 
       {items.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/40 p-8 text-center text-slate-400">
-          No hay solicitudes registradas.
+          {t('admin.requests.empty')}
         </div>
       ) : (
         <div className="space-y-3">
@@ -79,7 +81,7 @@ export default function AdminSolicitudesDev() {
                 <div>
                   <p className="text-white font-semibold">{item.titulo}</p>
                   <p className="text-xs text-slate-400">
-                    {item.username ?? 'Usuario desconocido'} - {new Date(item.created_at).toLocaleString('es-ES')}
+                    {item.username ?? t('admin.requests.unknownUser')} - {new Date(item.created_at).toLocaleString(i18n.language || 'es-ES')}
                   </p>
                 </div>
                 <span
@@ -102,13 +104,13 @@ export default function AdminSolicitudesDev() {
                     onClick={() => updateStatus(item.id, 'aceptada')}
                     className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-500"
                   >
-                    Aceptar
+                    {t('admin.requests.accept')}
                   </button>
                   <button
                     onClick={() => updateStatus(item.id, 'rechazada')}
                     className="rounded-lg bg-rose-600 px-3 py-2 text-sm font-medium text-white hover:bg-rose-500"
                   >
-                    Rechazar
+                    {t('admin.requests.reject')}
                   </button>
                 </div>
               )}

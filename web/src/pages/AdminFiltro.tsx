@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../supabase';
 import { ShieldAlert, Trash2, Plus, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -19,6 +20,7 @@ function getForbiddenWordErrorMessage(error: { code?: string; message?: string }
 }
 
 export default function AdminFiltro() {
+  const { t } = useTranslation();
   const [words, setWords] = useState<any[]>([]);
   const [newWord, setNewWord] = useState('');
   const [loading, setLoading] = useState(true);
@@ -46,7 +48,7 @@ export default function AdminFiltro() {
       console.error('Error creando palabra prohibida:', error);
       toast.error(getForbiddenWordErrorMessage(error));
     } else {
-      toast.success('Palabra añadida al filtro');
+      toast.success(t('admin.wordFilterPage.added'));
       setNewWord('');
       fetchWords();
     }
@@ -60,10 +62,10 @@ export default function AdminFiltro() {
       return;
     }
     fetchWords();
-    toast.success('Palabra eliminada');
+    toast.success(t('admin.wordFilterPage.deleted'));
   };
 
-  if (loading) return <div className="text-center text-white py-20">Cargando...</div>;
+  if (loading) return <div className="text-center text-white py-20">{t('admin.wordFilterPage.loading')}</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-6 mt-10 bg-slate-900 border border-slate-800 rounded-2xl">
@@ -71,14 +73,14 @@ export default function AdminFiltro() {
         to="/" 
         className="inline-flex items-center gap-2 text-slate-400 hover:text-indigo-400 mb-8 transition-colors font-medium">
         <ArrowLeft size={20} />
-        Volver al inicio
+        {t('admin.backHome')}
       </Link>
 
       <div className="flex items-center gap-3 mb-8">
         <ShieldAlert className="text-red-500" size={32} />
         <div>
-          <h1 className="text-2xl font-bold text-white">Filtro de Chat</h1>
-          <p className="text-slate-400">Gestiona las palabras ofensivas censuradas automáticamente.</p>
+          <h1 className="text-2xl font-bold text-white">{t('admin.wordFilterPage.title')}</h1>
+          <p className="text-slate-400">{t('admin.wordFilterPage.subtitle')}</p>
         </div>
       </div>
 
@@ -87,11 +89,11 @@ export default function AdminFiltro() {
           type="text"
           value={newWord}
           onChange={(e) => setNewWord(e.target.value)}
-          placeholder="Escriba una palabra"
+          placeholder={t('admin.wordFilterPage.placeholder')}
           className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-white"
         />
         <button type="submit" className="bg-red-600 hover:bg-red-500 text-white px-6 py-2 rounded-lg flex items-center gap-2">
-          <Plus size={20} /> Añadir
+          <Plus size={20} /> {t('admin.wordFilterPage.add')}
         </button>
       </form>
 
