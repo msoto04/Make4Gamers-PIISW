@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Gamepad2, Play, AlertCircle, Pencil } from 'lucide-react';
+import { Gamepad2, Play, Pencil, Plus } from 'lucide-react';
 import { supabase } from '../../../supabase';
 import type { Game } from '../../games/services/getGames';
 
@@ -48,18 +48,34 @@ export default function DevMyGamesSection() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-white">Mis juegos</h2>
-        <span className="rounded-full border border-slate-700 bg-slate-800/60 px-3 py-1 text-xs font-semibold text-slate-400">
-          {games.length} juego{games.length !== 1 ? 's' : ''}
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="rounded-full border border-slate-700 bg-slate-800/60 px-3 py-1 text-xs font-semibold text-slate-400">
+            {games.length} juego{games.length !== 1 ? 's' : ''}
+          </span>
+          <Link
+            to="/dev-game-new"
+            className="flex items-center gap-1.5 rounded-lg border border-violet-500/30 bg-violet-500/15 px-3 py-1.5 text-xs font-semibold text-violet-300 transition-colors hover:bg-violet-500/25 hover:text-violet-200"
+          >
+            <Plus size={13} />
+            Añadir juego
+          </Link>
+        </div>
       </div>
 
       {!games.length ? (
         <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-slate-700 py-20 text-center">
-          <AlertCircle size={40} className="text-slate-600" />
+          <Gamepad2 size={40} className="text-slate-600" />
           <div>
-            <p className="font-medium text-slate-300">No has subido ningún juego todavía</p>
-            <p className="mt-1 text-sm text-slate-500">Contacta con el equipo de M4G para publicar tu primer juego.</p>
+            <p className="font-medium text-slate-300">Aún no has publicado ningún juego</p>
+            <p className="mt-1 text-sm text-slate-500">Empieza ahora y llega a miles de jugadores en M4G.</p>
           </div>
+          <Link
+            to="/dev-game-new"
+            className="flex items-center gap-2 rounded-xl border border-violet-500/30 bg-violet-500/15 px-5 py-2.5 text-sm font-semibold text-violet-300 transition-colors hover:bg-violet-500/25 hover:text-violet-200"
+          >
+            <Plus size={15} />
+            Publicar mi primer juego
+          </Link>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
