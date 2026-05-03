@@ -153,3 +153,28 @@ export function getGameProgress(gameTitle: string, score: number) {
     pointsNeeded: nextTierThreshold - score,
   };
 }
+
+
+export function getGameControllerData(tier: string) {
+  const basePath = '/assets/emblems';
+  switch(tier) {
+    case 'SNES': return { name: 'SNES', image: `${basePath}/nintendoEmblem.png`, color: 'text-slate-400', glow: 'shadow-slate-500/40', border: 'hover:border-slate-500/50', bgClass: 'bg-slate-400' };
+    case 'PS1': return { name: 'PS1', image: `${basePath}/ps1Emblem.png`, color: 'text-orange-400', glow: 'shadow-orange-500/40', border: 'hover:border-orange-500/50', bgClass: 'bg-orange-400' };
+    case 'PS3': return { name: 'PS3', image: `${basePath}/ps3Emblem.png`, color: 'text-slate-200', glow: 'shadow-slate-300/50', border: 'hover:border-slate-300/50', bgClass: 'bg-slate-200' };
+    case 'PS4': return { name: 'PS4', image: `${basePath}/ps4Emblem.png`, color: 'text-yellow-400', glow: 'shadow-yellow-500/50', border: 'hover:border-yellow-500/50', bgClass: 'bg-yellow-400' };
+    case 'PS5': return { name: 'PS5', image: `${basePath}/ps5Emblem.png`, color: 'text-fuchsia-400', glow: 'shadow-fuchsia-500/60', border: 'hover:border-fuchsia-500/50', bgClass: 'bg-fuchsia-400' };
+    default: return { name: 'SNES', image: `${basePath}/nintendoEmblem.png`, color: 'text-slate-500', glow: 'shadow-slate-500/20', border: 'hover:border-slate-500/50', bgClass: 'bg-slate-500' };
+  }
+}
+
+export function getGlobalControllerData(tier: string) {
+  const basePath = '/assets';
+  switch(tier) {
+    case 'Hierro': return { name: 'Iniciado', image: `${basePath}/hierro.png`, color: 'text-slate-400', bgClass: 'bg-slate-400', glowClass: 'shadow-[0_0_15px_rgba(148,163,184,0.6)]' };
+    case 'Bronce': return { name: 'Bronce', image: `${basePath}/bronce.png`, color: 'text-orange-400', bgClass: 'bg-orange-400', glowClass: 'shadow-[0_0_15px_rgba(251,146,60,0.6)]' };
+    case 'Plata': return { name: 'Plata', image: `${basePath}/plata.png`, color: 'text-slate-200', bgClass: 'bg-slate-200', glowClass: 'shadow-[0_0_15px_rgba(226,232,240,0.7)]' };
+    case 'Oro': return { name: 'Oro', image: `${basePath}/oro.png`, color: 'text-yellow-400', bgClass: 'bg-yellow-400', glowClass: 'shadow-[0_0_15px_rgba(250,204,21,0.7)]' };
+    case 'Obsidiana': return { name: 'Leyenda', image: `${basePath}/obsidiana.png`, color: 'text-fuchsia-400', bgClass: 'bg-fuchsia-400', glowClass: 'shadow-[0_0_20px_rgba(192,38,211,0.8)]' };
+    default: return { name: 'Iniciado', image: `${basePath}/hierro.png`, color: 'text-slate-400', bgClass: 'bg-slate-400', glowClass: 'shadow-[0_0_10px_rgba(148,163,184,0.4)]' };
+  }
+}

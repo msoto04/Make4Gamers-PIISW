@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Trophy, Medal, Crown, Gamepad2, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../supabase';
-import { getRankingByGame, getUserRankPosition, getPlayerTier, type RankingEntry } from '../features/ranking/services/ranking.service';
+import { getRankingByGame, getUserRankPosition, type RankingEntry } from '../features/ranking/services/ranking.service';
 import UserAvatar from '../shared/components/UserAvatar';
+import { getTierForScore, getGameControllerData } from '../features/progression/services/progression.service';
 
 export default function Ranking() {
     const { t } = useTranslation(); 
@@ -14,6 +15,7 @@ export default function Ranking() {
     const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const currentTitle = games.find(g => g.id === selectedGame)?.title || '';
 
     useEffect(() => {
         const init = async () => {
@@ -113,9 +115,9 @@ export default function Ranking() {
                                         <h3 className="font-bold text-lg text-white truncate w-full">{top3[1].username}</h3>
                                         <p className="text-2xl font-black text-slate-400 mt-1">{top3[1].best_score.toLocaleString()}</p>
                                       
-                                        <img src={getPlayerTier(top3[1].best_score).icon} alt="Rango" className="h-12 object-contain mt-3 drop-shadow-lg" />
-                                        <span className={`text-xs font-semibold uppercase tracking-wider mt-1 block ${getPlayerTier(top3[1].best_score).color}`}>
-                                            {getPlayerTier(top3[1].best_score).name}
+                                        <img src={getGameControllerData(getTierForScore(currentTitle, top3[1].best_score)).image} alt="Rango" className="h-12 object-contain mt-3 drop-shadow-lg" />
+                                        <span className={`text-xs font-semibold uppercase tracking-wider mt-1 block ${getGameControllerData(getTierForScore(currentTitle, top3[1].best_score)).color}`}>
+                                            {getGameControllerData(getTierForScore(currentTitle, top3[1].best_score)).name}
                                         </span>
                                     </div>
                                 </div>
@@ -132,9 +134,9 @@ export default function Ranking() {
                                         <h3 className="font-bold text-xl text-white truncate w-full">{top3[0].username}</h3>
                                         <p className="text-3xl font-black text-yellow-400 mt-1">{top3[0].best_score.toLocaleString()}</p>
                                     
-                                        <img src={getPlayerTier(top3[0].best_score).icon} alt="Rango" className="h-16 object-contain mt-3 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
-                                        <span className={`text-sm font-bold uppercase tracking-wider mt-1 block ${getPlayerTier(top3[0].best_score).color}`}>
-                                            {getPlayerTier(top3[0].best_score).name}
+                                        <img src={getGameControllerData(getTierForScore(currentTitle, top3[0].best_score)).image} alt="Rango" className="h-16 object-contain mt-3 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
+                                        <span className={`text-sm font-bold uppercase tracking-wider mt-1 block ${getGameControllerData(getTierForScore(currentTitle, top3[0].best_score)).color}`}>
+                                            {getGameControllerData(getTierForScore(currentTitle, top3[0].best_score)).name}
                                         </span>
                                     </div>
                                 </div>
@@ -153,9 +155,9 @@ export default function Ranking() {
                                         <h3 className="font-bold text-lg text-white truncate w-full">{top3[2].username}</h3>
                                         <p className="text-2xl font-black text-amber-600 mt-1">{top3[2].best_score.toLocaleString()}</p>
                                     
-                                        <img src={getPlayerTier(top3[2].best_score).icon} alt="Rango" className="h-12 object-contain mt-3 drop-shadow-lg" />
-                                        <span className={`text-xs font-semibold uppercase tracking-wider mt-1 block ${getPlayerTier(top3[2].best_score).color}`}>
-                                            {getPlayerTier(top3[2].best_score).name}
+                                        <img src={getGameControllerData(getTierForScore(currentTitle, top3[2].best_score)).image} alt="Rango" className="h-12 object-contain mt-3 drop-shadow-lg" />
+                                        <span className={`text-xs font-semibold uppercase tracking-wider mt-1 block ${getGameControllerData(getTierForScore(currentTitle, top3[2].best_score)).color}`}>
+                                            {getGameControllerData(getTierForScore(currentTitle, top3[2].best_score)).name}
                                         </span>
                                     </div>
                                 </div>
@@ -173,9 +175,12 @@ export default function Ranking() {
                                 </div>
                                 <div className="divide-y divide-slate-800/50">
                                     {restOfRanking.map((entry, index) => {
+                                        const currentTitle = games.find(g => g.id === selectedGame)?.title || '';
                                         const rankNumber = index + 4; 
-                                        const tier = getPlayerTier(entry.best_score);
+                                        const tierName = getTierForScore(currentTitle, entry.best_score);
+                                        const tier = getGameControllerData(tierName);
                                         const isMe = entry.user_id === currentUserId;
+
 
                                         return (
                                             <div key={entry.user_id} className={`grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-800/50 transition-colors ${isMe ? 'bg-indigo-500/10 hover:bg-indigo-500/20' : ''}`}>
@@ -191,7 +196,7 @@ export default function Ranking() {
                                                 
 
                                                 <div className="col-span-4 hidden md:flex items-center justify-center gap-3">
-                                                    <img src={tier.icon} alt={tier.name} className="h-10 object-contain drop-shadow-md" title={tier.name} />
+                                                    <img src={tier.image} alt={tier.name} className="h-10 object-contain drop-shadow-md" title={tier.name} />
                                                     <span className={`px-3 py-1 rounded-full text-xs font-bold border border-slate-700/50 bg-slate-950/50 ${tier.color}`}>
                                                         {tier.name}
                                                     </span>
@@ -227,7 +232,7 @@ export default function Ranking() {
                    
                     <div className="hidden md:flex items-center gap-3">
                         <img 
-                            src={getPlayerTier(rankingData[currentUserRank - 1].best_score).icon} 
+                            src={getGameControllerData(getTierForScore(currentTitle, rankingData[currentUserRank - 1].best_score)).image} 
                             alt="Tu Rango" 
                             className="h-12 object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" 
                         />
