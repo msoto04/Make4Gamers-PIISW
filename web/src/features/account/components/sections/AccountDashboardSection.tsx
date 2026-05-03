@@ -42,6 +42,56 @@ export function AccountDashboardSection({ profile, highScores }: AccountDashboar
 
   return (
     <section className="space-y-6 w-full pb-8">
+
+
+      <div className="relative overflow-hidden rounded-3xl border border-slate-700/50 bg-slate-900 p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 shadow-2xl w-full">
+        
+       
+        <div className="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+        <div className="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-slate-800/40 to-transparent pointer-events-none"></div>
+
+  
+        <div className="relative z-10 shrink-0">
+          <div className="p-1.5 bg-slate-950/80 rounded-full border border-slate-700/50 shadow-inner">
+            <UserAvatar src={profile.avatar_url} name={profile.username} size={88} />
+          </div>
+        </div>
+
+      
+        <div className="relative z-10 flex-1 text-center sm:text-left min-w-0 w-full flex flex-col items-center sm:items-start">
+          
+        
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-950/80 border border-slate-800 mb-3 shadow-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">
+              {profile.role === 'admin' ? 'Administrador' : 'Jugador Oficial'}
+            </span>
+          </div>
+          
+        
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center sm:justify-start">
+            <h3 className="text-white text-3xl font-black tracking-tight truncate">
+              {profile.username || t('account.dashboard.defaultUser')}
+            </h3>
+
+            {profile.subscription_tier === 'premium' && (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gradient-to-r from-yellow-500/10 to-yellow-600/5 border border-yellow-500/20">
+                <Save size={14} className="text-yellow-500 fill-yellow-500/20" />
+                <span className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest hidden sm:inline-block">Premium</span>
+              </div>
+            )}
+          </div>
+
+         
+          <p className="text-slate-500 text-sm mt-1.5 font-medium">
+            {profile.location ? profile.location : 'Miembro de la comunidad'}
+          </p>
+        </div>
+      </div>
       
       <div className="relative w-full overflow-hidden bg-slate-950 border border-slate-700/50 rounded-[2.5rem] p-5 sm:p-8 shadow-[0_0_40px_-10px_rgba(0,0,0,0.5)]">
         
@@ -120,25 +170,7 @@ export function AccountDashboardSection({ profile, highScores }: AccountDashboar
         </div>
       </div>
 
-      <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 flex flex-col sm:flex-row items-center gap-6 shadow-xl w-full">
-        <UserAvatar src={profile.avatar_url} name={profile.username} size={80} />
-        <div className="flex-1 text-center sm:text-left min-w-0 w-full">
-          <div className="flex items-center justify-center sm:justify-start gap-2">
-            <h3 className="text-white text-2xl font-bold truncate">
-              {profile.username || t('account.dashboard.defaultUser')}
-            </h3>
 
-            {profile.subscription_tier === 'premium' && (
-              <span title="Usuario Premium" className="flex items-center">
-                <Save 
-                  size={24} 
-                  className="text-yellow-500 fill-yellow-500/20 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)] shrink-0 animate-pulse" 
-                />
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
 
       <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-xl w-full">
         <div className="flex items-center gap-3 mb-6">
