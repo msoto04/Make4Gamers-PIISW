@@ -18,6 +18,8 @@ import Ayuda from './pages/Ayuda';
 import Contacto from './pages/Contacto';
 import Estadisticas from './pages/Estadisticas';
 import Admin from './pages/Admin';
+import Developer from './pages/Developer';
+import DevManual from './pages/DevManual';
 function App() {
   return (
     <>
@@ -42,6 +44,8 @@ function App() {
           <Route path="/recuperar-password" element={<RecuperarPassword />} />
           <Route path="/actualizar-password" element={<ActualizarPassword />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/developer" element={<Developer />} />
+          <Route path="/dev-manual" element={<DevManual />} />
 
           {/* Main */}
           <Route element={<Layout />}>

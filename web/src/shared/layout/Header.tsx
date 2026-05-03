@@ -18,6 +18,7 @@ const Header = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isDeveloper, setIsDeveloper] = useState(false);
 
 
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -43,6 +44,9 @@ const Header = () => {
 
                 if (profile?.role === 'admin') {
                     setIsAdmin(true);
+                }
+                if (profile?.role === 'developer' || profile?.role === 'admin') {
+                    setIsDeveloper(true);
                 }
 
 
@@ -229,6 +233,14 @@ const Header = () => {
 
 
 
+                    {isDeveloper && (
+                        <Link
+                            to="/developer"
+                            className="hidden md:inline uppercase text-[11px] bg-violet-500/10 px-2 py-0.5 rounded border border-violet-500/30 text-violet-300 hover:text-violet-200 hover:border-violet-400/50 transition-colors"
+                        >
+                            Dev
+                        </Link>
+                    )}
                     {isAdmin && (
                         <Link
                             to="/admin"
