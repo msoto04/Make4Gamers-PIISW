@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 
 import { 
   getGlobalTier, 
-  calculateLazyGlobalScore 
+  calculateLazyGlobalScore,
+  getGameControllerData,
+  getGlobalControllerData 
 } from '../features/progression/services/progression.service';
 import GlobalRankEmblem from '../features/progression/components/GlobalRankEmblem';
 import { getTierForScore } from '../features/progression/services/progression.service';
@@ -27,16 +29,7 @@ const IconMap: Record<string, any> = {
   Medal,
   Star
 }; 
-const getTierColor = (tier: string) => {
-  switch(tier) {
-    case 'Hierro': return 'text-slate-400 bg-slate-400/10 border-slate-400/30';
-    case 'Bronce': return 'text-orange-500 bg-orange-500/10 border-orange-500/30';
-    case 'Plata': return 'text-blue-300 bg-blue-300/10 border-blue-300/30'; 
-    case 'Oro': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30';
-    case 'Obsidiana': return 'text-fuchsia-400 bg-fuchsia-400/10 border-fuchsia-400/30';
-    default: return 'text-indigo-400 bg-indigo-400/10 border-indigo-400/30';
-  }
-};
+
 
 const getControllerData = (tier: string) => {
   const basePath = '/assets/emblems';
@@ -70,7 +63,6 @@ export default function PerfilUsuario() {
   const [userAchievements, setUserAchievements] = useState<any[]>([]);
   const globalScore = calculateLazyGlobalScore(highScores || []);
   const globalTier = getGlobalTier(globalScore);
-  const tierStyles = getTierColor(globalTier);
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [reportDetails, setReportDetails] = useState('');
@@ -269,7 +261,8 @@ useEffect(() => {
                   </div>
                
                   <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 mt-2">
-                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full border shadow-sm ${tierStyles}`}>
+      
+                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full border shadow-sm ${getGlobalControllerData(globalTier).color} border-current bg-slate-800/50`}>
                         <Star size={14} fill="currentColor" />
                         <span className="text-xs font-black uppercase tracking-widest">
                           Rango {globalTier}
@@ -341,9 +334,10 @@ useEffect(() => {
             </h3>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {highScores.map((record, index) => {
-                const tier = getTierForScore(record.displayTitle, record.score);
-                const controller = getControllerData(tier);
+                {highScores.map((record, index) => {
+      
+                const tierName = getTierForScore(record.displayTitle, record.score);
+                const controller = getGameControllerData(tierName);
 
                 return (
                   <div 
@@ -364,8 +358,8 @@ useEffect(() => {
 
                      
                       <div className="relative w-full h-40 flex items-center justify-center mb-6">
-                        {/* Resplandor de fondo */}
-                        <div className={`absolute w-24 h-24 rounded-full blur-[40px] opacity-20 ${controller.glow} bg-current`}></div>
+                   
+                        <div className={`absolute w-24 h-24 rounded-full blur-[40px] opacity-20 ${controller.glow} bg-current ${controller.color}`}></div>
                         
                         <img 
                           src={controller.image} 
