@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Gamepad2, Play, AlertCircle, ExternalLink } from 'lucide-react';
+import { Gamepad2, Play, AlertCircle, Pencil } from 'lucide-react';
 import { supabase } from '../../../supabase';
 import type { Game } from '../../games/services/getGames';
 
@@ -118,11 +118,11 @@ export default function DevMyGamesSection() {
                       Jugar
                     </Link>
                     <Link
-                      to={`/juegos/${game.id}/reglas`}
-                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/60 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:border-slate-600 hover:text-white"
+                      to={`/dev-game/${game.id}`}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/60 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:border-violet-500/30 hover:bg-violet-500/10 hover:text-violet-300"
                     >
-                      <ExternalLink size={12} />
-                      Ver ficha
+                      <Pencil size={12} />
+                      Editar
                     </Link>
                   </div>
                 </div>

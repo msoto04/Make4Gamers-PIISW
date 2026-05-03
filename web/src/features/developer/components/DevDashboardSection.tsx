@@ -159,7 +159,7 @@ export default function DevDashboardSection() {
               return (
                 <Link
                   key={game.id}
-                  to={`/juegos/${game.id}/reglas`}
+                  to={`/dev-game/${game.id}`}
                   className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/50 px-4 py-3 transition-colors hover:border-violet-500/30 hover:bg-violet-500/5"
                 >
                   <div className="flex items-center gap-3">
