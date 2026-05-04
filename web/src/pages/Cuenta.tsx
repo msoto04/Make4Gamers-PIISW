@@ -735,7 +735,7 @@ export default function Cuenta() {
                 )}
                 
                 {activeSection === 'personal' && (
-                  <div className="flex-1 h-full min-h-full">
+                  <div className="pb-6">
                     <AccountPersonalSection
                       profile={profile}
                       uploadingAvatar={uploadingAvatar}
