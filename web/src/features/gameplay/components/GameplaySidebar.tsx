@@ -9,6 +9,7 @@ import { getGameProgress } from "../../progression/services/progression.service"
 export type GameplayTab = "chat" | "history";
 
 const SKIP_KEYS = new Set(["game_id", "territory"]);
+const REACTIONS = ["🔥", "❤️", "😂", "👍", "💀"];
 
 function formatKey(key: string): string {
   return key
@@ -87,7 +88,9 @@ export default function GameplaySidebar({
 
   const [tab, setTab] = useState<GameplayTab>("chat");
   const [chatInput, setChatInput] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
 
   const supportsHistory = useMemo(() => {
     const modes = availableModes ?? [];
@@ -101,6 +104,17 @@ export default function GameplaySidebar({
     return getGameProgress(gameTitle, myScore ?? 0);
   }, [scoreLoading, gameTitle, myScore]);
 
+  // Cerrar picker al hacer click fuera
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setShowEmojiPicker(false);
+      }
+    };
+    if (showEmojiPicker) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showEmojiPicker]);
+
   // Auto-scroll al último mensaje
   useEffect(() => {
     if (tab === "chat") {
@@ -113,6 +127,11 @@ export default function GameplaySidebar({
     if (!value) return;
     setChatInput("");
     await sendMessage(value);
+  };
+
+  const handleReaction = async (emoji: string) => {
+    setShowEmojiPicker(false);
+    await sendMessage(emoji);
   };
 
   return (
@@ -199,15 +218,19 @@ export default function GameplaySidebar({
                     {!isOwn && (
                       <span className="text-[10px] text-slate-500 px-1">{senderName}</span>
                     )}
-                    <div
-                      className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-snug break-words ${
-                        isOwn
-                          ? "bg-indigo-600 text-white rounded-br-sm"
-                          : "bg-slate-800 text-slate-200 rounded-bl-sm"
-                      }`}
-                    >
-                      {msg.content}
-                    </div>
+                    {REACTIONS.includes(msg.content) ? (
+                      <span className="text-3xl leading-none px-1">{msg.content}</span>
+                    ) : (
+                      <div
+                        className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-snug break-words ${
+                          isOwn
+                            ? "bg-indigo-600 text-white rounded-br-sm"
+                            : "bg-slate-800 text-slate-200 rounded-bl-sm"
+                        }`}
+                      >
+                        {msg.content}
+                      </div>
+                    )}
                     <span className="text-[10px] text-slate-600 px-1">{time}</span>
                   </div>
                 );
@@ -216,7 +239,36 @@ export default function GameplaySidebar({
             <div ref={bottomRef} />
           </div>
 
-          <div className="p-3 border-t border-slate-800 flex gap-2 shrink-0">
+          <div ref={pickerRef} className="p-3 border-t border-slate-800 flex gap-2 shrink-0 relative">
+            {/* Emoji picker */}
+            {showEmojiPicker && (
+              <div className="absolute bottom-full left-3 mb-2 bg-slate-800 border border-slate-700 rounded-2xl px-3 py-2 flex gap-1 shadow-2xl shadow-black/40">
+                {REACTIONS.map((emoji) => (
+                  <button
+                    key={emoji}
+                    onClick={() => handleReaction(emoji)}
+                    className="text-2xl hover:scale-125 active:scale-110 transition-transform p-1 rounded-xl hover:bg-slate-700"
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Botón emoji */}
+            <button
+              onClick={() => setShowEmojiPicker((v) => !v)}
+              disabled={!matchId}
+              className={`text-xl px-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+                showEmojiPicker
+                  ? "bg-slate-700 text-white"
+                  : "text-slate-400 hover:text-white hover:bg-slate-800"
+              }`}
+              title="Reacciones"
+            >
+              😊
+            </button>
+
             <input
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
