@@ -1,15 +1,14 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGameScore } from "../hooks/useGameScore";
+import { useMatchChat } from "../hooks/useMatchChat";
 import type { MatchMovement } from "../hooks/useMatchMovements";
 import type { MatchPlayer } from "../hooks/useActiveMatch";
-
-
 import { getGameProgress } from "../../progression/services/progression.service";
 
 export type GameplayTab = "chat" | "history";
 
-const SKIP_KEYS = new Set(["game_id"]);
+const SKIP_KEYS = new Set(["game_id", "territory"]);
 
 function formatKey(key: string): string {
   return key
@@ -66,7 +65,8 @@ function MoveCard({ movement, playerName }: { movement: MatchMovement; playerNam
 type Props = {
   userId: string | null;
   gameId: string | null;
-  gameTitle?: string; 
+  matchId?: string | null;
+  gameTitle?: string;
   movements: MatchMovement[];
   players?: MatchPlayer[];
   availableModes?: string[] | null;
@@ -75,6 +75,7 @@ type Props = {
 export default function GameplaySidebar({
   userId,
   gameId,
+  matchId,
   gameTitle,
   movements,
   players,
@@ -82,10 +83,11 @@ export default function GameplaySidebar({
 }: Props) {
   const { t } = useTranslation();
   const { score: myScore, loading: scoreLoading } = useGameScore(userId, gameId);
+  const { messages, sendMessage, loading: chatLoading } = useMatchChat(matchId ?? null, userId);
 
   const [tab, setTab] = useState<GameplayTab>("chat");
   const [chatInput, setChatInput] = useState("");
-  const [chatMessages, setChatMessages] = useState<string[]>([]);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   const supportsHistory = useMemo(() => {
     const modes = availableModes ?? [];
@@ -94,30 +96,31 @@ export default function GameplaySidebar({
     );
   }, [availableModes]);
 
-  const sendChat = () => {
-    const value = chatInput.trim();
-    if (!value) return;
-    setChatMessages((prev) => [...prev, value]);
-    setChatInput("");
-  };
-
-
   const progress = useMemo(() => {
     if (scoreLoading || !gameTitle) return null;
     return getGameProgress(gameTitle, myScore ?? 0);
   }, [scoreLoading, gameTitle, myScore]);
 
+  // Auto-scroll al último mensaje
+  useEffect(() => {
+    if (tab === "chat") {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, tab]);
+
+  const handleSend = async () => {
+    const value = chatInput.trim();
+    if (!value) return;
+    setChatInput("");
+    await sendMessage(value);
+  };
+
   return (
     <aside className="h-[600px] rounded-xl border border-slate-800 bg-slate-900 flex flex-col overflow-hidden">
-      
-  
-      {!scoreLoading && progress && progress.nextTierName !== 'MAX' && progress.pointsNeeded <= 1500 && (
-       
+
+      {!scoreLoading && progress && progress.nextTierName !== "MAX" && progress.pointsNeeded <= 1500 && (
         <div className="bg-gradient-to-r from-indigo-900 to-slate-900 border-b border-indigo-500/30 px-4 py-3 shadow-inner relative overflow-hidden shrink-0">
-          
-          {/* Brillo de fondo */}
-          <div className="absolute -top-10 -right-10 w-24 h-24 bg-indigo-500/20 blur-2xl rounded-full pointer-events-none"></div>
-          
+          <div className="absolute -top-10 -right-10 w-24 h-24 bg-indigo-500/20 blur-2xl rounded-full pointer-events-none" />
           <p className="text-[11px] font-bold text-indigo-300 uppercase tracking-widest mb-1 relative z-10 flex items-center gap-1">
             <span className="text-yellow-400"></span> ¡ESTÁS EN RACHA!
           </p>
@@ -126,7 +129,6 @@ export default function GameplaySidebar({
           </p>
         </div>
       )}
-     
 
       {/* Score */}
       <div className="px-4 py-3 border-b border-indigo-500/50 bg-slate-900 shadow-xl shadow-indigo-500/10 shrink-0">
@@ -148,6 +150,11 @@ export default function GameplaySidebar({
           }`}
         >
           {t("gameplay.chat")}
+          {messages.length > 0 && (
+            <span className="ml-1.5 text-[10px] bg-indigo-500/20 text-indigo-400 rounded-full px-1.5 py-0.5">
+              {messages.length}
+            </span>
+          )}
         </button>
         <button
           onClick={() => setTab("history")}
@@ -166,28 +173,63 @@ export default function GameplaySidebar({
 
       {/* Chat */}
       {tab === "chat" ? (
-        <div className="flex flex-col h-full overflow-hidden">
-          <div className="flex-1 overflow-auto p-3 space-y-2">
-            {chatMessages.length === 0 ? (
+        <div className="flex flex-col min-h-0 flex-1 overflow-hidden">
+          <div className="flex-1 overflow-auto p-3 space-y-3">
+            {chatLoading ? (
+              <p className="text-slate-500 text-sm">Cargando chat...</p>
+            ) : !matchId ? (
+              <p className="text-slate-500 text-sm">Inicia la partida para chatear con los jugadores.</p>
+            ) : messages.length === 0 ? (
               <p className="text-slate-500 text-sm">{t("gameplay.noMessages")}</p>
             ) : (
-              chatMessages.map((m, i) => (
-                <div key={i} className="text-sm bg-slate-800 rounded p-2">
-                  {m}
-                </div>
-              ))
+              messages.map((msg) => {
+                const isOwn = msg.sender_id === userId;
+                const senderName =
+                  players?.find((p) => p.id === msg.sender_id)?.username ?? "Jugador";
+                const time = new Date(msg.created_at).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+
+                return (
+                  <div
+                    key={msg.id}
+                    className={`flex flex-col gap-0.5 ${isOwn ? "items-end" : "items-start"}`}
+                  >
+                    {!isOwn && (
+                      <span className="text-[10px] text-slate-500 px-1">{senderName}</span>
+                    )}
+                    <div
+                      className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-snug break-words ${
+                        isOwn
+                          ? "bg-indigo-600 text-white rounded-br-sm"
+                          : "bg-slate-800 text-slate-200 rounded-bl-sm"
+                      }`}
+                    >
+                      {msg.content}
+                    </div>
+                    <span className="text-[10px] text-slate-600 px-1">{time}</span>
+                  </div>
+                );
+              })
             )}
+            <div ref={bottomRef} />
           </div>
 
-          <div className="p-3 border-t border-slate-800 flex gap-2">
+          <div className="p-3 border-t border-slate-800 flex gap-2 shrink-0">
             <input
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && sendChat()}
-              placeholder={t("gameplay.writeMessage")}
-              className="flex-1 bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm outline-none"
+              onKeyDown={(e) => e.key === "Enter" && handleSend()}
+              placeholder={matchId ? t("gameplay.writeMessage") : "Inicia la partida..."}
+              disabled={!matchId}
+              className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed"
             />
-            <button onClick={sendChat} className="px-3 py-2 rounded bg-indigo-600 hover:bg-indigo-500 text-sm">
+            <button
+              onClick={handleSend}
+              disabled={!matchId || !chatInput.trim()}
+              className="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm transition-colors"
+            >
               {t("gameplay.send")}
             </button>
           </div>

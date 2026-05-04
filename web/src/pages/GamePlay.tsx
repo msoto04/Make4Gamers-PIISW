@@ -464,6 +464,7 @@ export default function Gameplay() {
             <GameplaySidebar
               userId={userId}
               gameId={game.id}
+              matchId={matchId}
               gameTitle={game.title}
               movements={movements}
               players={allPlayers}
