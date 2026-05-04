@@ -42,19 +42,18 @@ export function AccountFriendsSection({
 
       <div className="space-y-3">
         {filteredFriends.map((friend) => (
-          <div key={friend.id} className="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-800/50 transition-colors group">
+          <div key={friend.id} className="flex items-center justify-between p-4 bg-slate-800/40 border border-slate-700/50 rounded-2xl hover:bg-slate-800 transition-all group">
             
-            <Link
-              to={`/jugador/${friend.username}`}
-              className="flex items-center gap-3 flex-1 min-w-0 mr-4"
+           
+            <Link 
+              to={`/usuario/${friend.username}`} 
+              className="flex-1 flex items-center gap-3 group"
             >
-              <div className="relative shrink-0">
-                <UserAvatar src={friend.avatar_url} name={friend.username} size={44} />
-                <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 border-2 border-slate-900 rounded-full ${friend.status === 'Online' ? 'bg-green-500' : 'bg-slate-500'}`}></div>
+              <div className="relative">
+                <UserAvatar src={friend.avatar_url} name={friend.username} size={45} />
+                <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-slate-900 ${friend.status === 'online' ? 'bg-green-500' : 'bg-slate-500'}`} />
               </div>
-              
-              <div className="min-w-0">
-                {/* ✨ CONTENEDOR DEL NOMBRE Y DISQUETE */}
+              <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1 group-hover:text-indigo-400 transition-colors">
                   <p className="text-white font-medium truncate">
                     {friend.username}
@@ -80,7 +79,7 @@ export function AccountFriendsSection({
             </Link>
 
           </div>
-        ))}  
+        ))}
 
         {filteredFriends.length === 0 && (
           <div className="text-center py-10">
