@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { getScoringSettings, updateScoringSetting } from '../services/settings.service';
 
-// 1. AHORA SON NÚMEROS REALES (Sin comillas)
+
 const DEFAULT_THRESHOLDS: Record<string, number> = {
   // Globales
   global_bronce: 50,
@@ -24,7 +24,7 @@ const DEFAULT_THRESHOLDS: Record<string, number> = {
 
 export default function AdminFormulas() {
   const { t } = useTranslation();
-  // 2. EL ESTADO AHORA ESPERA NÚMEROS
+
   const [thresholds, setThresholds] = useState<Record<string, number>>(DEFAULT_THRESHOLDS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -55,7 +55,7 @@ export default function AdminFormulas() {
       const response = await getScoringSettings(supabase);
       if (response.success && response.data) {
         const dbSettings = response.data.reduce((acc: Record<string, number>, curr: any) => {
-          // Convertimos lo que viene de la base de datos a número por si acaso
+
           acc[curr.setting_key] = Number(curr.setting_value);
           return acc;
         }, {});
@@ -69,7 +69,7 @@ export default function AdminFormulas() {
     }
   };
 
-  // 3. CONVERTIMOS EL TEXTO DEL INPUT A NÚMERO
+ 
   const handleValueChange = (key: string, newValue: string) => {
     setThresholds(prev => ({ ...prev, [key]: Number(newValue) }));
   };
