@@ -8,10 +8,10 @@ type GameCardProps = {
   genre: string;
   rating: number;
   players: number;
-  
+  isPremium?: boolean;
 };
 
-export default function GameCard({ title, image, genre, rating, players }: GameCardProps) {
+export default function GameCard({ title, image, genre, rating, players, isPremium }: GameCardProps) {
   const { t } = useTranslation();
 
   return (
@@ -40,8 +40,14 @@ export default function GameCard({ title, image, genre, rating, players }: GameC
       {/* Contenido */}
       <div className="p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="font-semibold text-white text-lg line-clamp-1 group-hover:text-indigo-400 transition-colors">
+          {/* Estrella */}
+          <h3 className="font-semibold text-white text-lg line-clamp-1 group-hover:text-indigo-400 transition-colors flex items-center gap-2">
             {title}
+            {isPremium && (
+               <span title="Juego Exclusivo Next Gen" className="flex shrink-0">
+                 <Star size={16} className="text-yellow-500 fill-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.8)]" />
+               </span>
+            )}
           </h3>
         </div>
 
@@ -49,7 +55,7 @@ export default function GameCard({ title, image, genre, rating, players }: GameC
           {t(`genres.${genre.toLowerCase()}`, { defaultValue: genre })}
         </p>
 
-        <div className="flex items-center gap-1 text-slate-400">
+        <div className="flex items-center gap-1 text-slate-400 mt-3">
           <Users size={16} />
           <span className="text-sm">{players.toLocaleString()}</span>
         </div>
