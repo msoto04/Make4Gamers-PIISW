@@ -64,7 +64,7 @@ export function AccountPersonalSection({
   const { t } = useTranslation();
 
   return (
-    <section className="h-full bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+    <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 pb-8 shadow-2xl relative overflow-x-hidden">
       <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -mr-20 -mt-20" />
 
       <div className="relative flex flex-col xl:flex-row items-start xl:items-center gap-6 mb-6">
