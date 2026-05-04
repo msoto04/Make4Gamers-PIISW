@@ -1,6 +1,6 @@
 import type { ChangeEvent, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Activity, Camera, Check, Edit2, X, Save } from 'lucide-react';
+import { Activity, Camera, Check, Edit2, X, Save, Code2, Gamepad2, Zap } from 'lucide-react';
 import AvatarPlaceholder from '../../../../shared/components/AvatarPlaceholder';
 
 type ProfileDetails = {
@@ -203,49 +203,76 @@ export function AccountPersonalSection({
       </div>
 
       {profile.role !== 'developer' && profile.role !== 'admin' && (
-        <div className="mt-5 rounded-xl border border-slate-700 bg-slate-900/70 p-4">
-          <h3 className="text-base font-semibold text-white">Solicitud de rol developer</h3>
-          <p className="mt-1 text-sm text-slate-400">
-            Envia una solicitud para acceder al rol de developer.
-          </p>
+        <div className="mt-5 relative rounded-2xl overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 rounded-2xl" />
+          <div className="relative m-px rounded-2xl bg-slate-900/95 p-5">
+            <div className="flex items-start gap-4">
+              <div className="shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                <Code2 size={22} className="text-white" />
+              </div>
 
-          {developerRequest && (
-            <div className="mt-3 rounded-lg border border-slate-700 bg-slate-800/70 px-3 py-2 text-sm">
-              <span className="text-slate-300">Estado actual: </span>
-              <span
-                className={
-                  developerRequest.estado === 'aceptada'
-                    ? 'text-emerald-400'
-                    : developerRequest.estado === 'rechazada'
-                      ? 'text-rose-400'
-                      : 'text-amber-400'
-                }
-              >
-                {developerRequest.estado}
-              </span>
+              <div className="flex-1 min-w-0">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 mb-2">
+                  <Gamepad2 size={11} />
+                  DEVELOPER
+                </span>
+                <h3 className="text-base font-bold text-white leading-snug">
+                  ¿Eres desarrollador y quieres crear juegos o buscar donde alojarlos?
+                </h3>
+                <p className="mt-1 text-sm font-semibold text-indigo-300">
+                  ¿Quieres formar parte del equipo de M4G?
+                </p>
+                <p className="mt-1.5 text-sm text-slate-400">
+                  Solicita el rol developer y empieza a publicar tus proyectos en la plataforma.
+                </p>
+              </div>
             </div>
-          )}
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            {developerRequest?.estado === 'pendiente' ? (
-              <button
-                type="button"
-                onClick={onCancelDeveloperRequest}
-                disabled={cancellingDeveloperRequest}
-                className="w-fit rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {cancellingDeveloperRequest ? 'Cancelando...' : 'Cancelar solicitud'}
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={onOpenDeveloperRequestModal}
-                disabled={creatingDeveloperRequest}
-                className="w-fit rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {creatingDeveloperRequest ? 'Enviando...' : 'Solicitar rol developer'}
-              </button>
+            {developerRequest && (
+              <div className="mt-4 flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/70 px-3 py-2 text-sm w-fit">
+                <div className={`w-2 h-2 rounded-full shrink-0 ${
+                  developerRequest.estado === 'aceptada'
+                    ? 'bg-emerald-400'
+                    : developerRequest.estado === 'rechazada'
+                      ? 'bg-rose-400'
+                      : 'bg-amber-400 animate-pulse'
+                }`} />
+                <span className="text-slate-300">Solicitud </span>
+                <span className={
+                  developerRequest.estado === 'aceptada'
+                    ? 'text-emerald-400 font-medium'
+                    : developerRequest.estado === 'rechazada'
+                      ? 'text-rose-400 font-medium'
+                      : 'text-amber-400 font-medium'
+                }>
+                  {developerRequest.estado}
+                </span>
+              </div>
             )}
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              {developerRequest?.estado === 'pendiente' ? (
+                <button
+                  type="button"
+                  onClick={onCancelDeveloperRequest}
+                  disabled={cancellingDeveloperRequest}
+                  className="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-rose-600/20 border border-rose-600/40 px-4 py-2 text-sm font-medium text-rose-400 transition-colors hover:bg-rose-600/30 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <X size={14} />
+                  {cancellingDeveloperRequest ? 'Cancelando...' : 'Cancelar solicitud'}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={onOpenDeveloperRequestModal}
+                  disabled={creatingDeveloperRequest}
+                  className="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all hover:from-indigo-500 hover:to-violet-500 hover:shadow-indigo-500/40 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Zap size={14} />
+                  {creatingDeveloperRequest ? 'Enviando...' : 'Quiero ser Developer'}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
