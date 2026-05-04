@@ -1,4 +1,4 @@
-import { Users, Star, Lock } from 'lucide-react';
+import { Users, Star, Crown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion } from "framer-motion";
 
@@ -10,11 +10,11 @@ type GameCardProps = {
   players: number;
   status?: string;
   isPremium?: boolean;
-  
 };
 
-export default function GameCard({ title, image, genre, rating, players, isPremium }: GameCardProps) {
+export default function GameCard({ title, image, genre, rating, players, status, isPremium }: GameCardProps) {
   const { t } = useTranslation();
+  const isVip = isPremium || status === 'review';
 
   return (
     <motion.div
@@ -27,21 +27,22 @@ export default function GameCard({ title, image, genre, rating, players, isPremi
     >
       {/* Imagen */}
       <div className="relative h-48 overflow-hidden bg-slate-800">
-
-   
-        {status === 'review' && (
-          <div className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-lg shadow-[0_0_15px_rgba(245,158,11,0.5)] z-20 flex items-center gap-1 border border-amber-300/30">
-            <Lock size={12} />
-            Premium Beta
-          </div>
-        )}
-      
         <img
           src={image}
           alt={title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
           loading="lazy"
         />
+
+        {/* Badge VIP */}
+        {isVip && (
+          <div className="absolute top-2 left-2 z-20 flex items-center gap-1 bg-yellow-400/90 backdrop-blur-sm text-slate-900 text-[10px] font-black uppercase tracking-wide px-2 py-1 rounded-md shadow-lg">
+            <Crown size={10} strokeWidth={2.5} />
+            VIP
+          </div>
+        )}
+
+        {/* Rating */}
         <div className="absolute top-2 right-2 bg-slate-900/90 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
           <Star size={14} className="text-yellow-400 fill-yellow-400" />
           <span className="text-sm font-semibold text-white">{rating}</span>
@@ -51,13 +52,12 @@ export default function GameCard({ title, image, genre, rating, players, isPremi
       {/* Contenido */}
       <div className="p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
-          {/* Estrella */}
           <h3 className="font-semibold text-white text-lg line-clamp-1 group-hover:text-indigo-400 transition-colors flex items-center gap-2">
             {title}
-            {isPremium && (
-               <span title="Juego Exclusivo Next Gen" className="flex shrink-0">
-                 <Star size={16} className="text-yellow-500 fill-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.8)]" />
-               </span>
+            {isVip && (
+              <span title="Juego Exclusivo VIP" className="flex shrink-0">
+                <Star size={16} className="text-yellow-500 fill-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.8)]" />
+              </span>
             )}
           </h3>
         </div>
