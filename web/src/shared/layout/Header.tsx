@@ -6,6 +6,7 @@ import { Logo } from '../icons/Logo';
 import { logout } from '../../features/auth/services/logout.service';
 import { useAuthStatus } from '../../features/auth/hooks/useAuthStatus';
 import { supabase } from '../../supabase';
+import { getAccountHighScores } from '../../features/account/services/account.service';
 
 
 import { calculateLazyGlobalScore, getGlobalProgress } from '../../features/progression/services/progression.service';
@@ -28,60 +29,31 @@ const Header = () => {
    
 
     useEffect(() => {
-        const fetchUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                setCurrentUserId(user.id);
+    const fetchUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            setCurrentUserId(user.id);
+            const { data: profileData } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+            if (profileData?.role === 'admin') setIsAdmin(true);
 
-
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', user.id)
-                    .maybeSingle();
-
-
-                if (profile?.role === 'admin') {
-                    setIsAdmin(true);
-                }
-
-
-                try {
-            
-                    const { data: userScores, error } = await supabase
-                        .from('scores') 
-                        .select(`
-                            score,
-                            games (
-                                title
-                            )
-                        `) 
-                        .eq('user_id', user.id);
-
-                    if (error) throw error;
-
-                    if (userScores) {
+    
+            try {
+                const scores = await getAccountHighScores(user.id);
+                if (scores && scores.length > 0) {
+                    const totalScore = calculateLazyGlobalScore(scores);
+                    const progress = getGlobalProgress(totalScore);
+                    setGlobalProgress(progress);
+                } else {
                     
-                        const highScores = userScores.map((row: any) => ({
-                            
-                            displayTitle: row.games?.title || 'Juego Desconocido',
-                            score: row.score
-                        }));
-                        
-                        const totalScore = calculateLazyGlobalScore(highScores);
-                        setGlobalProgress(getGlobalProgress(totalScore));
-                    }
-                } catch (error) {
-                    console.error("Error cargando progreso global:", error);
+                    setGlobalProgress(getGlobalProgress(0));
                 }
-               
+            } catch (error) {
+                console.error("Error cargando progreso en Header:", error);
             }
-        };
-        if (isAuthenticated) {
-            fetchUser();
         }
-    }, [isAuthenticated]);
-
+    };
+    fetchUser();
+}, []);
 
     useEffect(() => {
        
