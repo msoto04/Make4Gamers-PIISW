@@ -8,7 +8,6 @@ import gamificacionObligatoria from "../content/developer-guidelines/07-gamifica
 import sistemaElo from "../content/developer-guidelines/08-sistema-de-elo-ranking-y-progresion.md?raw";
 import sdkInstalacion from "../content/developer-guidelines/09-sdk-instalacion.md?raw";
 import sdkFlujoCompleto from "../content/developer-guidelines/09b-sdk-flujo-completo.md?raw";
-import sdkTablasRls from "../content/developer-guidelines/09c-sdk-tablas-rls.md?raw";
 import cicloVidaJuego from "../content/developer-guidelines/10-ciclo-de-vida-del-juego.md?raw";
 
 export type ManualSection = {
@@ -88,13 +87,6 @@ export const MANUAL_SECTIONS: ManualSection[] = [
     description:
       "Diagrama de secuencia, patrón host-only y ejemplo completo en TypeScript para un juego por turnos de 2 a 4 jugadores.",
     content: sdkFlujoCompleto,
-  },
-  {
-    id: "sdk-tablas-rls",
-    title: "SDK m4g-sdk — Tablas Supabase y políticas RLS",
-    description:
-      "DDL exacto de las tres tablas requeridas por el SDK y las políticas RLS mínimas para que funcione con la anon key.",
-    content: sdkTablasRls,
   },
   {
     id: "ciclo-vida-juego",
