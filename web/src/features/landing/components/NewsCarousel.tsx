@@ -2,6 +2,7 @@ import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, EffectCoverflow, Autoplay } from 'swiper/modules';
 import { newsData } from '../constants/News';
+import { Link } from 'react-router-dom';
 
 // Importar estilos de Swiper
 import 'swiper/css';
@@ -50,37 +51,39 @@ export const NewsCarousel: React.FC = () => {
           {newsData.map((news) => (
             <SwiperSlide key={news.id} className="group pb-9">
               {({ isActive }) => (
-                <article
-                  className={`relative overflow-hidden rounded-3xl border transition-all duration-500
-                  ${
-                    isActive
-                      ? 'scale-100 border-white/25 opacity-100 shadow-[0_16px_50px_-16px_rgba(124,58,237,0.72)]'
-                      : 'scale-[0.94] border-white/15 opacity-72'
-                  }`}
-                >
-                  <div className="relative aspect-[16/8]">
-                    <img
-                      src={news.image}
-                      alt={news.title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-900/35 to-transparent" />
-                    <div className="absolute inset-0 ring-1 ring-inset ring-white/10" />
-                  </div>
-
-                  <div
-                    className={`absolute bottom-0 left-0 w-full p-5 sm:p-6 transition-all duration-500 ${
-                      isActive ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+                <Link to={news.link || '#'} className={!news.link ? 'cursor-default' : ''}>
+                  <article
+                    className={`relative overflow-hidden rounded-3xl border transition-all duration-500
+                    ${
+                      isActive
+                        ? 'scale-100 border-white/25 opacity-100 shadow-[0_16px_50px_-16px_rgba(124,58,237,0.72)]'
+                        : 'scale-[0.94] border-white/15 opacity-72'
                     }`}
                   >
-                    <span className="inline-flex rounded-full bg-lime-300 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-slate-950 sm:text-xs">
-                      {news.category}
-                    </span>
-                    <h3 className="mt-2 text-lg font-extrabold leading-tight text-white drop-shadow md:text-2xl lg:text-3xl">
-                      {news.title}
-                    </h3>
-                  </div>
-                </article>
+                    <div className="relative aspect-[16/8]">
+                      <img
+                        src={news.image}
+                        alt={news.title}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-900/35 to-transparent" />
+                      <div className="absolute inset-0 ring-1 ring-inset ring-white/10" />
+                    </div>
+
+                    <div
+                      className={`absolute bottom-0 left-0 w-full p-5 sm:p-6 transition-all duration-500 ${
+                        isActive ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+                      }`}
+                    >
+                      <span className="inline-flex rounded-full bg-lime-300 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-slate-950 sm:text-xs">
+                        {news.category}
+                      </span>
+                      <h3 className="mt-2 text-lg font-extrabold leading-tight text-white drop-shadow md:text-2xl lg:text-3xl">
+                        {news.title}
+                      </h3>
+                    </div>
+                  </article>
+                </Link>
               )}
             </SwiperSlide>
           ))}
