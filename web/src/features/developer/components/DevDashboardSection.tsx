@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Gamepad2, CheckCircle2, Clock, AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
+import { BookOpen, Gamepad2, CheckCircle2, Clock, AlertCircle, ArrowRight, Sparkles, XCircle, FileEdit } from 'lucide-react';
 
 import { supabase } from '../../../supabase';
 import type { Game } from '../../games/services/getGames';
@@ -14,15 +14,17 @@ type GameSummary = {
   total: number;
   activo: number;
   revision: number;
-  otros: number;
+  rejected: number;
+  draft: number;
   games: Game[];
 };
 
 function getStatusStyle(status: string) {
   const s = status?.toLowerCase();
-  if (s === 'activo') return { label: 'Activo', cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' };
-  if (s === 'revision' || s === 'en revisión' || s === 'en revision') return { label: 'En revisión', cls: 'bg-amber-500/15 text-amber-300 border-amber-500/30' };
-  if (s === 'rechazado') return { label: 'Rechazado', cls: 'bg-rose-500/15 text-rose-300 border-rose-500/30' };
+  if (s === 'published') return { label: 'Publicado',   cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' };
+  if (s === 'review')    return { label: 'En revisión', cls: 'bg-amber-500/15  text-amber-300  border-amber-500/30'  };
+  if (s === 'rejected')  return { label: 'Rechazado',   cls: 'bg-rose-500/15   text-rose-300   border-rose-500/30'   };
+  if (s === 'draft')     return { label: 'Borrador',    cls: 'bg-slate-500/15  text-slate-400  border-slate-600/30'  };
   return { label: status, cls: 'bg-slate-500/15 text-slate-300 border-slate-500/30' };
 }
 
@@ -46,9 +48,10 @@ export default function DevDashboardSection() {
       const games = (gamesData ?? []) as Game[];
       setSummary({
         total: games.length,
-        activo: games.filter(g => g.status?.toLowerCase() === 'activo').length,
-        revision: games.filter(g => ['revision', 'en revisión', 'en revision'].includes(g.status?.toLowerCase() ?? '')).length,
-        otros: games.filter(g => !['activo', 'revision', 'en revisión', 'en revision'].includes(g.status?.toLowerCase() ?? '')).length,
+        activo: games.filter(g => g.status?.toLowerCase() === 'published').length,
+        revision: games.filter(g => g.status?.toLowerCase() === 'review').length,
+        rejected: games.filter(g => g.status?.toLowerCase() === 'rejected').length,
+        draft: games.filter(g => g.status?.toLowerCase() === 'draft').length,
         games: games.slice(0, 4),
       });
 
@@ -111,37 +114,73 @@ export default function DevDashboardSection() {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div className="rounded-xl border border-slate-700/60 bg-slate-900/60 p-5">
           <div className="mb-3 flex items-center gap-2">
             <div className="rounded-lg bg-violet-500/10 p-2">
               <Gamepad2 size={18} className="text-violet-400" />
             </div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Total juegos</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Total</span>
           </div>
           <p className="text-3xl font-bold text-white">{summary?.total ?? 0}</p>
         </div>
 
-        <div className="rounded-xl border border-slate-700/60 bg-slate-900/60 p-5">
+        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5">
           <div className="mb-3 flex items-center gap-2">
             <div className="rounded-lg bg-emerald-500/10 p-2">
               <CheckCircle2 size={18} className="text-emerald-400" />
             </div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Activos</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-emerald-500/70">Publicados</span>
           </div>
           <p className="text-3xl font-bold text-white">{summary?.activo ?? 0}</p>
         </div>
 
-        <div className="rounded-xl border border-slate-700/60 bg-slate-900/60 p-5">
+        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
           <div className="mb-3 flex items-center gap-2">
             <div className="rounded-lg bg-amber-500/10 p-2">
               <Clock size={18} className="text-amber-400" />
             </div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">En revisión</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-amber-500/70">En revisión</span>
           </div>
           <p className="text-3xl font-bold text-white">{summary?.revision ?? 0}</p>
         </div>
+
+        <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 p-5">
+          <div className="mb-3 flex items-center gap-2">
+            <div className="rounded-lg bg-rose-500/10 p-2">
+              <XCircle size={18} className="text-rose-400" />
+            </div>
+            <span className="text-xs font-semibold uppercase tracking-wide text-rose-500/70">Rechazados</span>
+          </div>
+          <p className="text-3xl font-bold text-white">{summary?.rejected ?? 0}</p>
+        </div>
       </div>
+
+      {/* Draft card — only shown when there are drafts */}
+      {(summary?.draft ?? 0) > 0 && (
+        <div className="rounded-xl border border-slate-600/40 bg-slate-800/40 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-slate-700/60 p-2">
+                <FileEdit size={18} className="text-slate-400" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-slate-300">
+                  {summary?.draft} juego{(summary?.draft ?? 0) !== 1 ? 's' : ''} en borrador
+                </p>
+                <p className="text-xs text-slate-500">Pendientes de enviar a revisión</p>
+              </div>
+            </div>
+            <Link
+              to="/developer"
+              onClick={() => {}}
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:border-violet-500/30 hover:text-violet-300"
+            >
+              Ver juegos
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Recent games */}
       <div>

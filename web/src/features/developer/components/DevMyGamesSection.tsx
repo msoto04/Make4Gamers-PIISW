@@ -6,10 +6,11 @@ import type { Game } from '../../games/services/getGames';
 
 function getStatusStyle(status: string) {
   const s = status?.toLowerCase();
-  if (s === 'activo') return { label: 'Activo', cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' };
-  if (s === 'revision' || s === 'en revisión' || s === 'en revision') return { label: 'En revisión', cls: 'bg-amber-500/15 text-amber-300 border-amber-500/30' };
-  if (s === 'rechazado') return { label: 'Rechazado', cls: 'bg-rose-500/15 text-rose-300 border-rose-500/30' };
-  if (s === 'inactivo') return { label: 'Inactivo', cls: 'bg-slate-500/15 text-slate-300 border-slate-500/30' };
+  if (s === 'published') return { label: 'Publicado',   cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' };
+  if (s === 'review')    return { label: 'En revisión', cls: 'bg-amber-500/15  text-amber-300  border-amber-500/30'  };
+  if (s === 'rejected')  return { label: 'Rechazado',   cls: 'bg-rose-500/15   text-rose-300   border-rose-500/30'   };
+  if (s === 'inactive')  return { label: 'Inactivo',    cls: 'bg-slate-500/15  text-slate-300  border-slate-500/30'  };
+  if (s === 'draft')     return { label: 'Borrador',    cls: 'bg-slate-500/15  text-slate-400  border-slate-600/30'  };
   return { label: status ?? 'Desconocido', cls: 'bg-slate-500/15 text-slate-300 border-slate-500/30' };
 }
 

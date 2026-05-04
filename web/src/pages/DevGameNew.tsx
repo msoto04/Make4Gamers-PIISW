@@ -311,7 +311,7 @@ export default function DevGameNew() {
         game_url:        finalGameUrl,
         thumbnail_url:   thumbnailUrl,
         manual_url:      manualUrl,
-        status:          'revision',
+        status:          'draft',
         created_at:      new Date().toISOString(),
         updated_at:      new Date().toISOString(),
       });
