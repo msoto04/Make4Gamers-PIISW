@@ -18,6 +18,10 @@ import Ayuda from './pages/Ayuda';
 import Contacto from './pages/Contacto';
 import Estadisticas from './pages/Estadisticas';
 import Admin from './pages/Admin';
+import Developer from './pages/Developer';
+import DevManual from './pages/DevManual';
+import DevGameEdit from './pages/DevGameEdit';
+import DevGameNew from './pages/DevGameNew';
 function App() {
   return (
     <>
@@ -42,6 +46,10 @@ function App() {
           <Route path="/recuperar-password" element={<RecuperarPassword />} />
           <Route path="/actualizar-password" element={<ActualizarPassword />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/developer" element={<Developer />} />
+          <Route path="/dev-manual" element={<DevManual />} />
+          <Route path="/dev-game/:id" element={<DevGameEdit />} />
+          <Route path="/dev-game-new" element={<DevGameNew />} />
 
           {/* Main */}
           <Route element={<Layout />}>
