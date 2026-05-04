@@ -3,53 +3,73 @@ import { supabase } from '../../../supabase';
 import type { ChatProfile } from '../types/chat.types';
 
 export const getFriendsList = async (currentUserId: string): Promise<ChatProfile[]> => {
-    const { data: friendships, error: friendError } = await supabase
-        .from('friendships')
-        .select('user_a, user_b')
-        .eq('status', 'accepted')
-        .or(`user_a.eq.${currentUserId},user_b.eq.${currentUserId}`);
-
-    let friendProfiles: ChatProfile[] = [];
-
-    // ✨ Aquí hemos quitado el bloque duplicado que daba error con friendIds
-
-    if (!friendError && friendships && friendships.length > 0) {
-        const friendIds = friendships.map(f => f.user_a === currentUserId ? f.user_b : f.user_a);
-        
-        const { data: profiles, error: profileError } = await supabase
-            .from('profiles')
-            .select('id, username, avatar_url, status, subscription_tier') 
-            .in('id', friendIds);
-
-        if (!profileError && profiles) {
-            friendProfiles = profiles.map(profile => ({
-                id: profile.id,
-                username: profile.username || 'Usuario',
-                avatar_url: profile.avatar_url,
-                status: profile.status || 'Disponible',
-                subscription_tier: profile.subscription_tier,
-                is_group: false
-            })); // ✨ Llaves y paréntesis corregidos aquí
-        }
-    } // ✨ Llave de cierre del if que faltaba
-
-    const { data: myGroups, error: groupError } = await supabase
+    // 1. Todos los rooms donde participa el usuario
+    const { data: participations } = await supabase
         .from('chat_participants')
-        .select('room_id, chat_rooms!inner(is_group)')
-        .eq('user_id', currentUserId)
-        .eq('chat_rooms.is_group', true);
+        .select('room_id')
+        .eq('user_id', currentUserId);
 
-    let groupProfiles: ChatProfile[] = [];
+    const allRoomIds = participations?.map(p => p.room_id) ?? [];
+    if (!allRoomIds.length) return [];
 
-    if (!groupError && myGroups && myGroups.length > 0) {
-        const roomIds = myGroups.map(g => g.room_id);
+    // 2. Obtener salas que NO son de partida — filtro directo, sin tocar match_chats
+    const { data: rooms } = await supabase
+        .from('chat_rooms')
+        .select('id, is_group')
+        .in('id', allRoomIds)
+        .eq('is_match_room', false);
 
+    if (!rooms?.length) return [];
+
+    const oneToOneIds = rooms.filter(r => !r.is_group).map(r => r.id);
+    const groupIds = rooms.filter(r => r.is_group).map(r => r.id);
+
+    const profiles: ChatProfile[] = [];
+
+    // 4. Salas 1-a-1: mostrar el perfil del otro participante
+    if (oneToOneIds.length > 0) {
+        const { data: others } = await supabase
+            .from('chat_participants')
+            .select('room_id, user_id')
+            .in('room_id', oneToOneIds)
+            .neq('user_id', currentUserId);
+
+        const otherUserIds = [...new Set(others?.map(p => p.user_id) ?? [])];
+
+        if (otherUserIds.length > 0) {
+            const { data: userProfiles } = await supabase
+                .from('profiles')
+                .select('id, username, avatar_url, status, subscription_tier')
+                .in('id', otherUserIds);
+
+            const roomToUser = new Map(others?.map(p => [p.room_id, p.user_id]) ?? []);
+            const userMap = new Map(userProfiles?.map(p => [p.id, p]) ?? []);
+
+            for (const roomId of oneToOneIds) {
+                const userId = roomToUser.get(roomId);
+                if (!userId) continue;
+                const profile = userMap.get(userId);
+                if (!profile) continue;
+                profiles.push({
+                    id: profile.id,
+                    room_id: roomId,
+                    username: profile.username || 'Usuario',
+                    avatar_url: profile.avatar_url,
+                    status: profile.status || 'Disponible',
+                    subscription_tier: profile.subscription_tier,
+                    is_group: false
+                });
+            }
+        }
+    }
+
+    // 5. Salas de grupo: mostrar nombres de miembros
+    if (groupIds.length > 0) {
         const { data: allParticipants } = await supabase
             .from('chat_participants')
             .select('room_id, profiles(username)')
-            .in('room_id', roomIds);
+            .in('room_id', groupIds);
 
-        // Agrupar los nombres por sala
         const roomMap = new Map<string, string[]>();
         allParticipants?.forEach(p => {
             if (!roomMap.has(p.room_id)) roomMap.set(p.room_id, []);
@@ -57,48 +77,57 @@ export const getFriendsList = async (currentUserId: string): Promise<ChatProfile
             if (p.profiles?.username) roomMap.get(p.room_id)?.push(p.profiles.username);
         });
 
-        groupProfiles = roomIds.map(roomId => {
+        for (const roomId of groupIds) {
             const members = roomMap.get(roomId) || [];
             const title = `Grupo (${members.length}): ${members.join(', ')}`;
-
-            return {
+            profiles.push({
                 id: roomId,
                 room_id: roomId,
-                username: title.length > 25 ? title.substring(0, 22) + '...' : title, // Cortar si es muy largo
+                username: title.length > 25 ? title.substring(0, 22) + '...' : title,
                 avatar_url: null,
                 status: 'Grupo',
                 is_group: true
-            };
-        });
+            });
+        }
     }
 
-    return [...friendProfiles, ...groupProfiles];
+    return profiles;
 };
 
 
 export const getOrCreateChatRoom = async (myId: string, friendId: string): Promise<string | null> => {
-  // 1. Buscamos SOLO las salas normales donde yo participo
-  const { data: myRooms, error: myRoomsError } = await supabase
+  // 1. Buscamos todas las salas donde yo participo
+  const { data: myParticipations, error: myRoomsError } = await supabase
     .from('chat_participants')
-    .select('room_id, chat_rooms!inner(is_group)')
-    .eq('user_id', myId)
-    .eq('chat_rooms.is_group', false);
+    .select('room_id')
+    .eq('user_id', myId);
 
-  if (myRoomsError || !myRooms) return null;
+  if (myRoomsError || !myParticipations) return null;
 
-  const myRoomIds = myRooms.map(r => r.room_id);
+  const allMyRoomIds = myParticipations.map(r => r.room_id);
+
+  // 2. Filtrar solo salas 1-a-1 (is_group=false) — consulta separada, más fiable que !inner join
+  let myRoomIds: string[] = [];
+  if (allMyRoomIds.length > 0) {
+    const { data: normalRooms } = await supabase
+      .from('chat_rooms')
+      .select('id')
+      .in('id', allMyRoomIds)
+      .eq('is_group', false);
+    myRoomIds = normalRooms?.map(r => r.id) ?? [];
+  }
 
   if (myRoomIds.length > 0) {
-    // 2. Buscamos si mi amigo está en alguna de mis salas
-    const { data: sharedRooms, error } = await supabase
+    // 3. Buscamos si mi amigo está en alguna de mis salas 1-a-1
+    const { data: sharedRooms } = await supabase
       .from('chat_participants')
       .select('room_id')
       .in('room_id', myRoomIds)
       .eq('user_id', friendId)
-      .limit(1); // ✨ LA CLAVE: Si hay salas duplicadas por bugs antiguos, pillamos solo la primera y evitamos que explote.
+      .limit(1);
 
     if (sharedRooms && sharedRooms.length > 0) {
-      return sharedRooms[0].room_id; 
+      return sharedRooms[0].room_id;
     }
   }
 
