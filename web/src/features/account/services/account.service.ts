@@ -135,14 +135,67 @@ export async function getUserDetailedStats(userId: string) {
 
     const chartData = Object.values(gameMap);
 
- 
+    const getWeekKey = (date: Date) => {
+      const copy = new Date(date);
+      const day = copy.getDay();
+      const monday = new Date(copy);
+      monday.setDate(copy.getDate() - ((day + 6) % 7));
+      return monday.toISOString().slice(0, 10);
+    };
+
+    const dailyCounts: Record<string, number> = {};
+    const weeklyCounts: Record<string, number> = {};
+    const monthlyCounts: Record<string, number> = {};
+
+    matchesData.forEach(match => {
+      const date = new Date(match.created_at);
+      const dayKey = date.toISOString().slice(0, 10);
+      const weekKey = getWeekKey(date);
+      const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
+
+      dailyCounts[dayKey] = (dailyCounts[dayKey] ?? 0) + 1;
+      weeklyCounts[weekKey] = (weeklyCounts[weekKey] ?? 0) + 1;
+      monthlyCounts[monthKey] = (monthlyCounts[monthKey] ?? 0) + 1;
+    });
+
+    const currentDate = new Date();
+    const lastSevenDays = Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(currentDate);
+      date.setDate(currentDate.getDate() - (6 - index));
+      const key = date.toISOString().slice(0, 10);
+      return {
+        name: date.toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: 'short' }),
+        count: dailyCounts[key] ?? 0,
+      };
+    });
+
+    const lastSixWeeks = Array.from({ length: 6 }, (_, index) => {
+      const date = new Date(currentDate);
+      date.setDate(currentDate.getDate() - 7 * (5 - index));
+      const key = getWeekKey(date);
+      return {
+        name: `Semana ${index + 1}`,
+        count: weeklyCounts[key] ?? 0,
+      };
+    });
+
+    const lastSixMonths = Array.from({ length: 6 }, (_, index) => {
+      const date = new Date(currentDate);
+      date.setMonth(currentDate.getMonth() - (5 - index));
+      const key = `${date.getFullYear()}-${date.getMonth() + 1}`;
+      return {
+        name: date.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' }),
+        count: monthlyCounts[key] ?? 0,
+      };
+    });
+
     const historyData = matchesData
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) 
       .slice(0, 8) 
       .map(match => {
         const rawTitle = Array.isArray(match.game) ? match.game[0]?.title : match.game?.title;
         return {
-          date: new Date(match.created_at).toLocaleDateString(),
+          date: new Date(match.created_at).toLocaleDateString('es-ES'),
           time: new Date(match.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
           game: rawTitle || 'Juego',
           status: 'Partida Jugada'
@@ -151,6 +204,8 @@ export async function getUserDetailedStats(userId: string) {
 
     const totalMatches = matchesData.length; 
     const highestScore = scoreData.length > 0 ? Math.max(...scoreData.map(s => s.score)) : 0;
+    const totalUsersQuery = await supabase.from('profiles').select('id', { count: 'exact', head: true });
+    const totalUsers = totalUsersQuery.count ?? 0;
     
     const favorite = chartData.reduce((prev, current) => 
       (prev.plays > current.plays) ? prev : current, 
@@ -160,6 +215,15 @@ export async function getUserDetailedStats(userId: string) {
     return {
       totalMatches,
       highestScore,
+      totalUsers,
+      totalGames: chartData.length,
+      matchesThisWeek: lastSixWeeks.reduce((sum, entry) => sum + entry.count, 0),
+      matchesThisMonth: lastSixMonths.reduce((sum, entry) => sum + entry.count, 0),
+      periodChartData: {
+        daily: lastSevenDays,
+        weekly: lastSixWeeks,
+        monthly: lastSixMonths,
+      },
       favoriteGame: favorite.name,
       favoriteGamePlays: favorite.plays,
       chartData, 
