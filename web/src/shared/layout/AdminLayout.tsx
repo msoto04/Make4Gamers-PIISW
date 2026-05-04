@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
+  Gamepad2,
   Calculator,
   Filter,
   LayoutDashboard,
@@ -19,8 +20,10 @@ import AdminTickets from '../../features/admin/components/AdminTicketsSection';
 import AdminSugerencias from '../../features/admin/components/AdminSuggestionsSection';
 import AdminFiltro from '../../features/admin/components/AdminWordFilterSection';
 import AdminSolicitudesDev from '../../features/admin/components/AdminDevRequestsSection';
+import AdminGamesSection from '../../features/admin/components/AdminGamesSection';
 
-type AdminSection = 'dashboard' | 'formulas' | 'tickets' | 'sugerencias' | 'filtro' | 'solicitudes';
+type AdminSection = 'dashboard' | 'juegos' | 'formulas' | 'tickets' | 'sugerencias' | 'filtro' | 'solicitudes';
+
 
 type NavItem = {
   key: AdminSection;
@@ -36,6 +39,7 @@ export default function AdminLayout() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [pendingDevRequests, setPendingDevRequests] = useState(0);
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
+
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -92,6 +96,7 @@ export default function AdminLayout() {
     { key: 'dashboard', label: t('admin.dashboard', { defaultValue: 'Panel' }), icon: LayoutDashboard },
     { key: 'formulas', label: t('admin.formulas'), icon: Calculator },
     { key: 'tickets', label: t('admin.tickets'), icon: LifeBuoy },
+    { key: 'juegos', label: 'Catálogo de Juegos', icon: Gamepad2 },
     { key: 'sugerencias', label: t('admin.suggestions'), icon: MessageSquare },
     { key: 'filtro', label: t('admin.wordFilter'), icon: Filter },
     {
@@ -110,6 +115,8 @@ export default function AdminLayout() {
         return <AdminTickets />;
       case 'sugerencias':
         return <AdminSugerencias />;
+      case 'juegos':
+        return <AdminGamesSection />;
       case 'filtro':
         return <AdminFiltro />;
       case 'solicitudes':

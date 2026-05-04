@@ -22,11 +22,24 @@ const GAME_SELECT_FIELDS = `
   price
 `;
 
-export async function findAllGames(client: SupabaseClient): Promise<Game[]> {
-  const { data, error } = await client
+
+export async function findAllGames(client: SupabaseClient, isPremium: boolean = false): Promise<Game[]> {
+
+  let query = client
     .from("games")
-    .select(GAME_SELECT_FIELDS)
-    .order("created_at", { ascending: false });
+    .select(GAME_SELECT_FIELDS);
+
+
+  if (isPremium) {
+   
+    query = query.in('status', ['published', 'review']);
+  } else {
+   
+    query = query.eq('status', 'published');
+  }
+
+ 
+  const { data, error } = await query.order("created_at", { ascending: false });
 
   if (error) {
     throw new Error(error.message || "No se pudieron recuperar los juegos");

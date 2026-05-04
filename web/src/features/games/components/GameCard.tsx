@@ -1,4 +1,4 @@
-import { Users, Star } from 'lucide-react';
+import { Users, Star, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion } from "framer-motion";
 
@@ -8,7 +8,9 @@ type GameCardProps = {
   genre: string;
   rating: number;
   players: number;
+  status?: string;
   isPremium?: boolean;
+  
 };
 
 export default function GameCard({ title, image, genre, rating, players, isPremium }: GameCardProps) {
@@ -25,6 +27,15 @@ export default function GameCard({ title, image, genre, rating, players, isPremi
     >
       {/* Imagen */}
       <div className="relative h-48 overflow-hidden bg-slate-800">
+
+   
+        {status === 'review' && (
+          <div className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-lg shadow-[0_0_15px_rgba(245,158,11,0.5)] z-20 flex items-center gap-1 border border-amber-300/30">
+            <Lock size={12} />
+            Premium Beta
+          </div>
+        )}
+      
         <img
           src={image}
           alt={title}
