@@ -89,7 +89,7 @@ export default function GameplaySidebar({
   const [tab, setTab] = useState<GameplayTab>("chat");
   const [chatInput, setChatInput] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
 
   const supportsHistory = useMemo(() => {
@@ -115,10 +115,10 @@ export default function GameplaySidebar({
     return () => document.removeEventListener("mousedown", handler);
   }, [showEmojiPicker]);
 
-  // Auto-scroll al último mensaje
+  // Auto-scroll al último mensaje dentro del contenedor (sin mover la página)
   useEffect(() => {
-    if (tab === "chat") {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (tab === "chat" && messagesRef.current) {
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
     }
   }, [messages, tab]);
 
@@ -193,7 +193,7 @@ export default function GameplaySidebar({
       {/* Chat */}
       {tab === "chat" ? (
         <div className="flex flex-col min-h-0 flex-1 overflow-hidden">
-          <div className="flex-1 overflow-auto p-3 space-y-3">
+          <div ref={messagesRef} className="flex-1 overflow-auto p-3 space-y-3">
             {chatLoading ? (
               <p className="text-slate-500 text-sm">Cargando chat...</p>
             ) : !matchId ? (
@@ -236,18 +236,17 @@ export default function GameplaySidebar({
                 );
               })
             )}
-            <div ref={bottomRef} />
           </div>
 
-          <div ref={pickerRef} className="p-3 border-t border-slate-800 flex gap-2 shrink-0 relative">
+          <div ref={pickerRef} className="px-4 py-3 border-t border-slate-800 flex items-center gap-2 shrink-0 relative">
             {/* Emoji picker */}
             {showEmojiPicker && (
-              <div className="absolute bottom-full left-3 mb-2 bg-slate-800 border border-slate-700 rounded-2xl px-3 py-2 flex gap-1 shadow-2xl shadow-black/40">
+              <div className="absolute bottom-full left-4 mb-2 bg-slate-800 border border-slate-700 rounded-2xl px-3 py-2 flex gap-2 shadow-2xl shadow-black/40">
                 {REACTIONS.map((emoji) => (
                   <button
                     key={emoji}
                     onClick={() => handleReaction(emoji)}
-                    className="text-2xl hover:scale-125 active:scale-110 transition-transform p-1 rounded-xl hover:bg-slate-700"
+                    className="text-2xl hover:scale-125 active:scale-110 transition-transform p-1.5 rounded-xl hover:bg-slate-700"
                   >
                     {emoji}
                   </button>
@@ -255,14 +254,14 @@ export default function GameplaySidebar({
               </div>
             )}
 
-            {/* Botón emoji */}
+            {/* Botón reacciones */}
             <button
               onClick={() => setShowEmojiPicker((v) => !v)}
               disabled={!matchId}
-              className={`text-xl px-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+              className={`shrink-0 w-9 h-9 flex items-center justify-center rounded-lg text-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
                 showEmojiPicker
                   ? "bg-slate-700 text-white"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800"
+                  : "text-slate-400 hover:text-white hover:bg-slate-700"
               }`}
               title="Reacciones"
             >
@@ -275,14 +274,19 @@ export default function GameplaySidebar({
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
               placeholder={matchId ? t("gameplay.writeMessage") : "Inicia la partida..."}
               disabled={!matchId}
-              className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex-1 min-w-0 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed"
             />
+
+            {/* Botón enviar */}
             <button
               onClick={handleSend}
               disabled={!matchId || !chatInput.trim()}
-              className="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm transition-colors"
+              className="shrink-0 w-9 h-9 flex items-center justify-center rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              title={t("gameplay.send")}
             >
-              {t("gameplay.send")}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-white">
+                <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+              </svg>
             </button>
           </div>
         </div>

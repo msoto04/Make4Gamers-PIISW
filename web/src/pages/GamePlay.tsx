@@ -313,7 +313,7 @@ export default function Gameplay() {
             />
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-[800px_280px] gap-4 justify-center items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-[800px_320px] gap-4 justify-center items-stretch">
             <section className="relative h-[600px] w-full max-w-[800px] rounded-xl overflow-hidden bg-black border border-indigo-500/50 shadow-xl shadow-indigo-500/10 transition-all duration-300">
               {timerActive ? <GameViewport src={finalGameUrl} title={`game-${game.id}`} ratio="4:3" /> : null}
 
