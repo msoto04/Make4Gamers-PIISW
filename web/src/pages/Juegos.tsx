@@ -193,7 +193,7 @@ const filteredGames = regularGames.filter((game) => {
                       genre={game.genre ?? t("gameplay.noGenre")}
                       rating={typeof game.rating === "number" ? game.rating : 0}
                       players={game.players ?? 0}
-                      status={game.status} 
+                      status={game.status ?? undefined}
                     />
                   </Link>
                 ))}
@@ -263,7 +263,7 @@ const filteredGames = regularGames.filter((game) => {
                         genre={game.genre ?? t("gameplay.noGenre")}
                         rating={typeof game.rating === "number" ? game.rating : 0}
                         players={game.players ?? 0}
-                        status={game.status}
+                        status={game.status ?? undefined}
                       />
                     </Link>
                   ))}
