@@ -86,12 +86,14 @@ export default function Chat() {
 
     const handleSelectEntity = async (entity: ChatProfile) => {
         setSelectedFriend(entity);
-        if (entity.is_group && entity.room_id) {
+        setLoadingRoom(true);
+        if (entity.room_id) {
             setRoomId(entity.room_id);
         } else {
-            const room = await getOrCreateChatRoom(currentUserId, entity.id);
+            const room = await getOrCreateChatRoom(currentUserId!, entity.id);
             setRoomId(room);
         }
+        setLoadingRoom(false);
     }
     
     const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -268,6 +270,7 @@ if (!currentUserId) {
                     onClose={() => setIsCreateGroupOpen(false)}
                     onGroupCreated={(newRoomId, groupProfile) => {
                         setIsCreateGroupOpen(false);
+                        setRefreshFriends(prev => prev + 1);
                         setSelectedFriend(groupProfile);
                         setRoomId(newRoomId);
                     }}

@@ -43,10 +43,10 @@ async function getOrCreateMatchRoom(
     return existing.room_id;
   }
 
-  // 2. Crear chat_room
+  // 2. Crear chat_room marcada como sala de partida
   const { data: newRoom, error: roomError } = await supabase
     .from("chat_rooms")
-    .insert({ is_group: true })
+    .insert({ is_group: true, is_match_room: true })
     .select("id")
     .single();
 
