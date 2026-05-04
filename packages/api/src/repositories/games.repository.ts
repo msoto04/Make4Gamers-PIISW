@@ -17,7 +17,9 @@ const GAME_SELECT_FIELDS = `
   created_at,
   updated_at,
   rating,
-  players
+  players,
+  edad_minima,
+  price
 `;
 
 export async function findAllGames(client: SupabaseClient): Promise<Game[]> {

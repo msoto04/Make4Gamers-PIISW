@@ -19,6 +19,7 @@ const Header = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isDeveloper, setIsDeveloper] = useState(false);
 
 
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -35,7 +36,7 @@ const Header = () => {
             setCurrentUserId(user.id);
             const { data: profileData } = await supabase.from('profiles').select('role').eq('id', user.id).single();
             if (profileData?.role === 'admin') setIsAdmin(true);
-
+            if (profileData?.role === 'developer' || profileData?.role === 'admin') setIsDeveloper(true);
     
             try {
                 const scores = await getAccountHighScores(user.id);
@@ -201,6 +202,14 @@ const Header = () => {
 
 
 
+                    {isDeveloper && (
+                        <Link
+                            to="/developer"
+                            className="hidden md:inline uppercase text-[11px] bg-violet-500/10 px-2 py-0.5 rounded border border-violet-500/30 text-violet-300 hover:text-violet-200 hover:border-violet-400/50 transition-colors"
+                        >
+                            Dev
+                        </Link>
+                    )}
                     {isAdmin && (
                         <Link
                             to="/admin"
