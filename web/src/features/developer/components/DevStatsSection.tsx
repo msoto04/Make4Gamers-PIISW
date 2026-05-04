@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import { Activity, Users, Star, AlertCircle, TrendingUp } from 'lucide-react';
 import { supabase } from '../../../supabase';
 import type { Game } from '../../games/services/getGames';
@@ -11,6 +12,7 @@ type GameStats = {
 };
 
 export default function DevStatsSection() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState<GameStats[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -71,12 +73,12 @@ export default function DevStatsSection() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-white">Estadísticas de mis juegos</h2>
+      <h2 className="text-xl font-semibold text-white">{t('developer.stats.title')}</h2>
 
       {!stats.length ? (
         <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-slate-700 py-20 text-center">
           <AlertCircle size={40} className="text-slate-600" />
-          <p className="text-slate-400">No hay juegos para mostrar estadísticas.</p>
+          <p className="text-slate-400">{t('developer.stats.empty')}</p>
         </div>
       ) : (
         <>
@@ -87,7 +89,7 @@ export default function DevStatsSection() {
                 <div className="rounded-lg bg-violet-500/10 p-2">
                   <Activity size={18} className="text-violet-400" />
                 </div>
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Partidas totales</span>
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t('developer.stats.totalPlays')}</span>
               </div>
               <p className="text-3xl font-bold text-white">{totalPlays.toLocaleString()}</p>
             </div>
@@ -97,7 +99,7 @@ export default function DevStatsSection() {
                 <div className="rounded-lg bg-indigo-500/10 p-2">
                   <Users size={18} className="text-indigo-400" />
                 </div>
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Jugadores únicos</span>
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t('developer.stats.uniquePlayers')}</span>
               </div>
               <p className="text-3xl font-bold text-white">{totalUnique.toLocaleString()}</p>
             </div>
@@ -107,7 +109,7 @@ export default function DevStatsSection() {
                 <div className="rounded-lg bg-amber-500/10 p-2">
                   <Star size={18} className="text-amber-400" />
                 </div>
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Valoración media</span>
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t('developer.stats.avgRating')}</span>
               </div>
               <p className="text-3xl font-bold text-white">
                 {avgRating > 0 ? avgRating.toFixed(1) : '—'}
@@ -119,7 +121,7 @@ export default function DevStatsSection() {
           <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 md:p-6">
             <h3 className="mb-5 flex items-center gap-2 text-base font-semibold text-white">
               <TrendingUp size={18} className="text-violet-400" />
-              Partidas por juego
+              {t('developer.stats.chartTitle')}
             </h3>
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -142,16 +144,16 @@ export default function DevStatsSection() {
           {/* Per-game table */}
           <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60">
             <div className="border-b border-slate-800 px-6 py-4">
-              <h3 className="font-semibold text-white">Desglose por juego</h3>
+              <h3 className="font-semibold text-white">{t('developer.stats.tableTitle')}</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead className="bg-slate-800/50 text-xs uppercase text-slate-400">
                   <tr>
-                    <th className="px-6 py-3 font-semibold">Juego</th>
-                    <th className="px-6 py-3 text-center font-semibold">Partidas</th>
-                    <th className="px-6 py-3 text-center font-semibold">Jugadores únicos</th>
-                    <th className="px-6 py-3 text-right font-semibold">Valoración</th>
+                    <th className="px-6 py-3 font-semibold">{t('developer.stats.colGame')}</th>
+                    <th className="px-6 py-3 text-center font-semibold">{t('developer.stats.colPlays')}</th>
+                    <th className="px-6 py-3 text-center font-semibold">{t('developer.stats.colUnique')}</th>
+                    <th className="px-6 py-3 text-right font-semibold">{t('developer.stats.colRating')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">

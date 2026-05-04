@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { BookOpen, Gamepad2, CheckCircle2, Clock, AlertCircle, ArrowRight, Sparkles, XCircle, FileEdit } from 'lucide-react';
 
 import { supabase } from '../../../supabase';
@@ -19,16 +20,21 @@ type GameSummary = {
   games: Game[];
 };
 
-function getStatusStyle(status: string) {
-  const s = status?.toLowerCase();
-  if (s === 'published') return { label: 'Publicado',   cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' };
-  if (s === 'review')    return { label: 'En revisión', cls: 'bg-amber-500/15  text-amber-300  border-amber-500/30'  };
-  if (s === 'rejected')  return { label: 'Rechazado',   cls: 'bg-rose-500/15   text-rose-300   border-rose-500/30'   };
-  if (s === 'draft')     return { label: 'Borrador',    cls: 'bg-slate-500/15  text-slate-400  border-slate-600/30'  };
-  return { label: status, cls: 'bg-slate-500/15 text-slate-300 border-slate-500/30' };
+function useStatusStyle() {
+  const { t } = useTranslation();
+  return (status: string) => {
+    const s = status?.toLowerCase();
+    if (s === 'published') return { label: t('developer.status.published'), cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' };
+    if (s === 'review')    return { label: t('developer.status.review'),    cls: 'bg-amber-500/15  text-amber-300  border-amber-500/30'  };
+    if (s === 'rejected')  return { label: t('developer.status.rejected'),  cls: 'bg-rose-500/15   text-rose-300   border-rose-500/30'   };
+    if (s === 'draft')     return { label: t('developer.status.draft'),     cls: 'bg-slate-500/15  text-slate-400  border-slate-600/30'  };
+    return { label: status, cls: 'bg-slate-500/15 text-slate-300 border-slate-500/30' };
+  };
 }
 
 export default function DevDashboardSection() {
+  const { t } = useTranslation();
+  const getStatusStyle = useStatusStyle();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [summary, setSummary] = useState<GameSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -86,11 +92,11 @@ export default function DevDashboardSection() {
             <div className="flex items-center gap-2">
               <Sparkles size={14} className="text-violet-400" />
               <span className="text-xs font-semibold uppercase tracking-widest text-violet-400">
-                Desarrollador Verificado
+                {t('developer.dashboard.verifiedBadge')}
               </span>
             </div>
             <h2 className="text-2xl font-bold text-white md:text-3xl">
-              Bienvenido al equipo de{' '}
+              {t('developer.dashboard.welcome')}{' '}
               <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
                 M4G
               </span>
@@ -98,7 +104,7 @@ export default function DevDashboardSection() {
               <span className="text-slate-200">{displayName}</span>
             </h2>
             <p className="max-w-md text-sm text-slate-400">
-              Desde aquí puedes gestionar tus juegos, seguir su evolución y consultar la documentación oficial.
+              {t('developer.dashboard.welcomeDesc')}
             </p>
           </div>
 
@@ -107,7 +113,7 @@ export default function DevDashboardSection() {
             className="group flex shrink-0 items-center gap-3 rounded-xl border border-violet-500/30 bg-violet-500/10 px-5 py-3.5 text-sm font-medium text-violet-200 transition-all hover:border-violet-400/50 hover:bg-violet-500/20 hover:text-white"
           >
             <BookOpen size={18} className="text-violet-400 transition-transform group-hover:scale-110" />
-            <span>Manual de Desarrollador</span>
+            <span>{t('developer.dashboard.manualLink')}</span>
             <ArrowRight size={14} className="text-violet-400 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
@@ -120,7 +126,7 @@ export default function DevDashboardSection() {
             <div className="rounded-lg bg-violet-500/10 p-2">
               <Gamepad2 size={18} className="text-violet-400" />
             </div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Total</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{t('developer.dashboard.cards.total')}</span>
           </div>
           <p className="text-3xl font-bold text-white">{summary?.total ?? 0}</p>
         </div>
@@ -130,7 +136,7 @@ export default function DevDashboardSection() {
             <div className="rounded-lg bg-emerald-500/10 p-2">
               <CheckCircle2 size={18} className="text-emerald-400" />
             </div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-emerald-500/70">Publicados</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-emerald-500/70">{t('developer.dashboard.cards.published')}</span>
           </div>
           <p className="text-3xl font-bold text-white">{summary?.activo ?? 0}</p>
         </div>
@@ -140,7 +146,7 @@ export default function DevDashboardSection() {
             <div className="rounded-lg bg-amber-500/10 p-2">
               <Clock size={18} className="text-amber-400" />
             </div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-amber-500/70">En revisión</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-amber-500/70">{t('developer.dashboard.cards.review')}</span>
           </div>
           <p className="text-3xl font-bold text-white">{summary?.revision ?? 0}</p>
         </div>
@@ -150,7 +156,7 @@ export default function DevDashboardSection() {
             <div className="rounded-lg bg-rose-500/10 p-2">
               <XCircle size={18} className="text-rose-400" />
             </div>
-            <span className="text-xs font-semibold uppercase tracking-wide text-rose-500/70">Rechazados</span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-rose-500/70">{t('developer.dashboard.cards.rejected')}</span>
           </div>
           <p className="text-3xl font-bold text-white">{summary?.rejected ?? 0}</p>
         </div>
@@ -166,17 +172,16 @@ export default function DevDashboardSection() {
               </div>
               <div>
                 <p className="text-sm font-semibold text-slate-300">
-                  {summary?.draft} juego{(summary?.draft ?? 0) !== 1 ? 's' : ''} en borrador
+                  {t('developer.dashboard.drafts', { count: summary?.draft ?? 0 })}
                 </p>
-                <p className="text-xs text-slate-500">Pendientes de enviar a revisión</p>
+                <p className="text-xs text-slate-500">{t('developer.dashboard.draftsDesc')}</p>
               </div>
             </div>
             <Link
               to="/developer"
-              onClick={() => {}}
               className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:border-violet-500/30 hover:text-violet-300"
             >
-              Ver juegos
+              {t('developer.dashboard.viewGames')}
             </Link>
           </div>
         </div>
@@ -184,12 +189,12 @@ export default function DevDashboardSection() {
 
       {/* Recent games */}
       <div>
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">Mis juegos recientes</h3>
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">{t('developer.dashboard.recentTitle')}</h3>
 
         {!summary?.games.length ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-slate-700 py-12 text-center">
             <AlertCircle size={32} className="text-slate-600" />
-            <p className="text-slate-400">Aún no has subido ningún juego.</p>
+            <p className="text-slate-400">{t('developer.dashboard.noGames')}</p>
           </div>
         ) : (
           <div className="space-y-2">

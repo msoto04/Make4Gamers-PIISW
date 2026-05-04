@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   Code2,
@@ -47,14 +48,17 @@ const MODES = ['Singleplayer', 'Multijugador', 'Online', 'Cooperativo', 'Competi
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function statusBadge(status: string | null) {
-  const s = (status ?? '').toLowerCase();
-  if (s === 'published') return { label: 'Publicado',   cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' };
-  if (s === 'review')    return { label: 'En revisión', cls: 'bg-amber-500/15  text-amber-300  border-amber-500/30'  };
-  if (s === 'rejected')  return { label: 'Rechazado',   cls: 'bg-rose-500/15   text-rose-300   border-rose-500/30'   };
-  if (s === 'inactive')  return { label: 'Inactivo',    cls: 'bg-slate-500/15  text-slate-300  border-slate-500/30'  };
-  if (s === 'draft')     return { label: 'Borrador',    cls: 'bg-slate-500/15  text-slate-400  border-slate-600/30'  };
-  return { label: status ?? 'Desconocido', cls: 'bg-slate-500/15 text-slate-300 border-slate-500/30' };
+function useStatusBadge() {
+  const { t } = useTranslation();
+  return (status: string | null) => {
+    const s = (status ?? '').toLowerCase();
+    if (s === 'published') return { label: t('developer.status.published'), cls: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' };
+    if (s === 'review')    return { label: t('developer.status.review'),    cls: 'bg-amber-500/15  text-amber-300  border-amber-500/30'  };
+    if (s === 'rejected')  return { label: t('developer.status.rejected'),  cls: 'bg-rose-500/15   text-rose-300   border-rose-500/30'   };
+    if (s === 'inactive')  return { label: t('developer.status.inactive'),  cls: 'bg-slate-500/15  text-slate-300  border-slate-500/30'  };
+    if (s === 'draft')     return { label: t('developer.status.draft'),     cls: 'bg-slate-500/15  text-slate-400  border-slate-600/30'  };
+    return { label: status ?? t('developer.status.unknown'), cls: 'bg-slate-500/15 text-slate-300 border-slate-500/30' };
+  };
 }
 
 function fileExt(file: File) {
@@ -75,6 +79,7 @@ type DropZoneProps = {
 };
 
 function FileDropZone({ label, hint, accept, icon: Icon, file, previewUrl, onChange, onClear }: DropZoneProps) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -113,7 +118,7 @@ function FileDropZone({ label, hint, accept, icon: Icon, file, previewUrl, onCha
             <img src={previewSrc} alt="preview" className="h-44 w-full object-cover" />
             <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity hover:opacity-100">
               <button type="button" onClick={() => inputRef.current?.click()} className="rounded-lg bg-violet-600 px-4 py-1.5 text-xs font-semibold text-white">
-                Cambiar
+                {t('developer.gameEdit.change')}
               </button>
             </div>
             {file && (
@@ -134,7 +139,7 @@ function FileDropZone({ label, hint, accept, icon: Icon, file, previewUrl, onCha
                   </p>
                 </div>
                 <button type="button" onClick={(e) => { e.stopPropagation(); onClear(); }} className="text-xs text-rose-400 hover:text-rose-300">
-                  Quitar archivo
+                  {t('developer.gameEdit.removeFile')}
                 </button>
               </>
             ) : (
@@ -142,7 +147,7 @@ function FileDropZone({ label, hint, accept, icon: Icon, file, previewUrl, onCha
                 <Icon size={26} className="text-slate-600" />
                 <div className="text-center">
                   <p className="text-sm text-slate-400">{hint}</p>
-                  <p className="mt-0.5 text-xs text-slate-600">Haz clic o arrastra aquí</p>
+                  <p className="mt-0.5 text-xs text-slate-600">{t('developer.gameEdit.clickOrDrag')}</p>
                 </div>
               </>
             )}
@@ -184,6 +189,8 @@ const inputCls = 'w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DevGameEdit() {
+  const { t } = useTranslation();
+  const statusBadge = useStatusBadge();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -224,12 +231,12 @@ export default function DevGameEdit() {
         .from('games').select('*').eq('id', id).maybeSingle();
 
       if (error || !gameData) {
-        toast.error('Juego no encontrado');
+        toast.error(t('developer.gameEdit.notFoundError'));
         navigate('/developer'); return;
       }
 
       if (gameData.developer_id !== session.user.id && profile?.role !== 'admin') {
-        toast.error('No tienes permiso para editar este juego');
+        toast.error(t('developer.gameEdit.permissionError'));
         navigate('/developer'); return;
       }
 
@@ -264,10 +271,10 @@ export default function DevGameEdit() {
 
   const handleSave = async () => {
     if (!game) return;
-    if (!title.trim()) { toast.error('El nombre es obligatorio'); return; }
+    if (!title.trim()) { toast.error(t('developer.gameEdit.nameRequired')); return; }
 
     setSaving(true);
-    const tid = toast.loading('Guardando cambios…');
+    const tid = toast.loading(t('developer.gameEdit.saving'));
 
     try {
       let thumbnailUrl = game.thumbnail_url;
@@ -302,7 +309,7 @@ export default function DevGameEdit() {
       const { error } = await supabase.from('games').update(payload).eq('id', game.id);
       if (error) throw error;
 
-      toast.success('Juego actualizado correctamente', { id: tid });
+      toast.success(t('developer.gameEdit.saved'), { id: tid });
 
       setGame(g => g ? {
         ...g,
@@ -322,7 +329,7 @@ export default function DevGameEdit() {
       setRulesFile(null);
       setDistFile(null);
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Error al guardar', { id: tid });
+      toast.error(err instanceof Error ? err.message : t('developer.gameEdit.saveError'), { id: tid });
     } finally {
       setSaving(false);
     }
@@ -354,7 +361,7 @@ export default function DevGameEdit() {
       className="flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-500 disabled:opacity-50"
     >
       {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
-      {saving ? 'Guardando…' : 'Guardar cambios'}
+      {saving ? t('developer.gameEdit.saving') : t('developer.gameEdit.save')}
     </button>
   );
 
@@ -368,7 +375,7 @@ export default function DevGameEdit() {
         <div className="mb-7">
           <Link to="/developer" className="mb-4 inline-flex items-center gap-1.5 text-sm text-violet-400 transition-colors hover:text-violet-300">
             <ArrowLeft size={15} />
-            Volver al panel
+            {t('developer.gameEdit.backToGames')}
           </Link>
 
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -393,9 +400,9 @@ export default function DevGameEdit() {
           <div className="space-y-5">
 
             {/* Basic info */}
-            <Section title="Información básica" icon={Gamepad2}>
+            <Section title={t('developer.gameEdit.sections.basic')} icon={Gamepad2}>
 
-              <Field label="Nombre del juego" required>
+              <Field label={t('developer.gameEdit.fields.title')} required>
                 <input
                   type="text"
                   value={title}
@@ -407,7 +414,7 @@ export default function DevGameEdit() {
                 <p className="mt-1 text-right text-xs text-slate-600">{title.length}/60</p>
               </Field>
 
-              <Field label="Descripción">
+              <Field label={t('developer.gameEdit.fields.description')}>
                 <textarea
                   value={description}
                   onChange={e => setDescription(e.target.value)}
@@ -420,7 +427,7 @@ export default function DevGameEdit() {
               </Field>
 
               <div className="grid grid-cols-3 gap-4">
-                <Field label="Versión" hint="Ej: 1.0.0">
+                <Field label={t('developer.gameEdit.fields.version')} hint={t('developer.gameEdit.hints.version')}>
                   <input
                     type="text"
                     value={version}
@@ -429,7 +436,7 @@ export default function DevGameEdit() {
                     className={`${inputCls} font-mono`}
                   />
                 </Field>
-                <Field label="Edad mínima" hint="0 = sin restricción">
+                <Field label={t('developer.gameEdit.fields.minAge')} hint={t('developer.gameEdit.hints.minAge')}>
                   <input
                     type="number"
                     value={edadMinima}
@@ -440,7 +447,7 @@ export default function DevGameEdit() {
                     className={inputCls}
                   />
                 </Field>
-                <Field label="Precio (€)" hint="0 = gratuito">
+                <Field label={t('developer.gameEdit.fields.price')} hint={t('developer.gameEdit.hints.price')}>
                   <input
                     type="number"
                     value={price}
@@ -452,14 +459,14 @@ export default function DevGameEdit() {
                 </Field>
               </div>
 
-              <Field label="Género">
+              <Field label={t('developer.gameEdit.fields.genre')}>
                 <select value={genre} onChange={e => setGenre(e.target.value)} className={inputCls}>
                   <option value="">Sin especificar</option>
                   {GENRES.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
               </Field>
 
-              <Field label="Modos de juego">
+              <Field label={t('developer.gameEdit.fields.modes')}>
                 <div className="flex flex-wrap gap-2 pt-0.5">
                   {MODES.map(m => (
                     <button
@@ -480,9 +487,9 @@ export default function DevGameEdit() {
             </Section>
 
             {/* URL + dist */}
-            <Section title="URL y distribución del juego" icon={Code2}>
+            <Section title={t('developer.gameEdit.sections.urlDist')} icon={Code2}>
 
-              <Field label="URL de alojamiento" hint="Debe ser HTTPS. Déjala vacía si subes el dist directamente.">
+              <Field label={t('developer.gameEdit.fields.url')} hint={t('developer.gameEdit.hints.url')}>
                 <input
                   type="url"
                   value={gameUrl}
@@ -494,13 +501,13 @@ export default function DevGameEdit() {
 
               <div className="flex items-center gap-3">
                 <div className="h-px flex-1 bg-slate-800" />
-                <span className="text-xs text-slate-600">o sube el archivo del juego</span>
+                <span className="text-xs text-slate-600">{t('developer.gameEdit.orUpload')}</span>
                 <div className="h-px flex-1 bg-slate-800" />
               </div>
 
               <FileDropZone
-                label="Dist del juego"
-                hint=".html, .js, .zip — el HTML se usará como game_url"
+                label={t('developer.gameEdit.fields.dist')}
+                hint={t('developer.gameEdit.hints.dist', '.html, .js, .zip — el HTML se usará como game_url')}
                 accept=".html,.js,.zip"
                 icon={Code2}
                 file={distFile}
@@ -520,10 +527,10 @@ export default function DevGameEdit() {
           <div className="space-y-5">
 
             {/* Thumbnail */}
-            <Section title="Imagen de portada" icon={ImageIcon}>
+            <Section title={t('developer.gameEdit.sections.thumbnail')} icon={ImageIcon}>
               <FileDropZone
-                label="Thumbnail"
-                hint="JPG, PNG o WebP · mín. 800×600"
+                label={t('developer.gameEdit.fields.thumbnail')}
+                hint={t('developer.gameEdit.hints.thumbnail')}
                 accept="image/jpeg,image/png,image/webp"
                 icon={ImageIcon}
                 file={thumbnailFile}
@@ -539,7 +546,7 @@ export default function DevGameEdit() {
             </Section>
 
             {/* Rules doc */}
-            <Section title="Documento de reglas" icon={FileText}>
+            <Section title={t('developer.gameEdit.sections.rules')} icon={FileText}>
               {game.manual_url && !rulesFile && (
                 <a
                   href={game.manual_url}
@@ -548,13 +555,13 @@ export default function DevGameEdit() {
                   className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/50 px-3 py-2 text-xs text-slate-300 transition-colors hover:border-slate-600 hover:text-white"
                 >
                   <FileText size={13} className="shrink-0 text-violet-400" />
-                  <span className="truncate">Ver documento actual</span>
+                  <span className="truncate">{t('developer.gameEdit.viewCurrentDoc')}</span>
                 </a>
               )}
 
               <FileDropZone
-                label="Nuevo documento"
-                hint="PDF, DOC, DOCX, TXT, MD"
+                label={t('developer.gameEdit.fields.rules')}
+                hint={t('developer.gameEdit.hints.rules')}
                 accept=".pdf,.doc,.docx,.txt,.md"
                 icon={FileText}
                 file={rulesFile}
@@ -570,37 +577,36 @@ export default function DevGameEdit() {
             </Section>
 
             {/* Price summary card */}
-            <Section title="Publicación" icon={Tag}>
+            <Section title={t('developer.gameEdit.sections.publication')} icon={Tag}>
               <div className="space-y-3">
                 <div className="flex items-center justify-between rounded-lg bg-slate-950/60 px-3 py-2.5">
-                  <span className="text-xs text-slate-400">Estado actual</span>
+                  <span className="text-xs text-slate-400">{t('developer.gameEdit.fields.currentStatus')}</span>
                   <span className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${statusCls}`}>{statusLabel}</span>
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-slate-950/60 px-3 py-2.5">
-                  <span className="text-xs text-slate-400">Precio</span>
+                  <span className="text-xs text-slate-400">{t('developer.gameEdit.fields.price')}</span>
                   <span className="text-sm font-semibold text-white">
-                    {price !== '' && parseInt(price, 10) > 0 ? `${price} €` : 'Gratuito'}
+                    {price !== '' && parseInt(price, 10) > 0 ? `${price} €` : t('developer.gameEdit.free')}
                   </span>
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-slate-950/60 px-3 py-2.5">
-                  <span className="text-xs text-slate-400">Edad mínima</span>
+                  <span className="text-xs text-slate-400">{t('developer.gameEdit.fields.minAge')}</span>
                   <span className="text-sm font-semibold text-white">
-                    {edadMinima !== '' && parseInt(edadMinima, 10) > 0 ? `+${edadMinima}` : 'Para todos'}
+                    {edadMinima !== '' && parseInt(edadMinima, 10) > 0 ? `+${edadMinima}` : t('developer.gameEdit.forAll')}
                   </span>
                 </div>
               </div>
               <p className="text-xs leading-relaxed text-slate-500">
-                El estado solo puede cambiarlo el equipo de M4G. Para solicitar cambios de visibilidad,{' '}
-                <Link to="/contacto" className="text-violet-400 hover:text-violet-300">contacta con el equipo</Link>.
+                {t('developer.gameEdit.statusNote')}{' '}
+                <Link to="/contacto" className="text-violet-400 hover:text-violet-300">{t('developer.gameEdit.contactLink')}</Link>.
               </p>
             </Section>
 
             {/* Storage note */}
             <div className="rounded-xl border border-violet-500/15 bg-violet-500/5 p-4">
               <p className="text-xs leading-relaxed text-slate-400">
-                Archivos almacenados en{' '}
-                <code className="font-mono text-violet-400">game-assets/{game.slug}/</code>.
-                Cada subida reemplaza el archivo anterior.
+                {t('developer.gameEdit.storageNote')}{' '}
+                <code className="font-mono text-violet-400">game-assets/{game.slug}/</code>
               </p>
             </div>
           </div>
@@ -609,7 +615,7 @@ export default function DevGameEdit() {
         {/* Bottom save bar */}
         <div className="mt-8 flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-900/60 px-5 py-4">
           <p className="text-sm text-slate-500">
-            Slug:{' '}
+            {t('developer.gameEdit.slugLabel')}:{' '}
             <code className="font-mono text-xs text-slate-400">{game.slug}</code>
           </p>
           <SaveBtn />

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft, ArrowRight, Check, Code2, FileText,
   Gamepad2, ImageIcon, Loader2, Tag, X,
@@ -18,12 +19,7 @@ const GENRES = [
 ];
 const MODES = ['Singleplayer', 'Multijugador', 'Online', 'Cooperativo', 'Competitivo'];
 
-const STEPS = [
-  { n: 1, label: 'Información',  icon: Gamepad2  },
-  { n: 2, label: 'Técnico',      icon: Code2     },
-  { n: 3, label: 'Assets',       icon: ImageIcon },
-  { n: 4, label: 'Revisión',     icon: Check     },
-] as const;
+const STEP_ICONS = [Gamepad2, Code2, ImageIcon, Check] as const;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -76,6 +72,7 @@ type DropZoneProps = {
 };
 
 function FileDropZone({ label, hint, accept, icon: Icon, file, onChange, onClear }: DropZoneProps) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -106,7 +103,7 @@ function FileDropZone({ label, hint, accept, icon: Icon, file, onChange, onClear
             <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity hover:opacity-100">
               <button type="button" onClick={() => inputRef.current?.click()}
                 className="rounded-lg bg-violet-600 px-4 py-1.5 text-xs font-semibold text-white">
-                Cambiar
+                {t('developer.gameNew.change')}
               </button>
             </div>
             <button type="button" onClick={onClear}
@@ -125,14 +122,14 @@ function FileDropZone({ label, hint, accept, icon: Icon, file, onChange, onClear
                   <p className="mt-0.5 text-xs text-slate-500">{fileSize(file)}</p>
                 </div>
                 <button type="button" onClick={e => { e.stopPropagation(); onClear(); }}
-                  className="text-xs text-rose-400 hover:text-rose-300">Quitar archivo</button>
+                  className="text-xs text-rose-400 hover:text-rose-300">{t('developer.gameNew.removeFile')}</button>
               </>
             ) : (
               <>
                 <Icon size={26} className="text-slate-600" />
                 <div className="text-center">
                   <p className="text-sm text-slate-400">{hint}</p>
-                  <p className="mt-0.5 text-xs text-slate-600">Haz clic o arrastra aquí</p>
+                  <p className="mt-0.5 text-xs text-slate-600">{t('developer.gameNew.clickOrDrag')}</p>
                 </div>
               </>
             )}
@@ -145,15 +142,15 @@ function FileDropZone({ label, hint, accept, icon: Icon, file, onChange, onClear
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
-function StepIndicator({ current }: { current: number }) {
+function StepIndicator({ current, labels }: { current: number; labels: string[] }) {
   return (
     <div className="flex items-center justify-center gap-0 overflow-x-auto pb-2">
-      {STEPS.map((step, idx) => {
-        const done    = step.n < current;
-        const active  = step.n === current;
-        const Icon    = step.icon;
+      {STEP_ICONS.map((Icon, idx) => {
+        const n      = idx + 1;
+        const done   = n < current;
+        const active = n === current;
         return (
-          <div key={step.n} className="flex items-center">
+          <div key={n} className="flex items-center">
             <div className="flex flex-col items-center gap-1.5">
               <div className={`flex h-9 w-9 items-center justify-center rounded-full border-2 transition-all ${
                 done   ? 'border-violet-500 bg-violet-500 text-white' :
@@ -164,11 +161,11 @@ function StepIndicator({ current }: { current: number }) {
               </div>
               <span className={`hidden text-[10px] font-semibold uppercase tracking-wide sm:block ${
                 active ? 'text-violet-300' : done ? 'text-violet-500' : 'text-slate-600'
-              }`}>{step.label}</span>
+              }`}>{labels[idx]}</span>
             </div>
-            {idx < STEPS.length - 1 && (
+            {idx < STEP_ICONS.length - 1 && (
               <div className={`mx-2 h-0.5 w-12 shrink-0 transition-colors sm:w-16 ${
-                step.n < current ? 'bg-violet-500' : 'bg-slate-800'
+                n < current ? 'bg-violet-500' : 'bg-slate-800'
               }`} />
             )}
           </div>
@@ -192,6 +189,7 @@ function ReviewRow({ label, value }: { label: string; value: React.ReactNode }) 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DevGameNew() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [step, setStep]       = useState(1);
@@ -233,16 +231,16 @@ export default function DevGameNew() {
 
   const validate = (s: number): string | null => {
     if (s === 1) {
-      if (!title.trim()) return 'El nombre del juego es obligatorio.';
+      if (!title.trim()) return t('developer.gameNew.validation.titleRequired');
     }
     if (s === 2) {
       const hasUrl  = gameUrl.trim().length > 0;
       const hasDist = !!distFile;
-      if (!hasUrl && !hasDist) return 'Debes indicar una URL o subir un archivo del juego.';
-      if (hasUrl && !gameUrl.startsWith('https://')) return 'La URL del juego debe usar HTTPS.';
+      if (!hasUrl && !hasDist) return t('developer.gameNew.validation.urlOrFile');
+      if (hasUrl && !gameUrl.startsWith('https://')) return t('developer.gameNew.validation.urlHttps');
     }
     if (s === 3) {
-      if (!thumbnailFile) return 'La imagen de portada es obligatoria.';
+      if (!thumbnailFile) return t('developer.gameNew.validation.thumbnailRequired');
     }
     return null;
   };
@@ -275,7 +273,7 @@ export default function DevGameNew() {
   const handleSubmit = async () => {
     if (!userId || !thumbnailFile) return;
     setSubmitting(true);
-    const tid = toast.loading('Subiendo archivos…');
+    const tid = toast.loading(t('developer.gameNew.uploading'));
 
     try {
       const slug = slugify(title);
@@ -296,7 +294,7 @@ export default function DevGameNew() {
         if (!finalGameUrl) finalGameUrl = distUrl;
       }
 
-      toast.loading('Creando juego…', { id: tid });
+      toast.loading(t('developer.gameNew.creating'), { id: tid });
 
       const { error } = await supabase.from('games').insert({
         developer_id:    userId,
@@ -318,10 +316,10 @@ export default function DevGameNew() {
 
       if (error) throw error;
 
-      toast.success('¡Juego enviado a revisión!', { id: tid });
+      toast.success(t('developer.gameNew.success'), { id: tid });
       navigate('/developer');
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Error al publicar el juego', { id: tid });
+      toast.error(err instanceof Error ? err.message : t('developer.gameNew.error'), { id: tid });
     } finally {
       setSubmitting(false);
     }
@@ -331,25 +329,25 @@ export default function DevGameNew() {
 
   const renderStep1 = () => (
     <div className="space-y-5">
-      <Field label="Nombre del juego" required counter={`${title.length}/60`}>
+      <Field label={t('developer.gameEdit.fields.title')} required counter={`${title.length}/60`}>
         <input type="text" value={title} onChange={e => setTitle(e.target.value)}
-          maxLength={60} placeholder="Nombre visible en la plataforma" className={inputCls} />
+          maxLength={60} placeholder={t('developer.gameNew.values.notSpecified')} className={inputCls} />
       </Field>
 
-      <Field label="Descripción" counter={`${description.length}/500`}>
+      <Field label={t('developer.gameEdit.fields.description')} counter={`${description.length}/500`}>
         <textarea value={description} onChange={e => setDescription(e.target.value)}
           maxLength={500} rows={4} placeholder="Describe tu juego en 50–500 caracteres…"
           className={`${inputCls} resize-none`} />
       </Field>
 
-      <Field label="Género">
+      <Field label={t('developer.gameEdit.fields.genre')}>
         <select value={genre} onChange={e => setGenre(e.target.value)} className={inputCls}>
-          <option value="">Sin especificar</option>
+          <option value="">{t('developer.gameNew.values.notSpecified')}</option>
           {GENRES.map(g => <option key={g} value={g}>{g}</option>)}
         </select>
       </Field>
 
-      <Field label="Modos de juego">
+      <Field label={t('developer.gameEdit.fields.modes')}>
         <div className="flex flex-wrap gap-2 pt-0.5">
           {MODES.map(m => (
             <button key={m} type="button"
@@ -370,34 +368,34 @@ export default function DevGameNew() {
   const renderStep2 = () => (
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-4">
-        <Field label="Versión" hint="Ej: 1.0.0">
+        <Field label={t('developer.gameEdit.fields.version')} hint={t('developer.gameEdit.hints.version')}>
           <input type="text" value={version} onChange={e => setVersion(e.target.value)}
             placeholder="1.0.0" className={`${inputCls} font-mono`} />
         </Field>
-        <Field label="Edad mínima" hint="0 = sin restricción">
+        <Field label={t('developer.gameEdit.fields.minAge')} hint={t('developer.gameEdit.hints.minAge')}>
           <input type="number" value={edadMinima} onChange={e => setEdadMinima(e.target.value)}
             min={0} max={18} placeholder="0" className={inputCls} />
         </Field>
-        <Field label="Precio (€)" hint="0 = gratuito">
+        <Field label={t('developer.gameEdit.fields.price')} hint={t('developer.gameEdit.hints.price')}>
           <input type="number" value={price} onChange={e => setPrice(e.target.value)}
             min={0} placeholder="0" className={inputCls} />
         </Field>
       </div>
 
-      <Field label="URL del juego" required hint="Debe comenzar por https://. Déjala vacía si subes el dist abajo.">
+      <Field label={t('developer.gameEdit.fields.url')} required hint={t('developer.gameEdit.hints.url')}>
         <input type="url" value={gameUrl} onChange={e => setGameUrl(e.target.value)}
           placeholder="https://mi-servidor.com/juego" className={inputCls} />
       </Field>
 
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-slate-800" />
-        <span className="text-xs text-slate-600">o sube el archivo del juego</span>
+        <span className="text-xs text-slate-600">{t('developer.gameNew.orUpload')}</span>
         <div className="h-px flex-1 bg-slate-800" />
       </div>
 
       <FileDropZone
-        label="Dist del juego"
-        hint=".html, .js o .zip — si es HTML se usará como URL del juego"
+        label={t('developer.gameEdit.fields.dist')}
+        hint={t('developer.gameEdit.hints.dist')}
         accept=".html,.js,.zip"
         icon={Code2}
         file={distFile}
@@ -409,7 +407,9 @@ export default function DevGameNew() {
         <div className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3">
           <Check size={14} className="text-emerald-400" />
           <p className="text-xs text-emerald-300">
-            {gameUrl.trim() ? 'URL configurada correctamente.' : `Archivo seleccionado: ${distFile?.name}`}
+            {gameUrl.trim()
+              ? t('developer.gameNew.values.urlConfigured')
+              : t('developer.gameNew.values.fileSelected', { name: distFile?.name })}
           </p>
         </div>
       )}
@@ -419,13 +419,13 @@ export default function DevGameNew() {
   const renderStep3 = () => (
     <div className="space-y-6">
       <FileDropZone
-        label="Imagen de portada *"
-        hint="JPG, PNG o WebP · mínimo 800×600 px · máx. 2 MB"
+        label={`${t('developer.gameEdit.fields.thumbnail')} *`}
+        hint={t('developer.gameEdit.hints.thumbnail')}
         accept="image/jpeg,image/png,image/webp"
         icon={ImageIcon}
         file={thumbnailFile}
         onChange={f => {
-          if (f.size > 2 * 1024 * 1024) { toast.error('La imagen no puede superar los 2 MB'); return; }
+          if (f.size > 2 * 1024 * 1024) { toast.error(t('developer.gameNew.validation.imageSize')); return; }
           setThumbnailFile(f);
         }}
         onClear={() => setThumbnailFile(null)}
@@ -434,18 +434,18 @@ export default function DevGameNew() {
       <div className="space-y-3">
         <div className="flex items-center gap-3">
           <div className="h-px flex-1 bg-slate-800" />
-          <span className="text-xs text-slate-600">documento de reglas (opcional)</span>
+          <span className="text-xs text-slate-600">{t('developer.gameNew.rulesOptional')}</span>
           <div className="h-px flex-1 bg-slate-800" />
         </div>
 
         <FileDropZone
-          label="Reglas del juego"
-          hint="Solo formato Markdown (.md)"
+          label={t('developer.gameEdit.fields.rules')}
+          hint={t('developer.gameEdit.hints.rules')}
           accept=".md"
           icon={FileText}
           file={rulesFile}
           onChange={f => {
-            if (!f.name.endsWith('.md')) { toast.error('El documento de reglas debe ser un archivo .md'); return; }
+            if (!f.name.endsWith('.md')) { toast.error(t('developer.gameNew.validation.rulesFormat')); return; }
             setRulesFile(f);
           }}
           onClear={() => setRulesFile(null)}
@@ -453,9 +453,7 @@ export default function DevGameNew() {
 
         <div className="rounded-xl border border-slate-700/50 bg-slate-950/60 px-4 py-3">
           <p className="text-xs leading-relaxed text-slate-500">
-            El archivo de reglas debe estar en formato{' '}
-            <code className="font-mono text-violet-400">Markdown (.md)</code>.
-            Puedes incluir texto, listas, tablas e imágenes con sintaxis estándar de Markdown.
+            <code className="font-mono text-violet-400">Markdown (.md)</code>
           </p>
         </div>
       </div>
@@ -470,8 +468,7 @@ export default function DevGameNew() {
       <div className="space-y-5">
         <div className="rounded-xl border border-violet-500/20 bg-violet-500/5 px-4 py-3">
           <p className="text-xs text-violet-300">
-            Revisa la información antes de publicar. Tu juego se enviará a revisión y
-            el equipo de M4G lo activará en el catálogo cuando supere la verificación.
+            {t('developer.gameNew.initialStatus')}
           </p>
         </div>
 
@@ -479,43 +476,37 @@ export default function DevGameNew() {
 
           {/* Info summary */}
           <div className="rounded-2xl border border-slate-800 bg-slate-900/60 px-5 py-4">
-            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">Datos del juego</h3>
-            <ReviewRow label="Nombre"       value={title} />
-            <ReviewRow label="Descripción"  value={
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">{t('developer.gameNew.reviewTitle')}</h3>
+            <ReviewRow label={t('developer.gameNew.review.name')}        value={title} />
+            <ReviewRow label={t('developer.gameNew.review.description')} value={
               description
                 ? <span className="line-clamp-2 text-left">{description}</span>
-                : <span className="text-slate-500 italic">Sin descripción</span>
+                : <span className="text-slate-500 italic">{t('developer.gameNew.values.notSpecified')}</span>
             } />
-            <ReviewRow label="Género"       value={genre || <span className="text-slate-500 italic">Sin especificar</span>} />
-            <ReviewRow label="Modos"        value={modes.length ? modes.join(', ') : <span className="text-slate-500 italic">No indicados</span>} />
-            <ReviewRow label="Versión"      value={version || <span className="text-slate-500 italic">—</span>} />
-            <ReviewRow label="Edad mínima"  value={edadMinima && parseInt(edadMinima) > 0 ? `+${edadMinima}` : 'Para todos'} />
-            <ReviewRow label="Precio"       value={price && parseInt(price) > 0 ? `${price} €` : 'Gratuito'} />
-            <ReviewRow label="URL / Dist"   value={
+            <ReviewRow label={t('developer.gameNew.review.genre')}       value={genre || <span className="text-slate-500 italic">{t('developer.gameNew.values.notSpecified')}</span>} />
+            <ReviewRow label={t('developer.gameNew.review.modes')}       value={modes.length ? modes.join(', ') : <span className="text-slate-500 italic">{t('developer.gameNew.values.notIndicated')}</span>} />
+            <ReviewRow label={t('developer.gameNew.review.version')}     value={version || <span className="text-slate-500 italic">—</span>} />
+            <ReviewRow label={t('developer.gameNew.review.minAge')}      value={edadMinima && parseInt(edadMinima) > 0 ? `+${edadMinima}` : t('developer.gameNew.values.forAll')} />
+            <ReviewRow label={t('developer.gameNew.review.price')}       value={price && parseInt(price) > 0 ? `${price} €` : t('developer.gameNew.values.free')} />
+            <ReviewRow label={t('developer.gameNew.review.urlDist')}     value={
               hasUrl ? <span className="max-w-[200px] truncate font-mono text-xs">{gameUrl}</span>
-                     : hasDist ? <span className="text-emerald-400">Archivo: {distFile?.name}</span>
-                               : <span className="text-slate-500 italic">Sin URL</span>
+                     : hasDist ? <span className="text-emerald-400">{distFile?.name}</span>
+                               : <span className="text-slate-500 italic">{t('developer.gameNew.values.notSpecified')}</span>
             } />
-            <ReviewRow label="Reglas (.md)" value={rulesFile ? <span className="text-emerald-400">{rulesFile.name}</span> : <span className="text-slate-500 italic">Sin documento</span>} />
+            <ReviewRow label={t('developer.gameNew.review.rules')}       value={rulesFile ? <span className="text-emerald-400">{rulesFile.name}</span> : <span className="text-slate-500 italic">{t('developer.gameNew.values.withoutDoc')}</span>} />
           </div>
 
           {/* Thumbnail preview */}
           <div className="flex flex-col gap-3">
             <div className="overflow-hidden rounded-2xl border border-slate-700 bg-slate-900">
               {thumbnailFile ? (
-                <img src={URL.createObjectURL(thumbnailFile)} alt="Thumbnail preview"
+                <img src={URL.createObjectURL(thumbnailFile)} alt={t('developer.gameNew.review.thumbnail')}
                   className="h-36 w-full object-cover sm:h-48" />
               ) : (
                 <div className="flex h-36 w-full items-center justify-center sm:h-48">
                   <ImageIcon size={36} className="text-slate-700" />
                 </div>
               )}
-            </div>
-            <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
-              <p className="text-xs leading-relaxed text-amber-200/80">
-                Estado inicial: <span className="font-semibold text-amber-300">En revisión</span>.
-                El equipo lo revisará en 2–5 días laborables.
-              </p>
             </div>
           </div>
         </div>
@@ -534,33 +525,38 @@ export default function DevGameNew() {
         {/* Back */}
         <Link to="/developer" className="mb-6 inline-flex items-center gap-1.5 text-sm text-violet-400 transition-colors hover:text-violet-300">
           <ArrowLeft size={15} />
-          Volver al panel
+          {t('developer.gameNew.backToPortal')}
         </Link>
 
         {/* Page title */}
         <div className="mb-7">
-          <h1 className="text-2xl font-bold text-white">Publicar nuevo juego</h1>
+          <h1 className="text-2xl font-bold text-white">{t('developer.gameNew.pageTitle')}</h1>
           <p className="mt-1 text-sm text-slate-400">
-            Completa cada paso para enviar tu juego al equipo de M4G.
+            {t('developer.gameNew.initialStatus')}
           </p>
         </div>
 
         {/* Step indicator */}
         <div className="mb-8">
-          <StepIndicator current={step} />
+          <StepIndicator current={step} labels={[
+            t('developer.gameNew.steps.info'),
+            t('developer.gameNew.steps.technical'),
+            t('developer.gameNew.steps.assets'),
+            t('developer.gameNew.steps.review'),
+          ]} />
         </div>
 
         {/* Step content */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 md:p-7">
           <div className="mb-6 border-b border-slate-800 pb-4">
             <h2 className="flex items-center gap-2 font-semibold text-white">
-              {step === 1 && <><Gamepad2 size={16} className="text-violet-400" /> Información básica</>}
-              {step === 2 && <><Code2     size={16} className="text-violet-400" /> Detalles técnicos</>}
-              {step === 3 && <><ImageIcon size={16} className="text-violet-400" /> Assets del juego</>}
-              {step === 4 && <><Tag       size={16} className="text-violet-400" /> Revisión y publicación</>}
+              {step === 1 && <><Gamepad2 size={16} className="text-violet-400" /> {t('developer.gameNew.stepTitles.info')}</>}
+              {step === 2 && <><Code2     size={16} className="text-violet-400" /> {t('developer.gameNew.stepTitles.technical')}</>}
+              {step === 3 && <><ImageIcon size={16} className="text-violet-400" /> {t('developer.gameNew.stepTitles.assets')}</>}
+              {step === 4 && <><Tag       size={16} className="text-violet-400" /> {t('developer.gameNew.stepTitles.review')}</>}
             </h2>
             <p className="mt-0.5 text-xs text-slate-500">
-              Paso {step} de {STEPS.length}
+              {t('developer.gameNew.stepOf', { step, total: STEP_ICONS.length })}
             </p>
           </div>
 
@@ -575,20 +571,20 @@ export default function DevGameNew() {
           <button type="button" onClick={back} disabled={step === 1}
             className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-5 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:border-slate-600 hover:text-white disabled:pointer-events-none disabled:opacity-30">
             <ArrowLeft size={15} />
-            Anterior
+            {t('developer.gameNew.buttons.back')}
           </button>
 
           {step < 4 ? (
             <button type="button" onClick={advance}
               className="flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-500">
-              Siguiente
+              {t('developer.gameNew.buttons.next')}
               <ArrowRight size={15} />
             </button>
           ) : (
             <button type="button" onClick={handleSubmit} disabled={submitting}
               className="flex items-center gap-2 rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-500 disabled:opacity-50">
               {submitting ? <Loader2 size={15} className="animate-spin" /> : <Check size={15} />}
-              {submitting ? 'Publicando…' : 'Publicar juego'}
+              {submitting ? t('developer.gameNew.buttons.submitting') : t('developer.gameNew.buttons.submit')}
             </button>
           )}
         </div>
@@ -597,11 +593,11 @@ export default function DevGameNew() {
         <div className="mt-6 h-1 w-full overflow-hidden rounded-full bg-slate-800">
           <div
             className="h-full rounded-full bg-gradient-to-r from-violet-600 to-indigo-500 transition-all duration-500"
-            style={{ width: `${(step / STEPS.length) * 100}%` }}
+            style={{ width: `${(step / STEP_ICONS.length) * 100}%` }}
           />
         </div>
         <p className="mt-2 text-center text-xs text-slate-600">
-          {Math.round((step / STEPS.length) * 100)}% completado
+          {t('developer.gameNew.percentComplete', { percent: Math.round((step / STEP_ICONS.length) * 100) })}
         </p>
       </main>
 

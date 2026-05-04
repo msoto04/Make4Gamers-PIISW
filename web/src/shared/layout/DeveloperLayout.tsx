@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { LayoutDashboard, Gamepad2, BarChart2, type LucideIcon } from 'lucide-react';
 import Header from './Header';
 import Footer from './Footer';
@@ -16,17 +17,18 @@ type NavItem = {
   icon: LucideIcon;
 };
 
-const navItems: NavItem[] = [
-  { key: 'dashboard', label: 'Panel', icon: LayoutDashboard },
-  { key: 'juegos', label: 'Mis juegos', icon: Gamepad2 },
-  { key: 'estadisticas', label: 'Estadísticas', icon: BarChart2 },
-];
-
 export default function DeveloperLayout() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [allowed, setAllowed] = useState(false);
   const [activeSection, setActiveSection] = useState<DevSection>('dashboard');
+
+  const navItems: NavItem[] = [
+    { key: 'dashboard', label: t('developer.layout.nav.dashboard'), icon: LayoutDashboard },
+    { key: 'juegos',    label: t('developer.layout.nav.games'),     icon: Gamepad2 },
+    { key: 'estadisticas', label: t('developer.layout.nav.stats'), icon: BarChart2 },
+  ];
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -56,7 +58,7 @@ export default function DeveloperLayout() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-400">
-        Cargando panel de desarrollador…
+        {t('developer.layout.loading')}
       </div>
     );
   }
@@ -82,14 +84,14 @@ export default function DeveloperLayout() {
             <div className="mb-1 flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-violet-500 shadow-[0_0_6px_1px] shadow-violet-500/60" />
               <span className="text-xs font-semibold uppercase tracking-widest text-violet-400">
-                Developer Portal
+                {t('developer.layout.portalBadge')}
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-white">Panel de Desarrollador</h1>
-            <p className="text-sm text-slate-400">Gestión y seguimiento de tus contribuciones a M4G.</p>
+            <h1 className="text-2xl font-bold text-white">{t('developer.layout.title')}</h1>
+            <p className="text-sm text-slate-400">{t('developer.layout.subtitle')}</p>
           </div>
           <Link to="/" className="shrink-0 text-sm text-violet-400 transition-colors hover:text-violet-300">
-            Volver al inicio
+            {t('developer.layout.backHome')}
           </Link>
         </div>
 
@@ -122,9 +124,9 @@ export default function DeveloperLayout() {
 
             <div className="mt-6 rounded-xl border border-slate-800 bg-slate-950/60 p-3 text-center">
               <p className="text-xs text-slate-500">
-                ¿Dudas o problemas?{' '}
+                {t('developer.layout.contactPrompt')}{' '}
                 <Link to="/contacto" className="text-violet-400 hover:text-violet-300">
-                  Contacta con el equipo
+                  {t('developer.layout.contactLink')}
                 </Link>
               </p>
             </div>

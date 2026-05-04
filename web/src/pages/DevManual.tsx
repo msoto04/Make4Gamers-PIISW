@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, BookOpen, ChevronDown, Search, X } from 'lucide-react';
 import { MANUAL_SECTIONS } from '../features/developer/data/manual.data';
 import MarkdownRenderer from '../shared/components/MarkdownRenderer';
@@ -53,6 +54,7 @@ function SectionItem({ section, index }: { section: typeof MANUAL_SECTIONS[numbe
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DevManual() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
 
   const filtered = query.trim()
@@ -70,7 +72,7 @@ export default function DevManual() {
         <div className="mx-auto max-w-4xl px-4 py-10">
           <Link to="/developer" className="mb-6 inline-flex items-center gap-2 text-sm text-violet-400 transition-colors hover:text-violet-300">
             <ArrowLeft size={16} />
-            Volver al panel
+            {t('developer.manual.backToPanel')}
           </Link>
 
           <div className="flex items-start gap-4">
@@ -78,8 +80,8 @@ export default function DevManual() {
               <BookOpen size={28} className="text-violet-400" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Manual de Desarrollador</h1>
-              <p className="mt-1 text-slate-400">Documentación técnica oficial de M4G para desarrolladores verificados.</p>
+              <h1 className="text-3xl font-bold text-white">{t('developer.manual.title')}</h1>
+              <p className="mt-1 text-slate-400">{t('developer.manual.subtitle')}</p>
             </div>
           </div>
 
@@ -90,7 +92,7 @@ export default function DevManual() {
               type="text"
               value={query}
               onChange={e => setQuery(e.target.value)}
-              placeholder="Buscar en el manual…"
+              placeholder={t('developer.manual.searchPlaceholder')}
               className="w-full rounded-xl border border-slate-700 bg-slate-900 py-3 pl-10 pr-10 text-sm text-slate-200 placeholder:text-slate-500 focus:border-violet-500/50 focus:outline-none focus:ring-1 focus:ring-violet-500/20"
             />
             {query && (
@@ -108,17 +110,17 @@ export default function DevManual() {
         {filtered.length === 0 ? (
           <div className="py-16 text-center">
             <Search size={36} className="mx-auto text-slate-700" />
-            <p className="mt-4 text-slate-400">No hay secciones que coincidan con tu búsqueda.</p>
+            <p className="mt-4 text-slate-400">{t('developer.manual.noResults')}</p>
             <button type="button" onClick={() => setQuery('')}
               className="mt-3 text-sm text-violet-400 hover:text-violet-300">
-              Limpiar búsqueda
+              {t('developer.manual.clearSearch')}
             </button>
           </div>
         ) : (
           <div className="space-y-3">
             {query && (
               <p className="mb-4 text-sm text-slate-500">
-                {filtered.length} sección{filtered.length !== 1 ? 'es' : ''} encontrada{filtered.length !== 1 ? 's' : ''} para &ldquo;{query}&rdquo;
+                {t('developer.manual.results', { count: filtered.length })} &ldquo;{query}&rdquo;
               </p>
             )}
             {filtered.map(section => (
@@ -132,9 +134,9 @@ export default function DevManual() {
         )}
 
         <p className="mt-12 text-center text-xs text-slate-600">
-          Manual de Desarrollador M4G · Última actualización: mayo 2026 ·{' '}
+          {t('developer.manual.footerText')}{' '}
           <Link to="/contacto" className="text-violet-700 hover:text-violet-500">
-            ¿Algo desactualizado? Cuéntanos
+            {t('developer.manual.footerLink')}
           </Link>
         </p>
       </div>
