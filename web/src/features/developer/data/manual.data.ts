@@ -6,6 +6,9 @@ import reglasExperiencia from "../content/developer-guidelines/05-reglas-de-expe
 import consistenciaVisual from "../content/developer-guidelines/06-consistencia-visual-ui.md?raw";
 import gamificacionObligatoria from "../content/developer-guidelines/07-gamificacion-obligatoria.md?raw";
 import sistemaElo from "../content/developer-guidelines/08-sistema-de-elo-ranking-y-progresion.md?raw";
+import sdkInstalacion from "../content/developer-guidelines/09-sdk-instalacion.md?raw";
+import sdkFlujoCompleto from "../content/developer-guidelines/09b-sdk-flujo-completo.md?raw";
+import sdkTablasRls from "../content/developer-guidelines/09c-sdk-tablas-rls.md?raw";
 import cicloVidaJuego from "../content/developer-guidelines/10-ciclo-de-vida-del-juego.md?raw";
 
 export type ManualSection = {
@@ -41,7 +44,7 @@ export const MANUAL_SECTIONS: ManualSection[] = [
     id: "sistema-configuracion-partidas",
     title: "Sistema de configuración de partidas",
     description:
-      "Criterios y reglas relacionados con la configuración, creación y funcionamiento de las partidas.",
+      "Criterios de configuración de partidas e integración técnica con el SDK para registrar matches y movimientos.",
     content: sistemaPuntuacion,
   },
   {
@@ -69,8 +72,29 @@ export const MANUAL_SECTIONS: ManualSection[] = [
     id: "sistema-elo-ranking-progresion",
     title: "Sistema de ELO, ranking y progresión",
     description:
-      "Funcionamiento de la progresión competitiva, rankings y sistemas de clasificación.",
+      "Funcionamiento de la progresión competitiva, rankings e implementación técnica del ELO con el m4g-sdk.",
     content: sistemaElo,
+  },
+  {
+    id: "sdk-instalacion",
+    title: "SDK m4g-sdk — Instalación y configuración",
+    description:
+      "Instala la librería oficial de M4G, configura las dependencias e integra getLaunchContextFromUrl para leer el contexto de lanzamiento.",
+    content: sdkInstalacion,
+  },
+  {
+    id: "sdk-flujo-completo",
+    title: "SDK m4g-sdk — Flujo completo de integración",
+    description:
+      "Diagrama de secuencia, patrón host-only y ejemplo completo en TypeScript para un juego por turnos de 2 a 4 jugadores.",
+    content: sdkFlujoCompleto,
+  },
+  {
+    id: "sdk-tablas-rls",
+    title: "SDK m4g-sdk — Tablas Supabase y políticas RLS",
+    description:
+      "DDL exacto de las tres tablas requeridas por el SDK y las políticas RLS mínimas para que funcione con la anon key.",
+    content: sdkTablasRls,
   },
   {
     id: "ciclo-vida-juego",

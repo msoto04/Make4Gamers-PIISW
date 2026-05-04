@@ -106,16 +106,69 @@ Los usuarios acumulan puntos al jugar y mejorar sus resultados. Estos puntos con
 * Su posición en el ranking global.
 * Su avance dentro de los rangos de la plataforma.
 
-El sistema muestra elementos como:
+---
 
-* Ranking global de jugadores.
-* Posición actual del usuario.
-* Puntuación total.
-* Liga o rango alcanzado.
-* Progreso hacia el siguiente rango.
-* Temporada actual.
+## 🔌 Implementación técnica con el m4g-sdk
+
+El SDK de M4G calcula y actualiza el ELO de todos los jugadores automáticamente al terminar cada partida mediante el sistema de **Virtual Duels**.
+
+### Cómo funciona el sistema ELO del SDK
+
+<div class="m4g-elo-table"></div>
+
+**Reglas del cálculo:**
+
+- Cada jugador disputa un duelo virtual contra cada rival.
+- La puntuación S se calcula según la posición final: `S = (total − posición) / (total − 1)`
+- El Factor K determina la amplitud del cambio: K=50 (underdog), K=40 (provisional), K=20 (establecido).
+- El ELO inicial de un jugador nuevo en un juego es **1000**.
+- Cada juego mantiene su propio ranking independiente (filtrado por `game_id`).
+
+> [!TIP]
+> El sistema es zero-sum con K idéntico: los puntos que gana el ganador son exactamente los que pierde el perdedor. Esto garantiza que el ELO total de la plataforma se mantiene constante.
+
+### Llamar a `submitEloResult`
+
+```typescript
+import { submitEloResult } from 'm4g-sdk';
+
+// Solo el host al terminar la partida
+if (isHost) {
+  const eloResult = await submitEloResult([
+    { userId: player1Id, gameId: ctx.gameId!, position: 1 }, // Ganador
+    { userId: player2Id, gameId: ctx.gameId!, position: 2 }, // Perdedor
+    { userId: player3Id, gameId: ctx.gameId!, position: 3 }, // (si hay más jugadores)
+  ]);
+
+  if (!eloResult.ok) {
+    console.error('[m4g] submitEloResult:', eloResult.error);
+    return;
+  }
+
+  // eloResult.results contiene los deltas de cada jugador
+  // [{ userId, oldElo, newElo, delta }, ...]
+  socket.emit('match:elo', { results: eloResult.results });
+}
+```
+
+> [!WARNING]
+> **Solo el host** debe llamar a `submitEloResult`. Una doble llamada genera cambios de ELO incorrectos que afectan el ranking de forma permanente.
+
+### Mostrar los resultados a los jugadores
+
+```typescript
+socket.on('match:elo', ({ results }) => {
+  for (const r of results) {
+    const sign    = r.delta >= 0 ? '+' : '';
+    const isLocal = r.userId === ctx.playerId;
+    console.log(
+      isLocal ? '(tú)' : r.userId,
+      r.oldElo, '→', r.newElo,
+      '(' + sign + r.delta + ')'
+    );
+  }
+});
+```
 
 > [!NOTE]
-> Por ejemplo, un jugador puede aparecer en el ranking con una puntuación determinada y una liga asociada, como **PS4**, **PS5** o rangos superiores. Además, el sistema indica cuánto progreso le falta para alcanzar el siguiente rango, reforzando la sensación de avance y reto.
-
-Este modelo sirve como referencia para los desarrolladores, que podrán adaptar sus propios sistemas de puntuación manteniendo siempre los principios de **claridad, justicia y motivación**.
+> Para el flujo completo con `createMatch`, `submitMatchMovement`, `submitEloResult` y `endMatch` integrados, consulta la sección **SDK m4g-sdk — Flujo completo de integración**.

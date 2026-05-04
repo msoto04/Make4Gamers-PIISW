@@ -3,6 +3,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { Copy, Check, Info, AlertTriangle, Lightbulb, XCircle, CheckCircle2 } from 'lucide-react';
+import SdkFlowDiagram from '../../features/developer/components/SdkFlowDiagram';
+import EloTable from '../../features/developer/components/EloTable';
 
 // ─── Remark plugin: GitHub-style alerts ([!NOTE], [!TIP], …) ─────────────────
 // remark-gfm 4.x does not ship alert support, so we handle it ourselves.
@@ -210,9 +212,11 @@ export default function MarkdownRenderer({ content }: { content: string }) {
             );
           },
 
-          // Color palette — triggered by <div class="m4g-palette"></div> in markdown
+          // Custom markdown components triggered by class names
           div: ({ className, children }) => {
-            if (className?.includes('m4g-palette')) return <ColorPalette />;
+            if (className?.includes('m4g-palette'))    return <ColorPalette />;
+            if (className?.includes('m4g-sdk-flow'))   return <SdkFlowDiagram />;
+            if (className?.includes('m4g-elo-table'))  return <EloTable />;
             return <div className={className}>{children}</div>;
           },
 
