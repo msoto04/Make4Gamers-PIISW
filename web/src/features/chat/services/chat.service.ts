@@ -3,7 +3,7 @@ import { supabase } from '../../../supabase';
 import type { ChatProfile } from '../types/chat.types';
 
 export const getFriendsList = async (currentUserId: string): Promise<ChatProfile[]> => {
-    // 1. Todos los rooms donde participa el usuario
+    
     const { data: participations } = await supabase
         .from('chat_participants')
         .select('room_id')
@@ -12,7 +12,6 @@ export const getFriendsList = async (currentUserId: string): Promise<ChatProfile
     const allRoomIds = participations?.map(p => p.room_id) ?? [];
     if (!allRoomIds.length) return [];
 
-    // 2. Obtener salas que NO son de partida — filtro directo, sin tocar match_chats
     const { data: rooms } = await supabase
         .from('chat_rooms')
         .select('id, is_group')
@@ -26,7 +25,7 @@ export const getFriendsList = async (currentUserId: string): Promise<ChatProfile
 
     const profiles: ChatProfile[] = [];
 
-    // 4. Salas 1-a-1: mostrar el perfil del otro participante
+  
     if (oneToOneIds.length > 0) {
         const { data: others } = await supabase
             .from('chat_participants')
@@ -50,20 +49,23 @@ export const getFriendsList = async (currentUserId: string): Promise<ChatProfile
                 if (!userId) continue;
                 const profile = userMap.get(userId);
                 if (!profile) continue;
-                profiles.push({
-                    id: profile.id,
-                    room_id: roomId,
-                    username: profile.username || 'Usuario',
-                    avatar_url: profile.avatar_url,
-                    status: profile.status || 'Disponible',
-                    subscription_tier: profile.subscription_tier,
-                    is_group: false
-                });
+                
+
+                if (!profiles.some(p => p.id === profile.id)) {
+                    profiles.push({
+                        id: profile.id,
+                        room_id: roomId,
+                        username: profile.username || 'Usuario',
+                        avatar_url: profile.avatar_url,
+                        status: profile.status || 'Disponible',
+                        subscription_tier: profile.subscription_tier,
+                        is_group: false
+                    });
+                }
             }
         }
     }
-
-    // 5. Salas de grupo: mostrar nombres de miembros
+    
     if (groupIds.length > 0) {
         const { data: allParticipants } = await supabase
             .from('chat_participants')
