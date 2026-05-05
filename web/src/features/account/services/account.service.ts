@@ -99,18 +99,31 @@ export async function getUserDetailedStats(userId: string) {
       .select('score, created_at, game:games(title)')
       .eq('user_id', userId);
 
+
     const { data: matchesDataRaw } = await supabase
       .from('matches')
-      .select('created_at, game:games(title)')
-      .eq('player_1', userId);
+      .select('created_at, game:games(title), game_id')
+      .or(`player_1.eq.${userId},player_2.eq.${userId}`);
 
     const scoreData: any[] = scoreDataRaw || [];
     const matchesData: any[] = matchesDataRaw || [];
 
+    // Eliminar duplicados: solo una partida por usuario, juego y día
+    const uniqueMatchesMap = new Map();
+    matchesData.forEach(match => {
+      const date = new Date(match.created_at).toISOString().slice(0, 10);
+      const key = `${match.game_id}_${date}`;
+      if (!uniqueMatchesMap.has(key)) {
+        uniqueMatchesMap.set(key, match);
+      }
+    });
+    const uniqueMatches = Array.from(uniqueMatchesMap.values());
+
     const gameMap: Record<string, GameStat> = {};
 
     
-    matchesData.forEach(match => {
+
+    uniqueMatches.forEach(match => {
       const rawTitle = Array.isArray(match.game) ? match.game[0]?.title : match.game?.title;
       const title = rawTitle || 'Desconocido';
 
@@ -147,7 +160,8 @@ export async function getUserDetailedStats(userId: string) {
     const weeklyCounts: Record<string, number> = {};
     const monthlyCounts: Record<string, number> = {};
 
-    matchesData.forEach(match => {
+
+    uniqueMatches.forEach(match => {
       const date = new Date(match.created_at);
       const dayKey = date.toISOString().slice(0, 10);
       const weekKey = getWeekKey(date);
@@ -189,7 +203,8 @@ export async function getUserDetailedStats(userId: string) {
       };
     });
 
-    const historyData = matchesData
+
+    const historyData = uniqueMatches
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) 
       .slice(0, 8) 
       .map(match => {
@@ -202,7 +217,7 @@ export async function getUserDetailedStats(userId: string) {
         };
       });
 
-    const totalMatches = matchesData.length; 
+    const totalMatches = uniqueMatches.length; 
     const highestScore = scoreData.length > 0 ? Math.max(...scoreData.map(s => s.score)) : 0;
     const totalUsersQuery = await supabase.from('profiles').select('id', { count: 'exact', head: true });
     const totalUsers = totalUsersQuery.count ?? 0;
