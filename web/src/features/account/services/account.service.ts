@@ -67,7 +67,7 @@ export async function getAccountHighScores(userId: string) {
     }
   });
 
-  return bestScores.slice(0, 3);
+  return bestScores;
 }
 
 
