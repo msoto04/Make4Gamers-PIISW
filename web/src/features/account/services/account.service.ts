@@ -34,8 +34,44 @@ export function updateAccountProfile(
   return updateAccountProfileFromApi(supabase, userId, patch);
 }
 
-export function getAccountRecentGames(userId: string, limit = 5): Promise<AccountRecentGame[]> {
-  return getAccountRecentGamesFromApi(supabase, userId, limit);
+export async function getAccountRecentGames(userId: string, limit = 10): Promise<AccountRecentGame[]> {
+  const { data, error } = await supabase
+    .from('matches')
+    .select(`
+      id,
+      created_at,
+      player_1,
+      player_2,
+      games ( title ),
+      match_results ( final_score_player_1, final_score_player_2, points_awarded )
+    `)
+    .or(`player_1.eq.${userId},player_2.eq.${userId}`) // El usuario puede ser jugador 1 o 2
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("Error al obtener el historial de partidas:", error);
+    return [];
+  }
+
+  return (data || []).map((match: any) => {
+    const isPlayer1 = match.player_1 === userId;
+    
+    const results = Array.isArray(match.match_results) ? match.match_results[0] : match.match_results;
+    const gameData = Array.isArray(match.games) ? match.games[0] : match.games;
+    
+    let matchScore = 0;
+    if (results) {
+       matchScore = isPlayer1 ? results.final_score_player_1 : results.final_score_player_2;
+    }
+
+    return {
+      id: match.id,
+      score: matchScore || 0,
+      created_at: match.created_at,
+      game: gameData || { title: "Juego Desconocido" }
+    };
+  }) as AccountRecentGame[];
 }
 
 export function getAccountFriends(userId: string): Promise<AccountFriend[]> {
